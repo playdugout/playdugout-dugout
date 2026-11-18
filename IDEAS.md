@@ -24,7 +24,7 @@ Cada jugador crea su propio futbolista (avatar ilustrado, diseño propio, sin ju
 - Límite total de 6–8 vídeos al día. Nunca en ranked ni Versus, nunca forzados.
 
 ## Producto
-- ~~Importar miles de jugadores desde Wikidata~~ (hecho: 4.361).
+- ~~Importar miles de jugadores desde Wikidata~~ (hecho: 3.737 tras quitar los que solo jugaron en ligas poco conocidas).
 - ~~Estadísticas reales para Higher or Lower~~ (hecho con Wikidata; solo liga y selección).
 - Idiomas ES / EN / PT con detección automática.
 - Ranking global y temporadas mensuales con recompensas por división.

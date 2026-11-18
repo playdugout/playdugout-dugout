@@ -4,6 +4,16 @@ RAW, PROTO, OUTJS, OUTSQL = sys.argv[1:5]
 d = json.load(open(RAW))
 P, S, T, C = d['players'], d['stints'], d['teams'], d['countries']
 NOW = 2026
+# País de cada club (P17), descargado aparte: team_country.json junto a raw.json
+_TC = os.path.join(os.path.dirname(os.path.abspath(RAW)), 'team_country.json')
+TEAM_COUNTRY = json.load(open(_TC)) if os.path.exists(_TC) else {}
+# Ligas conocidas: España, Reino Unido, Italia, Alemania, Francia, Portugal, Países Bajos, Bélgica, Turquía
+TOP_COUNTRIES = {'Q29','Q145','Q38','Q183','Q142','Q45','Q55','Q31','Q43'}
+FAMOUS_POP = 110          # con tanta presencia en Wikipedia se queda aunque solo jugara en ligas menores
+NOT_FOOTBALL = {'O. J. Simpson', 'Carl Weathers'}
+KEEP_ANYWAY = {'Lev Yashin', 'Garrincha', 'Oleh Blokhin', 'Igor Akinfeev'}   # leyendas de ligas menores
+# Mismo club con dos nombres
+CLUB_ALIAS = {'Deportivo':'Deportivo de A Coruña','Celta':'Celta de Vigo','Botafogo':'Botafogo F.R','Bolton':'Bolton Wanderers','Albacete':'Albacete Balompié','Roda':'Roda JC Kerkrade','East Bengal':'East Bengal Club','Club Nacional':'Club Nacional de Football'}
 MAJOR = {"Q8682":"RMA","Q7156":"FCB","Q8701":"ATM","Q10329":"SEV","Q10333":"VAL","Q12297":"VIL","Q8723":"BET","Q8687":"ATH",
  "Q10315":"RSO","Q5549552":"RSO","Q18656":"MUN","Q50602":"MCI","Q1130849":"LIV","Q9616":"CHE","Q9617":"ARS","Q18741":"TOT",
  "Q1422":"JUV","Q1543":"MIL","Q55602896":"MIL","Q631":"INT","Q2641":"NAP","Q2739":"ROM","Q15789":"BAY","Q41420":"BVB",
@@ -38,7 +48,7 @@ def team_ok(t):
     return bool(I.get('en') or I.get('es'))
 def team_key(t):
     if t in MAJOR: return MAJOR[t]
-    I = T[t]; return short(I.get('en') or I.get('es'))
+    I = T[t]; k = short(I.get('en') or I.get('es')); return CLUB_ALIAS.get(k, k)
 def season(v, is_end):
     m = re.match(r'(-?\d{4})-(\d{2})-(\d{2})', v or '')
     if not m: return None
@@ -133,6 +143,9 @@ for k, p in P.items():
     merged = [x[:3] for x in merged]
     nat = nat_of(p)
     if not nat: continue
+    if name in NOT_FOOTBALL: continue                                   # otros deportes (fútbol americano…)
+    top = any(s['team'] in MAJOR or set(TEAM_COUNTRY.get(s['team'], [])) & TOP_COUNTRIES for s in by_p.get(k, []))
+    if not top and p['pop'] < FAMOUS_POP and name not in KEEP_ANYWAY: continue                      # solo ligas poco conocidas
     wd.append({'name': name, 'nat': nat, 'pop': p['pop'], 'st': merged, 'alt': {norm(p.get('es', '')), norm(p.get('en', ''))},
                'la': la, 'lg': lg, 'caps': caps, 'ig': ig, 'pos': pos, 'cur': bool(merged) and merged[-1][2] >= NOW, 'by': by})
 # --- base curada del prototipo ---
@@ -153,7 +166,7 @@ for w in wd:
 out, used, kept_cur, took_wd = [], set(), 0, 0
 CLUB_EN = {'Hamburgo':'Hamburg','Colonia':'Cologne','Burdeos':'Bordeaux','Niza':'Nice','Basilea':'Basel','Salzburgo':'Salzburg','Estrella Roja':'Red Star Belgrade','Spartak Moscú':'Spartak Moscow','CSKA Moscú':'CSKA Moscow','Lokomotiv Moscú':'Lokomotiv Moscow','Standard Lieja':'Standard Liège','Club Brujas':'Club Brugge','Rubin Kazán':'Rubin Kazan','Núremberg':'Nuremberg','CSKA Sofía':'CSKA Sofia','Dinamo Kiev':'Dynamo Kyiv','Al-Ahli Dubái':'Al-Ahli Dubai'}
 for c in cur:
-    c['st'] = [[CLUB_EN.get(x[0], x[0]), x[1], x[2]] for x in c['st']]
+    c['st'] = [[CLUB_ALIAS.get(CLUB_EN.get(x[0], x[0]), CLUB_EN.get(x[0], x[0])), x[1], x[2]] for x in c['st']]
     w = wd_by.get(norm(c['name']))
     if w and id(w) not in used and majors(c['st']) <= majors(w['st']) and len(w['st']) >= 1:
         used.add(id(w)); out.append({**w, 'name': c['name'], 'nat': c['nat'] or w['nat']}); took_wd += 1

@@ -916,13 +916,25 @@ const STAR_NAMES=["Cristiano Ronaldo","Lionel Messi","Neymar","Kylian Mbappé","
 const STARS=PLAYERS.filter(p=>STAR_NAMES.includes(p.name)); const STARS_SET=new Set(STARS.map(p=>p.id));
 const MAJOR_KEYS=new Set(Object.keys(CLUBS));
 const MIDP=PLAYERS.filter(p=>STARS_SET.has(p.id)||p.pop>=75||(p.pop>=48&&p.stints.some(s=>MAJOR_KEYS.has(s.club)))||(p.cur&&p.pop>=42&&p.stints.some(s=>MAJOR_KEYS.has(s.club)&&s.e-s.s>=2))); const MID_SET=new Set(MIDP.map(p=>p.id));
-function PPSET(){return DIFF==="easy"?STARS_SET:DIFF==="hard"?null:MID_SET}
+function PPSET(){return KNOWN()}
+const _PPS={};function PPS(){return _PPS[DIFF]||(_PPS[DIFF]=new Set(PP().map(p=>p.id)))}
 function mateIn(a,set){const all=[...MATES[a.id].keys()];const f=set?all.filter(k=>set.has(k)):all;const L=f.length?f:all;return PLAYERS[L[Math.floor(Math.random()*L.length)]]}
 const BIG=["RMA","FCB","ATM","MUN","MCI","LIV","CHE","ARS","JUV","MIL","INT","BAY","PSG","BVB"];
 // Intermedio: los jugadores que aparecen en pantalla salen de los más conocidos (MIDE); las respuestas válidas siguen siendo todas
-const MIDE=MIDP.filter(p=>STARS_SET.has(p.id)||(p.pop>=55&&p.stints.some(s=>MAJOR_KEYS.has(s.club))));
-function PP(){return DIFF==="easy"?STARS:DIFF==="hard"?PLAYERS:MIDE}
-function CP(){return DIFF==="easy"?BIG:DIFF==="hard"?CLUB_POOL:CLUB_TOP}
+const inMajor=p=>p.stints.some(s=>MAJOR_KEYS.has(s.club));
+const MIDE=MIDP.filter(p=>STARS_SET.has(p.id)||(p.pop>=55&&inMajor(p))); const MIDE_SET=new Set(MIDE.map(p=>p.id));
+// NIVELES. Cada nivel enseña jugadores distintos (no se repiten entre niveles):
+//  Principiante: estrellas actuales o recientes, las que conoce un niño que empieza.
+//  Intermedio: conocidos de grandes clubes, sin las estrellas de Principiante.
+//  Experto: el resto con algo de recorrido.
+const EASYP=PLAYERS.filter(p=>STARS_SET.has(p.id)||(p.pop>=75&&inMajor(p)&&(p.by==null||p.by>=1975))); const EASY_SET=new Set(EASYP.map(p=>p.id));
+const MIDS=MIDE.filter(p=>!EASY_SET.has(p.id));
+const HARDP=PLAYERS.filter(p=>!EASY_SET.has(p.id)&&!MIDE_SET.has(p.id)&&(p.pop>=30||inMajor(p)));
+const KNOWN_MID=new Set([...EASY_SET,...MIDE_SET]);
+function PP(){return DIFF==="easy"?EASYP:DIFF==="hard"?HARDP:MIDS}
+// A quién se espera que sepa nombrar el jugador de cada nivel (para garantizar que hay respuestas a su alcance)
+function KNOWN(){return DIFF==="easy"?EASY_SET:DIFF==="hard"?null:KNOWN_MID}
+function CP(){return DIFF==="easy"?BIG:DIFF==="hard"?CLUB_POOL.filter(c=>!BIG.includes(c)):CLUB_TOP}
 function initialOf(n){const w=n.split(" ");return (w.length>1?w[w.length-1]:w[0])[0]}
 
 // Compañeros: mismo club con al menos una temporada en común
@@ -935,10 +947,12 @@ const MATES=PLAYERS.map(()=>new Map());
 })();
 function bfs(from){const d=new Array(PLAYERS.length).fill(-1),prev=new Array(PLAYERS.length).fill(-1);d[from]=0;const q=[from];
   while(q.length){const u=q.shift();for(const v of MATES[u].keys())if(d[v]<0){d[v]=d[u]+1;prev[v]=u;q.push(v)}}return {d,prev}}
+function bfsIn(from,set){const d=new Array(PLAYERS.length).fill(-1);d[from]=0;const q=[from];
+  while(q.length){const u=q.shift();for(const v of MATES[u].keys())if(d[v]<0&&set.has(v)){d[v]=d[u]+1;q.push(v)}}return d}
 function seasons(s,e){const f=y=>String(y%100).padStart(2,"0");if(e<=s)e=s+1;return e-s===1?`${f(s)}/${f(e)}`:`${s}–${e}`}
 
 // ---------- Utilidades ----------
-function rng(seed){let s=seed>>>0||1;return()=>{s^=s<<13;s>>>=0;s^=s>>17;s^=s<<5;s>>>=0;return s/4294967296}}
+function rng(seed){let s=((seed>>>0)^0x9E3779B9)>>>0||1;const f=()=>{s^=s<<13;s>>>=0;s^=s>>17;s^=s<<5;s>>>=0;return s/4294967296};for(let i=0;i<12;i++)f();return f}
 function hash(str){let h=2166136261;for(const c of str){h^=c.charCodeAt(0);h=Math.imul(h,16777619)}return h>>>0}
 const today=new Date(); const baseDay=today.getFullYear()+"-"+(today.getMonth()+1)+"-"+today.getDate();
 const DIFF_NAMES={easy:"Beginner",mid:"Intermediate",hard:"Expert"};
@@ -987,8 +1001,8 @@ function makeLink(seed){
   const r=rng(seed);
   for(let t=0;t<500;t++){
     const pool=PP(); const a=pool[Math.floor(r()*pool.length)].id; const {d}=bfs(a);
-    const want=DIFF==="easy"?2:DIFF==="hard"?4:(r()<0.85?3:4);
-    const cands=pool.filter(p=>d[p.id]===want).map(p=>p.id);
+    const want=DIFF==="easy"?2:DIFF==="hard"?4:3, K=KNOWN(), kd=K?bfsIn(a,K):d;
+    const cands=pool.filter(p=>d[p.id]===want&&kd[p.id]===want).map(p=>p.id);
     if(cands.length) return {a,b:cands[Math.floor(r()*cands.length)],par:want};
   }
   // plan B: cualquier pareja que no fueran compañeros
@@ -1085,11 +1099,11 @@ PLAYERS.forEach(p=>{p.set.forEach(c=>{let S=CLUB_IDX.get(c);if(!S){S=new Set();C
 function catSet(c){return (c.type==="nat"?NAT_IDX:CLUB_IDX).get(c.key)||new Set()}
 function gridClubs(){
   if(DIFF==="easy")return BIG;
-  return DIFF==="hard"?CLUB_POOL.slice().sort((a,b)=>clubCounts[b]-clubCounts[a]).slice(0,120):CLUB_TOP;
+  return DIFF==="hard"?CLUB_POOL.filter(c=>!BIG.includes(c)).sort((a,b)=>clubCounts[b]-clubCounts[a]).slice(0,110):CLUB_TOP;
 }
 function makeGrid(seed){
   const r=rng(seed); const pick=a=>a[Math.floor(r()*a.length)];
-  const pool=gridClubs(),ps=DIFF==="hard"?null:MID_SET,need0=DIFF==="hard"?1:DIFF==="mid"?3:2;
+  const pool=gridClubs(),ps=KNOWN(),need0=DIFF==="hard"?1:DIFF==="mid"?3:2;
   const count=(A,B)=>{const [x,y]=A.size<B.size?[A,B]:[B,A];let n=0;for(const id of x)if(y.has(id)&&(!ps||ps.has(id)))n++;return n};
   for(let t=0;t<30000;t++){
     const used=new Set(); const rows=[],cols=[];
@@ -1165,7 +1179,7 @@ const T={},MAXT=5;
 const T_POOL=PLAYERS.filter(p=>p.stints.length>=4);
 function startTray(daily){
   const r=rng(daily?hash("tray"+dayKey):Math.floor(Math.random()*1e9));
-  const TP=DIFF==="easy"?T_POOL.filter(p=>STARS_SET.has(p.id)):DIFF==="hard"?T_POOL.filter(p=>!STARS_SET.has(p.id)):T_POOL.filter(p=>MIDE.includes(p));
+  const TP=PP().filter(p=>p.stints.length>=(DIFF==="easy"?3:4));
   const p=TP[Math.floor(r()*TP.length)];
   Object.assign(T,{daily,p,guesses:[],over:false,won:false});
   if(daily){const s=store.get("tray-"+dayKey,null);if(s&&s.pid===p.id)Object.assign(T,{guesses:s.guesses,over:s.over,won:s.won})}
@@ -1446,10 +1460,10 @@ $("vs-copylink").onclick=e=>copy(`${ARTIFACT_URL}#vs-${V.code}`,e.currentTarget)
 // Nombre|goles|asistencias|amarillas|rojas
 // Totales reales de Wikidata (fichas de Wikipedia): partidos y goles de liga sumando todos sus clubes, y partidos y goles con la selección.
 const HL_CATS=[{k:"lg",n:"League goals",u:"league goals"},{k:"la",n:"League apps",u:"league appearances"},{k:"caps",n:"Caps",u:"international caps"},{k:"ig",n:"Intl goals",u:"international goals"}];
-const STATS=PLAYERS.filter(p=>(MID_SET.has(p.id)||STARS_SET.has(p.id))&&(p.la!=null||p.caps!=null)).map(p=>({name:p.name,nat:p.nat,pos:p.pos,lg:p.lg,la:p.la,caps:p.caps,ig:p.ig}));
+const STATS=PLAYERS.filter(p=>p.la!=null||p.caps!=null).map(p=>({id:p.id,name:p.name,nat:p.nat,pos:p.pos,lg:p.lg,la:p.la,caps:p.caps,ig:p.ig}));
 function clearlyDifferent(x,y){const hi=Math.max(x,y),lo=Math.min(x,y);return hi-lo>=Math.max(3,hi*0.15)}
 const H={cat:"lg",a:null,b:null,streak:0,busy:false,over:false};
-function hlPool(){return STATS.filter(s=>s[H.cat]!=null&&!((H.cat==="lg"||H.cat==="ig")&&s.pos==="GK"))}
+function hlPool(){const S=PPS();return STATS.filter(s=>S.has(s.id)&&s[H.cat]!=null&&!((H.cat==="lg"||H.cat==="ig")&&s.pos==="GK"))}
 function hlBest(){return store.get("hl-best-"+H.cat,0)}
 function hlPickNext(prev){
   const cands=hlPool().filter(s=>s!==prev&&clearlyDifferent(s[H.cat],prev[H.cat]));
@@ -1531,7 +1545,7 @@ const TL_POOL=[];PLAYERS.forEach(p=>p.stints.forEach((s,k)=>{if(CLUBS[s.club]&&!
 function makeTimeline(seed){
   const r=rng(seed),items=[],years=new Set(),who=new Set();
   const gap=DIFF==="easy"?3:DIFF==="hard"?1:2;
-  for(const it of shuffle(DIFF==="easy"?TL_POOL.filter(x=>STARS_SET.has(x.p.id)):DIFF==="hard"?TL_POOL:TL_POOL.filter(x=>MID_SET.has(x.p.id)),r)){if(years.has(it.y)||who.has(it.p.id))continue;if(items.length&&items.some(x=>Math.abs(x.y-it.y)<gap))continue;items.push(it);years.add(it.y);who.add(it.p.id);if(items.length===5)break}
+  for(const it of shuffle(TL_POOL.filter(x=>PPS().has(x.p.id)),r)){if(years.has(it.y)||who.has(it.p.id))continue;if(items.length&&items.some(x=>Math.abs(x.y-it.y)<gap))continue;items.push(it);years.add(it.y);who.add(it.p.id);if(items.length===5)break}
   return items;
 }
 function startTimeline(daily){
@@ -1678,14 +1692,20 @@ $("lu-new").onclick=()=>startLineup(false);$("lu-daily").onclick=()=>startLineup
 const NAT_ADJ={ESP:"Spanish",ARG:"Argentine",BRA:"Brazilian",FRA:"French",GER:"German",POR:"Portuguese",ENG:"English",NED:"Dutch",CRO:"Croatian",URU:"Uruguayan",BEL:"Belgian",ITA:"Italian",COL:"Colombian",CHI:"Chilean"};
 function makeFive(seed){
   const r=rng(seed),pick=a=>a[Math.floor(r()*a.length)],levels=[];
-  const count=f=>PLAYERS.filter(f);
-  const tryN=(fn,lo,hi)=>{for(let t=0;t<3000;t++){const L=fn();if(L){const a=count(L.test);if(a.length>=lo&&a.length<=hi){L.ans=a.map(p=>p.id);return L}}}};
-  levels.push(tryN(()=>{const c=pick(CLUB_TOP);return {text:`5 players who played for ${clubName(c)}`,test:p=>p.set.has(c)}},12,99));
-  levels.push(tryN(()=>{const c=pick(CLUB_TOP),n=pick(Object.keys(NAT_ADJ));return {text:`4 ${NAT_ADJ[n]} players who played for ${clubName(c)}`,test:p=>p.nat===n&&p.set.has(c)}},5,9));
-  levels.push(tryN(()=>{const a=pick(CLUB_TOP),b=pick(CLUB_TOP);if(a===b)return null;return {text:`3 players who played for ${clubName(a)} and ${clubName(b)}`,test:p=>p.set.has(a)&&p.set.has(b)}},3,6));
-  levels.push(tryN(()=>{if(r()<0.5){const a=pick(CLUB_TOP),b=pick(CLUB_TOP),n=pick(Object.keys(NAT_ADJ));if(a===b)return null;return {text:`2 ${NAT_ADJ[n]} players who played for ${clubName(a)} and ${clubName(b)}`,test:p=>p.nat===n&&p.set.has(a)&&p.set.has(b)}}
-    const a=pick(CLUB_TOP),b=pick(CLUB_TOP),c=pick(CLUB_TOP);if(new Set([a,b,c]).size<3)return null;return {text:`2 players who played for ${clubName(a)}, ${clubName(b)} and ${clubName(c)}`,test:p=>p.set.has(a)&&p.set.has(b)&&p.set.has(c)}},2,3));
-  levels.push(tryN(()=>{const A=pick(MIDP),B=pick(MIDP);if(A===B||MATES[A.id].has(B.id))return null;return {text:`1 player who was a teammate of both ${A.name} and ${B.name}`,test:p=>MATES[A.id].has(p.id)&&MATES[B.id].has(p.id)}},1,2));
+  // Respuestas que cuentan para saber si el nivel es asequible: lo que se espera que conozca el jugador
+  const K=DIFF==="easy"?KNOWN_MID:DIFF==="hard"?null:MID_SET;
+  const clubs=DIFF==="easy"?BIG:DIFF==="hard"?CLUB_TOP:CLUB_TOP.slice(0,25);
+  const nats=DIFF==="easy"?["ESP","ARG","BRA","FRA","POR","ENG","GER","NED"]:Object.keys(NAT_ADJ);
+  const people=DIFF==="easy"?EASYP:DIFF==="hard"?MIDP:MIDE;
+  const R=DIFF==="easy"?[[25,999],[7,99],[6,99],[3,99],[2,99]]:DIFF==="hard"?[[12,99],[5,9],[3,6],[2,3],[1,2]]:[[18,999],[6,15],[4,10],[2,6],[2,4]];
+  const count=f=>PLAYERS.filter(p=>f(p)&&(!K||K.has(p.id)));
+  const tryN=(fn,[lo,hi])=>{for(let t=0;t<3000;t++){const L=fn();if(L){const a=count(L.test);if(a.length>=lo&&a.length<=hi){L.ans=PLAYERS.filter(L.test).sort((x,y)=>y.pop-x.pop).map(p=>p.id);return L}}}};
+  levels.push(tryN(()=>{const c=pick(clubs);return {text:`5 players who played for ${clubName(c)}`,test:p=>p.set.has(c)}},R[0]));
+  levels.push(tryN(()=>{const c=pick(clubs),n=pick(nats);return {text:`4 ${NAT_ADJ[n]} players who played for ${clubName(c)}`,test:p=>p.nat===n&&p.set.has(c)}},R[1]));
+  levels.push(tryN(()=>{const a=pick(clubs),b=pick(clubs);if(a===b)return null;return {text:`3 players who played for ${clubName(a)} and ${clubName(b)}`,test:p=>p.set.has(a)&&p.set.has(b)}},R[2]));
+  levels.push(tryN(()=>{if(DIFF==="easy"||r()<0.5){const a=pick(clubs),b=pick(clubs),n=pick(nats);if(a===b)return null;return {text:`2 ${NAT_ADJ[n]} players who played for ${clubName(a)} and ${clubName(b)}`,test:p=>p.nat===n&&p.set.has(a)&&p.set.has(b)}}
+    const a=pick(clubs),b=pick(clubs),c=pick(clubs);if(new Set([a,b,c]).size<3)return null;return {text:`2 players who played for ${clubName(a)}, ${clubName(b)} and ${clubName(c)}`,test:p=>p.set.has(a)&&p.set.has(b)&&p.set.has(c)}},R[3]));
+  levels.push(tryN(()=>{const A=pick(people),B=pick(people);if(A===B||MATES[A.id].has(B.id))return null;return {text:`1 player who was a teammate of both ${A.name} and ${B.name}`,test:p=>MATES[A.id].has(p.id)&&MATES[B.id].has(p.id)}},R[4]));
   return levels.map((L,i)=>({...L,need:5-i}));
 }
 const F={};
@@ -1724,12 +1744,12 @@ $("f-give").onclick=()=>{F.over=true;F.lives=0;saveFive();renderFive()};
 $("f-new").onclick=()=>startFive(false);$("f-daily").onclick=()=>startFive(true);
 
 // ---------- Nivel de dificultad ----------
-const DIFF_TXT={easy:"Only stars and big clubs, more time and more hints. Great if you don’t follow football closely.",mid:"Well-known players and clubs. The standard level.",hard:"All 2,800+ players, longer chains, less time, lesser-known careers and grids with fewer answers."};
+const DIFF_TXT={easy:"Only today’s big stars and the biggest clubs, with more time and hints. Perfect if you’re just getting into football.",mid:"Well-known players from big clubs. A fair challenge if you follow football.",hard:"Lesser-known players, smaller clubs, longer chains and less time. For real experts."};
 function renderDiff(){document.querySelectorAll("[data-diff]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.diff===DIFF));$("diff-txt").textContent=DIFF_TXT[DIFF]}
 document.querySelector(".diff").addEventListener("click",e=>{const b=e.target.closest("[data-diff]");if(!b||b.dataset.diff===DIFF)return;
   DIFF=b.dataset.diff;try{localStorage.setItem("pq-diff",DIFF)}catch(err){}
   dayKey=baseDay+(DIFF==="mid"?"":"-"+DIFF);renderDiff();
-  startLink(true);startGrid(true);startTray(true);startOdd(true);startTimeline(true);startLineup(true);startFive(true);
+  startLink(true);startGrid(true);startTray(true);startOdd(true);startTimeline(true);startLineup(true);startFive(true);startWho(true);startDeep(true);hlStart();
   if(!$("s-play").hidden){cancelAnimationFrame(SV.raf);svShow("start")}
   updateHome();
 });
@@ -2047,7 +2067,7 @@ function qRole(n){return ["Commentator","Manager","Player"].find(r=>SPEAKERS[r].
 const WQ={},WQ_N=5;
 function makeWho(seed){
   const r=rng(seed),qs=shuffle(QUOTES.map((_,i)=>i),r),out=[],used=new Set();
-  const nOpt=DIFF==="easy"?3:DIFF==="hard"?6:4;
+  const nOpt=DIFF==="easy"?3:4;
   for(const i of qs){const Q=QUOTES[i];if(used.has(Q.w)&&out.length<4&&qs.length>out.length+8)continue;used.add(Q.w);
     const role=qRole(Q.w),pool=shuffle(SPEAKERS[role].filter(n=>n!==Q.w),r);
     const extra=shuffle([...SPEAKERS.Manager,...SPEAKERS.Player].filter(n=>n!==Q.w&&!pool.includes(n)),r);
@@ -2099,7 +2119,7 @@ const CLUB_LIST=Object.keys(clubCounts).sort((a,b)=>clubCounts[b]-clubCounts[a])
 function searchClubs(q,limit=8){q=cnorm(q);if(!q)return [];const w=q.split(" ");
   return CLUB_LIST.filter(c=>c.n.includes(q)||c.kk===q||w.every(x=>c.n.split(" ").some(t=>t.startsWith(x)))).slice(0,limit).map(c=>c.k)}
 function dcQuestion(r,kind){
-  const pp=DIFF==="hard"?PLAYERS.filter(p=>p.pop>=35):PP();
+  const pp=PP();
   for(let t=0;t<600;t++){
     if(kind==="clubs"){
       const p=pp[Math.floor(r()*pp.length)];const clubs=[...new Set(p.stints.map(s=>s.club))];
@@ -2110,7 +2130,7 @@ function dcQuestion(r,kind){
       const cs=CP(),a=cs[Math.floor(r()*cs.length)],b=cs[Math.floor(r()*cs.length)];if(a===b)continue;
       const ans=PLAYERS.filter(p=>p.set.has(a)&&p.set.has(b));
       if(ans.length<2||ans.length>3)continue;
-      if(DIFF!=="hard"&&!ans.every(p=>MID_SET.has(p.id)))continue;
+      if(DIFF!=="hard"&&!ans.every(p=>KNOWN().has(p.id)))continue;
       return {kind,t:`Name the ${ans.length} players who played for both <b>${esc(clubName(a))}</b> and <b>${esc(clubName(b))}</b>`,sub:"In our database",
         s:"p"+[a,b].sort().join("-"),ans:ans.sort((x,y)=>y.pop-x.pop).map(p=>p.id)};
     }

@@ -14,3 +14,7 @@ el catálogo de cromos coincida con los jugadores.
 
 Limpieza que se aplica: se quitan selecciones nacionales, filiales, equipos juveniles y de cantera
 (etapas antes de los 17 años), fútbol femenino (por ahora) y jugadores sin fechas.
+
+## Filtro de ligas
+`build_players.py` lee `team_country.json` (país de cada club, sacado de Wikidata con la propiedad P17) junto a `raw.json`.
+Solo entran jugadores que hayan jugado en un club grande o en España, Reino Unido, Italia, Alemania, Francia, Portugal, Países Bajos, Bélgica o Turquía, salvo leyendas muy conocidas (`KEEP_ANYWAY`) o los de la lista revisada a mano.
