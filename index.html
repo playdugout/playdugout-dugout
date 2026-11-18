@@ -400,6 +400,7 @@ footer{margin-top:40px;color:var(--chalk-dim);font-size:.82rem;border-top:2px da
 <script src="js/config.js"></script>
 <script src="js/online.js"></script>
 <script src="js/players.js"></script>
+<script src="js/cards.js"></script>
 </head>
 <body>
 <div class="wrap">
@@ -1876,7 +1877,10 @@ const LEGENDS=["Lionel Messi","Cristiano Ronaldo","Ronaldo Nazário","Zinedine Z
 const RAR_INFO={legend:{n:"Legend",p:.04},epic:{n:"Epic",p:.16},rare:{n:"Rare",p:.30},common:{n:"Common",p:.50}};
 const STAT_NAMES=new Set(STATS.map(s=>s.name));
 PLAYERS.forEach(p=>{p.rar=LEGENDS.includes(p.name)?"legend":STARS_SET.has(p.id)?"epic":(p.pop>=70)?"rare":"common"});
-const BY_RAR={};Object.keys(RAR_INFO).forEach(k=>BY_RAR[k]=PLAYERS.filter(p=>p.rar===k));
+// Álbum: lista fija de cromos (js/cards.js). Los juegos usan todos los jugadores; el álbum solo estos.
+const CARD_NAMES=new Set(window.DG_CARDS||PLAYERS.map(p=>p.name));
+const CARDS=PLAYERS.filter(p=>CARD_NAMES.has(p.name));CARDS.forEach((p,i)=>{p.card=true;p.no=i+1});
+const BY_RAR={};Object.keys(RAR_INFO).forEach(k=>BY_RAR[k]=CARDS.filter(p=>p.rar===k));
 // Número fijo de cromo (no cambia aunque se añadan o quiten jugadores): hash del nombre
 PLAYERS.forEach(p=>{p.cid=hash("card:"+p.name)&0x7fffffff});
 const CID=new Map(PLAYERS.map(p=>[p.cid,p.id]));if(CID.size!==PLAYERS.length)console.warn("Card id collision");
@@ -1886,11 +1890,11 @@ const C={tab:"packs",filter:"all"};
 function album(){return store.get("album",{})}
 function packs(){let n=store.get("packs",null);if(n===null){n=2;store.set("packs",n)}return n}
 function addPacks(n){store.set("packs",packs()+n)}
-function owned(){const a=album();return Object.keys(a).filter(k=>a[k]>0).length}
+function owned(){const a=album();return Object.keys(a).filter(k=>a[k]>0&&PLAYERS[k]&&PLAYERS[k].card).length}
 function cardHTML(p,o={}){
   const first=p.stints[0],last=p.stints[p.stints.length-1];const clubs=[...new Set(p.stints.map(s=>s.club))];
   const big=clubs.slice(0,6),more=clubs.length-big.length;const route=clubs.map(c=>clubName(c)).join(" → ");
-  return `<div class="ccard ${p.rar}">${o.tag?`<span class="tagn ${o.tag==="NEW"?"":"dup"}">${o.tag}</span>`:""}<div class="top"><span>${RAR_INFO[p.rar].n}</span><span>#${String(p.id+1).padStart(3,"0")}</span></div><span class="fl" aria-hidden="true">${flag(p)}</span><span class="nm">${esc(p.name)}</span><span class="ft">${first.s}–${last.e>=2026?"now":last.e} · ${clubs.length} clubs</span><div class="cl">${big.map(c=>clubBadge(c)).join("")}${more>0?`<span class="ft">+${more}</span>`:""}</div><span class="rt" title="${esc(route)}">${esc(route)}</span>${o.count>1?`<span class="ft">×${o.count}</span>`:""}</div>`;
+  return `<div class="ccard ${p.rar}">${o.tag?`<span class="tagn ${o.tag==="NEW"?"":"dup"}">${o.tag}</span>`:""}<div class="top"><span>${RAR_INFO[p.rar].n}</span><span>#${String(p.no||p.id+1).padStart(4,"0")}</span></div><span class="fl" aria-hidden="true">${flag(p)}</span><span class="nm">${esc(p.name)}</span><span class="ft">${first.s}–${last.e>=2026?"now":last.e} · ${clubs.length} clubs</span><div class="cl">${big.map(c=>clubBadge(c)).join("")}${more>0?`<span class="ft">+${more}</span>`:""}</div><span class="rt" title="${esc(route)}">${esc(route)}</span>${o.count>1?`<span class="ft">×${o.count}</span>`:""}</div>`;
 }
 function drawCard(){let x=Math.random(),acc=0,r="common";for(const k of ["legend","epic","rare","common"]){acc+=RAR_INFO[k].p;if(x<acc){r=k;break}}const L=BY_RAR[r];return L[Math.floor(Math.random()*L.length)]}
 function openPack(){
@@ -1917,7 +1921,7 @@ const TROPHIES=[
  {id:"hl10",ic:"📈",n:"Scout’s eye",d:"Streak of 10 in Higher or Lower.",t:()=>Math.max(...HL_CATS.map(c=>store.get("hl-best-"+c.k,0)))>=10},
  {id:"col25",ic:"📒",n:"Collector",d:"Collect 25 different cards.",t:()=>owned()>=25},
  {id:"col75",ic:"📚",n:"Album builder",d:"Collect 75 different cards.",t:()=>owned()>=75},
- {id:"col177",ic:"🏆",n:"Complete album",d:"Collect every card in the album.",t:()=>owned()>=PLAYERS.length},
+ {id:"col177",ic:"🏆",n:"Complete album",d:"Collect every card in the album.",t:()=>owned()>=CARDS.length},
  {id:"legend",ic:"⭐",n:"First legend",d:"Get a Legend card.",t:()=>BY_RAR.legend.some(p=>album()[p.id]>0)},
  {id:"spin",ic:"🎡",n:"Feeling lucky",d:"Spin the wheel for the first time.",t:()=>Object.keys((()=>{try{return localStorage}catch(e){return {}}})()).some(k=>k.startsWith("spin-"))},
  {id:"trade",ic:"🤝",n:"First trade",d:"Trade a card with a friend.",t:()=>store.get("trades",0)>=1}
@@ -1944,7 +1948,7 @@ function checkRewards(){
 }
 function renderAlbum(){
   const n=packs(),a=album(),got=trophiesGot();
-  $("c-npacks").textContent=n;$("c-count").textContent=`${owned()}/${PLAYERS.length}`;$("c-ntro").textContent=`${Object.keys(got).length}/${TROPHIES.length}`;
+  $("c-npacks").textContent=n;$("c-count").textContent=`${owned()}/${CARDS.length}`;$("c-ntro").textContent=`${Object.keys(got).length}/${TROPHIES.length}`;
   $("c-packtxt").textContent=n?`You have ${n} unopened pack${n===1?"":"s"}.`:"No packs left. Complete daily puzzles or unlock trophies to get more.";
   $("c-open").disabled=n<1;
   document.querySelectorAll("[data-tab]").forEach(b=>b.setAttribute("aria-selected",b.dataset.tab===C.tab));
@@ -1953,12 +1957,12 @@ function renderAlbum(){
   if(C.tab==="album"){
     const F=[["all","All"],["legend","Legend"],["epic","Epic"],["rare","Rare"],["common","Common"],["dup","Duplicates"]];
     $("c-filters").innerHTML=F.map(([k,t])=>`<button class="btn" type="button" data-filter="${k}" aria-pressed="${k===C.filter}">${t}</button>`).join("");
-    const list=PLAYERS.filter(p=>C.filter==="all"||C.filter===p.rar||(C.filter==="dup"&&a[p.id]>1));
-    $("c-grid").innerHTML=list.map(p=>a[p.id]>0?cardHTML(p,{count:a[p.id]}):`<div class="ccard locked"><span class="q">?</span><span class="ft">#${String(p.id+1).padStart(3,"0")} · ${RAR_INFO[p.rar].n}</span></div>`).join("")||`<p class="beta">You don’t have any duplicates yet.</p>`;
+    const list=CARDS.filter(p=>C.filter==="all"||C.filter===p.rar||(C.filter==="dup"&&a[p.id]>1));
+    $("c-grid").innerHTML=list.map(p=>a[p.id]>0?cardHTML(p,{count:a[p.id]}):`<div class="ccard locked"><span class="q">?</span><span class="ft">#${String(p.no||p.id+1).padStart(4,"0")} · ${RAR_INFO[p.rar].n}</span></div>`).join("")||`<p class="beta">You don’t have any duplicates yet.</p>`;
   }
   if(C.tab==="trophies")$("c-trolist").innerHTML=TROPHIES.map(T=>`<li class="${got[T.id]?"on":""}"><span class="ic" aria-hidden="true">${T.ic}</span><div><b>${T.n}</b><span>${T.d}</span></div></li>`).join("");
   if(C.tab==="trade")renderTrade();
-  const st=$("st-album");if(st){st.textContent=n?`${n} pack${n===1?"":"s"} to open`:`${owned()}/${PLAYERS.length} cards`;st.className="st"+(n?"":" done")}
+  const st=$("st-album");if(st){st.textContent=n?`${n} pack${n===1?"":"s"} to open`:`${owned()}/${CARDS.length} cards`;st.className="st"+(n?"":" done")}
 }
 document.querySelector(".tabs").addEventListener("click",e=>{const b=e.target.closest("[data-tab]");if(b){C.tab=b.dataset.tab;renderAlbum()}});
 $("c-filters").addEventListener("click",e=>{const b=e.target.closest("[data-filter]");if(b){C.filter=b.dataset.filter;renderAlbum()}});

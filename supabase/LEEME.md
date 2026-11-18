@@ -11,7 +11,9 @@ Orden para un proyecto nuevo (Supabase → **SQL Editor** → **New query** → 
 
 Si ya tenías 01 y 03 ejecutados, basta con ejecutar **04** y después **02**.
 
-Todos los archivos se pueden volver a ejecutar sin problema (por ejemplo, cuando actualicemos jugadores: solo hace falta el 02).
+Todos los archivos se pueden volver a ejecutar sin problema.
+
+El álbum tiene una lista fija de cromos (`js/cards.js`), separada de la lista de jugadores de los juegos. Actualizar jugadores no cambia el álbum; solo si se añaden cromos a `js/cards.js` hay que regenerar y volver a ejecutar el 02.
 
 Los números de cromo son fijos (salen del nombre del jugador), así que actualizar la lista de jugadores no estropea las colecciones.
 

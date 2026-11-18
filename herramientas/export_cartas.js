@@ -2,7 +2,7 @@ const {chromium}=require('playwright');(async()=>{
 const srv=require('child_process').spawn('python3',['-m','http.server','8778','-d',require('path').join(__dirname,'..')]);await new Promise(r=>setTimeout(r,800));
 const b=await chromium.launch();const ctx=await b.newContext();await ctx.route('**/supabase.min.js',r=>r.fulfill({body:'',contentType:'text/javascript'}));
 const p=await ctx.newPage();await p.goto('http://localhost:8778/');await p.waitForTimeout(800);
-const o=await p.evaluate(()=>({rows:PLAYERS.map(x=>[x.cid,x.name,x.rar]),uniq:CID.size}));
+const o=await p.evaluate(()=>({rows:CARDS.map(x=>[x.cid,x.name,x.rar]),uniq:new Set(CARDS.map(x=>x.cid)).size}));
 if(o.uniq!==o.rows.length)throw new Error('collision');
 const esc=s=>s.replace(/'/g,"''");
 const sql=`-- Card catalogue (one per player). Generated from the game database (Wikidata + manual review).
