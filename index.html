@@ -354,6 +354,10 @@ footer .legal a{color:var(--chalk-dim)}
 .cookie{position:fixed;left:12px;right:12px;bottom:max(12px,env(safe-area-inset-bottom,0px));z-index:50;max-width:620px;margin:0 auto;padding:14px 16px;border-radius:14px;border:2px solid var(--card);background:var(--felt-2);box-shadow:0 10px 30px rgba(0,0,0,.4)}
 .cookie p{margin:0 0 10px;font-size:.92rem}
 .cookie a{color:var(--card)}
+.fbline{font-size:.88rem;color:var(--chalk-dim);margin:10px 0 0}.fbline a{color:var(--card)}
+#fb .sheet{display:flex;flex-direction:column;gap:12px}
+#fb textarea{font:inherit;width:100%;padding:10px 12px;border-radius:10px;border:2px solid var(--line);background:rgba(0,0,0,.2);color:var(--chalk);resize:vertical}
+.fbk{display:inline-flex;gap:6px;align-items:center;padding:6px 10px;border:1px solid var(--line);border-radius:999px;font-size:.88rem;cursor:pointer}
 .share pre{margin:0;font-family:var(--mono);font-size:.82rem;line-height:1.45;white-space:pre-wrap;overflow-wrap:anywhere;color:var(--chalk)}
 .share .row a{text-decoration:none}
 .streak{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
@@ -421,6 +425,7 @@ footer{margin-top:40px;color:var(--chalk-dim);font-size:.82rem;border-top:2px da
       <h2>Ten football games, <em>whatever you know</em></h2>
       <p>Test what you know about transfers, dressing rooms, goals and careers. Daily puzzles reset at midnight; everything else is unlimited.</p>
       <div class="streak" id="streak"></div>
+      <p class="fbline">Found a mistake or have an idea? <a href="#" data-feedback>Tell us</a></p>
     </div>
     <div class="games">
       <a class="game" href="#album">
@@ -879,7 +884,19 @@ footer{margin-top:40px;color:var(--chalk-dim);font-size:.82rem;border-top:2px da
   <div class="toast" id="toast" role="status" hidden></div>
 
   <footer>Fan-made game, not affiliated with any club or league. Badges are generic emblems with each team’s initials. Database: <span id="count"></span> players; seasons are shown by starting year (2013–2018 = 2013/14 to 2017/18). Player data from Wikidata.<br><span id="dg-status">Server: connecting…</span>
-    <nav class="legal" aria-label="Legal"><a href="legal.html#notice">Legal notice</a><a href="legal.html#privacy">Privacy</a><a href="legal.html#cookies">Cookies</a><a href="#" data-cookie-settings>Cookie settings</a><a href="#" data-delete-data>Delete my data</a></nav></footer>
+    <nav class="legal" aria-label="Legal"><a href="#" data-feedback>💬 Feedback</a><a href="legal.html#notice">Legal notice</a><a href="legal.html#privacy">Privacy</a><a href="legal.html#cookies">Cookies</a><a href="#" data-cookie-settings>Cookie settings</a><a href="#" data-delete-data>Delete my data</a></nav></footer>
+  <div class="picker" id="fb" hidden>
+    <form class="sheet" id="fb-form" role="dialog" aria-modal="true" aria-labelledby="fb-title">
+      <p class="q" id="fb-title">Send feedback</p>
+      <div class="row" role="radiogroup" aria-label="Type">
+        <label class="fbk"><input type="radio" name="fbk" value="bug" checked> 🐞 Something’s wrong</label>
+        <label class="fbk"><input type="radio" name="fbk" value="idea"> 💡 Idea</label>
+        <label class="fbk"><input type="radio" name="fbk" value="other"> 💬 Other</label>
+      </div>
+      <textarea id="fb-text" maxlength="1000" rows="5" placeholder="Tell us what happened or what you’d like to see. Please don’t include personal information."></textarea>
+      <div class="row"><button class="btn primary" type="submit" id="fb-send">Send</button><button class="btn" type="button" id="fb-close">Cancel</button><span class="msg" id="fb-msg" role="status"></span></div>
+    </form>
+  </div>
   <div class="cookie" id="cookie" role="region" aria-label="Cookie notice" hidden>
     <p id="ck-txt"></p>
     <div class="row" id="ck-btns"></div>
@@ -1658,7 +1675,7 @@ function openChallenge(h){
   if(G.go)G.go(+sd>>>0);else if(k==="h"&&HL_CATS.some(c=>c.k===sd)){H.cat=sd;hlStart()}
   const box=$("chal");box.dataset.view=G.v;
   box.innerHTML=`<div><b>⚔️ A friend challenged you</b> · ${esc(G.n)} · ${esc(DIFF_NAMES[DIFF])}${G.go?" · same puzzle":""}</div>${res?`<div class="k">Their result</div><pre>${esc(decodeURIComponent(res))}</pre>`:""}<div>Beat it, then send yours back.</div><button type="button" class="x" aria-label="Close">✕</button>`;
-  box.hidden=false;box.querySelector(".x").onclick=()=>{box.hidden=true};
+  box.hidden=false;box.querySelector(".x").onclick=()=>{box.hidden=true};track("challenge",{game:G.v});
   const lab=$(k+"-label");if(lab&&G.go)lab.textContent="challenge";
   return G.v;
 }
@@ -2466,14 +2483,14 @@ document.addEventListener("click",e=>{if(e.target.closest("[data-delete-data]"))
 // ---------- Aviso de cookies ----------
 // Ahora solo hay almacenamiento imprescindible, así que basta con informar.
 // Cuando se añadan servicios opcionales (analítica, anuncios), se listan aquí y el aviso pasa a pedir Aceptar/Rechazar.
-const OPTIONAL_SERVICES=[];   // p. ej. ["analytics","ads"]
+const OPTIONAL_SERVICES=["anonymous usage statistics"];   // añadir aquí "ads" cuando haya anuncios
 function getConsent(){try{return JSON.parse(localStorage.getItem("dg-consent")||"null")}catch(e){return null}}
 function setConsent(opt){try{localStorage.setItem("dg-consent",JSON.stringify({v:1,optional:opt,services:OPTIONAL_SERVICES,t:Date.now()}))}catch(e){}$("cookie").hidden=true;window.dispatchEvent(new CustomEvent("dg-consent",{detail:opt}))}
 window.DG_CONSENT=()=>{const c=getConsent();return !!(c&&c.optional&&OPTIONAL_SERVICES.every(s=>(c.services||[]).includes(s)))};
 function showCookie(force){
   const c=getConsent(),needAsk=OPTIONAL_SERVICES.length&&!(c&&OPTIONAL_SERVICES.every(s=>(c.services||[]).includes(s)));
   if(!force&&c&&!needAsk)return;
-  if(OPTIONAL_SERVICES.length){$("ck-txt").innerHTML=`We use essential storage to save your progress. With your permission we’d also use ${OPTIONAL_SERVICES.join(" and ")} to improve Dugout. <a href="legal.html#cookies">Learn more</a>`;
+  if(OPTIONAL_SERVICES.length){$("ck-txt").innerHTML=`Dugout uses essential storage to save your progress. With your permission we’d also collect ${OPTIONAL_SERVICES.join(" and ")} (which games are played and finished) to improve the game. No ads, no tracking across sites. <a href="legal.html#cookies">Learn more</a>`;
     $("ck-btns").innerHTML=`<button class="btn primary" type="button" data-ck="1">Accept</button><button class="btn" type="button" data-ck="0">Reject</button>`}
   else{$("ck-txt").innerHTML=`Dugout only uses essential storage to save your progress and keep your guest account. No ads, no tracking cookies. <a href="legal.html#cookies">Learn more</a>`;
     $("ck-btns").innerHTML=`<button class="btn primary" type="button" data-ck="0">OK</button>`}
@@ -2483,6 +2500,37 @@ $("cookie").addEventListener("click",e=>{const b=e.target.closest("[data-ck]");i
 document.addEventListener("click",e=>{if(e.target.closest("[data-cookie-settings]")){e.preventDefault();showCookie(true)}});
 setTimeout(()=>showCookie(false),800);
 
+// ---------- Estadísticas de uso (solo con permiso) ----------
+const TRK={seen:new Set(),visit:false};
+function track(name,o={}){
+  if(!window.DG_CONSENT||!DG_CONSENT()||!(window.DG&&DG.ready))return;
+  DG.ready.then(()=>{if(!DG.sb||!DG.user)return;
+    DG.sb.rpc("log_event",{p_name:name,p_game:o.game||null,p_level:o.level||DIFF,p_daily:o.daily??null,p_result:o.result?String(o.result).slice(0,40):null}).then(()=>{},()=>{})});
+}
+function trackVisit(){if(TRK.visit||!DG_CONSENT())return;TRK.visit=true;track("visit")}
+window.addEventListener("dg-consent",e=>{if(e.detail)trackVisit()});
+setTimeout(trackVisit,1500);
+// Partida terminada = el recuadro de compartir aparece con un resultado
+{const _rs=renderShare;renderShare=function(k,text){_rs(k,text);if(!text)return;const sig=k+"|"+text;if(TRK.seen.has(sig))return;TRK.seen.add(sig);
+  const G=CH_GAMES[k],lines=text.split("\n");track("finish",{game:G?G.v:k,daily:!/free play/.test(lines[0])&&!/challenge/.test(($(k+"-label")||{}).textContent||""),result:(lines[1]||"").replace(/[^\w\s/:.+-]/g,"").trim()||lines[0].replace(/^.*\)\s*/,"")});
+  $("sh-"+k).addEventListener("click",ev=>{if(ev.target.closest("button,a"))track("share",{game:G?G.v:k})},{once:true});}}
+// Feedback
+function openFeedback(){$("fb").hidden=false;setMsg("fb-msg","");$("fb-send").disabled=false;setTimeout(()=>$("fb-text").focus(),50)}
+function closeFeedback(){$("fb").hidden=true}
+document.addEventListener("click",e=>{if(e.target.closest("[data-feedback]")){e.preventDefault();openFeedback()}});
+$("fb-close").onclick=closeFeedback;
+$("fb").addEventListener("click",e=>{if(e.target.id==="fb")closeFeedback()});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("fb").hidden)closeFeedback()});
+$("fb-form").addEventListener("submit",async e=>{
+  e.preventDefault();const msg=$("fb-text").value.trim(),kind=(document.querySelector('input[name="fbk"]:checked')||{}).value||"other";
+  if(msg.length<3){setMsg("fb-msg","Please write a bit more.","bad");return}
+  if(!(window.DG&&DG.sb)){setMsg("fb-msg","Can’t connect right now. Try again later or email playdugout@gmail.com.","bad");return}
+  $("fb-send").disabled=true;setMsg("fb-msg","Sending…");
+  try{await DG.ready;const {error}=await DG.sb.rpc("send_feedback",{p_kind:kind,p_message:msg,p_page:location.hash.slice(1)||"home",p_level:DIFF});if(error)throw error;
+    $("fb-text").value="";setMsg("fb-msg","Thanks! We read every message.","ok");setTimeout(closeFeedback,1500)}
+  catch(err){$("fb-send").disabled=false;setMsg("fb-msg",(err&&err.message)||"Couldn’t send. Please try again.","bad")}
+});
+
 const VIEWS=["home","link-up","grid","career","odd-one-out","lineup","54321","higher-lower","survival","timeline","who-said-it","deep-cut","versus","album"];
 function route(){
   let h=location.hash.slice(1);
@@ -2491,6 +2539,7 @@ function route(){
   const cb=$("chal");if(cb&&!cb.hidden&&cb.dataset.view!==h)cb.hidden=true;
   if(/^vs-[a-z0-9]{4,6}$/.test(h)){const c=h.slice(3);if(!V.r)$("vs-code").value=c.toUpperCase();h="versus"}
   const v=VIEWS.includes(h)?h:"home";
+  if(v!=="home"&&v!=="album"&&typeof track==="function")track("view",{game:v});
   VIEWS.forEach(n=>{document.getElementById("v-"+n).hidden=n!==v;const a=document.getElementById("nav-"+n);if(n===v)a.setAttribute("aria-current","page");else a.removeAttribute("aria-current")});
   if(v==="home")updateHome();
   window.scrollTo(0,0);
