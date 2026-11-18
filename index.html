@@ -1,12 +1,12 @@
 <!doctype html>
-<html lang="es">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Dugout · juegos diarios de fútbol</title>
-<meta name="description" content="Retos diarios de fútbol: conecta jugadores, adivina trayectorias y alineaciones, colecciona cromos y juega ranked contra tus amigos.">
+<title>Dugout · daily football games</title>
+<meta name="description" content="Daily football puzzles: link players, guess careers and line-ups, collect cards and play ranked against your friends.">
 <meta property="og:title" content="Dugout">
-<meta property="og:description" content="Retos diarios de fútbol, cromos y duelos online.">
+<meta property="og:description" content="Daily football puzzles, collectible cards and online duels.">
 <meta name="theme-color" content="#163a2c">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;800&family=Barlow:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap">
@@ -352,10 +352,10 @@ footer{margin-top:40px;color:var(--chalk-dim);font-size:.82rem;border-top:2px da
   <header>
     <a class="brand" href="#home">
       <svg width="46" height="46" viewBox="0 0 46 46" aria-hidden="true"><path d="M4 30 V20 Q4 8 23 8 Q42 8 42 20 V30" fill="none" stroke="currentColor" stroke-width="2.5"/><line x1="2" y1="30" x2="44" y2="30" stroke="currentColor" stroke-width="2.5"/><line x1="9" y1="24" x2="37" y2="24" stroke="currentColor" stroke-width="2"/><circle cx="15" cy="19" r="3" fill="#f6c945"/><circle cx="23" cy="19" r="3" fill="currentColor"/><circle cx="31" cy="19" r="3" fill="currentColor"/><path d="M10 38 h26" stroke="#f6c945" stroke-width="2" stroke-dasharray="3 3"/></svg>
-      <div><h1>Dug<span>out</span></h1><p>Retos diarios para futboleros</p></div>
+      <div><h1>Dug<span>out</span></h1><p>Daily puzzles for football fans</p></div>
     </a>
-    <nav aria-label="Juegos">
-      <a href="#home" id="nav-home">Inicio</a>
+    <nav aria-label="Games">
+      <a href="#home" id="nav-home">Home</a>
       <a href="#link-up" id="nav-link-up">Link-Up</a>
       <a href="#grid" id="nav-grid">Grid</a>
       <a href="#career" id="nav-career">Career</a>
@@ -366,13 +366,13 @@ footer{margin-top:40px;color:var(--chalk-dim);font-size:.82rem;border-top:2px da
       <a href="#survival" id="nav-survival">Survival</a>
       <a href="#timeline" id="nav-timeline">Timeline</a>
       <a href="#versus" id="nav-versus">Versus</a>
-      <a href="#album" id="nav-album">Cromos</a>
+      <a href="#album" id="nav-album">Cards</a>
     </nav>
-    <div class="diff" role="group" aria-label="Nivel de dificultad">
-      <span class="lbl">Nivel</span>
-      <button type="button" data-diff="easy">Principiante</button>
-      <button type="button" data-diff="mid">Intermedio</button>
-      <button type="button" data-diff="hard">Experto</button>
+    <div class="diff" role="group" aria-label="Difficulty">
+      <span class="lbl">Level</span>
+      <button type="button" data-diff="easy">Beginner</button>
+      <button type="button" data-diff="mid">Intermediate</button>
+      <button type="button" data-diff="hard">Expert</button>
       <span class="dtxt" id="diff-txt"></span>
     </div>
   </header>
@@ -381,54 +381,54 @@ footer{margin-top:40px;color:var(--chalk-dim);font-size:.82rem;border-top:2px da
   <!-- PORTADA -->
   <section id="v-home">
     <div class="hero">
-      <h2>Diez juegos de fútbol, <em>sepas mucho o poco</em></h2>
-      <p>Pon a prueba lo que sabes de fichajes, vestuarios, goles y trayectorias. Los retos diarios cambian a medianoche y el resto se juega sin límite.</p>
+      <h2>Ten football games, <em>whatever you know</em></h2>
+      <p>Test what you know about transfers, dressing rooms, goals and careers. Daily puzzles reset at midnight; everything else is unlimited.</p>
       <div class="streak" id="streak"></div>
     </div>
     <div class="games">
       <a class="game" href="#album">
         <svg viewBox="0 0 72 72" aria-hidden="true"><rect x="10" y="12" width="34" height="46" rx="4" fill="#a9c0b2" transform="rotate(-10 27 35)"/><rect x="26" y="10" width="34" height="46" rx="4" fill="#f6c945" stroke="#163a2c" stroke-width="2" transform="rotate(8 43 33)"/><text x="44" y="40" text-anchor="middle" font-family="Barlow Condensed,sans-serif" font-weight="800" font-size="16" fill="#163a2c" transform="rotate(8 43 33)">★</text></svg>
-        <div><h3>Cromos y trofeos <span class="tag">NUEVO</span></h3><p>Gana sobres jugando, completa el álbum e intercambia repetidos con tus amigos.</p><span class="st" id="st-album"></span></div>
+        <div><h3>Cards &amp; trophies <span class="tag">NEW</span></h3><p>Earn packs by playing, complete the album and swap duplicates with friends.</p><span class="st" id="st-album"></span></div>
       </a>
       <a class="game" href="#lineup">
         <svg viewBox="0 0 72 72" aria-hidden="true"><rect x="8" y="4" width="56" height="64" rx="4" fill="none" stroke="#a9c0b2" stroke-width="2"/><line x1="8" y1="36" x2="64" y2="36" stroke="#a9c0b2" stroke-width="1.5"/><circle cx="36" cy="60" r="4" fill="#f6c945"/><circle cx="18" cy="48" r="4" fill="#eef3ea"/><circle cx="30" cy="48" r="4" fill="#eef3ea"/><circle cx="42" cy="48" r="4" fill="#eef3ea"/><circle cx="54" cy="48" r="4" fill="#eef3ea"/><circle cx="24" cy="30" r="4" fill="#eef3ea"/><circle cx="36" cy="30" r="4" fill="#eef3ea"/><circle cx="48" cy="30" r="4" fill="#eef3ea"/><circle cx="22" cy="14" r="4" fill="none" stroke="#f6c945" stroke-width="2"/><circle cx="36" cy="12" r="4" fill="none" stroke="#f6c945" stroke-width="2"/><circle cx="50" cy="14" r="4" fill="none" stroke="#f6c945" stroke-width="2"/></svg>
-        <div><h3>Lineup <span class="tag">NUEVO</span></h3><p>Te damos un partido histórico. ¿Te sabes el once titular?</p><span class="st" id="st-lu"></span></div>
+        <div><h3>Lineup <span class="tag">NEW</span></h3><p>We give you a historic match. Can you name the starting XI?</p><span class="st" id="st-lu"></span></div>
       </a>
       <a class="game" href="#54321">
         <svg viewBox="0 0 72 72" aria-hidden="true"><g font-family="Barlow Condensed,sans-serif" font-weight="800" text-anchor="middle"><text x="12" y="62" font-size="30" fill="#eef3ea">5</text><text x="26" y="56" font-size="25" fill="#cfdccf">4</text><text x="39" y="50" font-size="21" fill="#a9c0b2">3</text><text x="51" y="44" font-size="17" fill="#d8c060">2</text><text x="62" y="38" font-size="14" fill="#f6c945">1</text></g></svg>
-        <div><h3>5-4-3-2-1 <span class="tag">NUEVO</span></h3><p>Nombra 5 jugadores, luego 4, 3, 2 y 1… con condiciones cada vez más difíciles.</p><span class="st" id="st-54"></span></div>
+        <div><h3>5-4-3-2-1 <span class="tag">NEW</span></h3><p>Name 5 players, then 4, 3, 2 and 1… with harder and harder conditions.</p><span class="st" id="st-54"></span></div>
       </a>
       <a class="game" href="#higher-lower">
         <svg viewBox="0 0 72 72" aria-hidden="true"><rect x="6" y="14" width="26" height="44" rx="5" fill="#eef3ea"/><rect x="40" y="14" width="26" height="44" rx="5" fill="none" stroke="#f6c945" stroke-width="3"/><path d="M53 26l-6 8h12zM53 46l-6-8h12z" fill="#f6c945"/><text x="19" y="42" text-anchor="middle" font-family="Barlow Condensed,sans-serif" font-weight="800" font-size="14" fill="#163a2c">G</text></svg>
-        <div><h3>Higher or Lower <span class="tag">NUEVO</span></h3><p>¿Más o menos goles, asistencias o tarjetas? Encadena aciertos y bate tu récord.</p><span class="st" id="st-hl"></span></div>
+        <div><h3>Higher or Lower <span class="tag">NEW</span></h3><p>More or fewer goals, assists or cards? Build a streak and beat your record.</p><span class="st" id="st-hl"></span></div>
       </a>
       <a class="game" href="#survival">
         <svg viewBox="0 0 72 72" aria-hidden="true"><path d="M36 8c10 14 18 20 18 34a18 18 0 0 1-36 0c0-8 4-12 8-16 0 6 3 9 6 10-2-12 2-20 4-28z" fill="#f6c945"/><path d="M36 40c4 5 7 8 7 13a7 7 0 0 1-14 0c0-5 3-8 7-13z" fill="#163a2c"/></svg>
-        <div><h3>Survival <span class="tag">NUEVO</span></h3><p>Preguntas rápidas sin fin. Un fallo y se acabó. ¿Hasta dónde llega tu racha?</p><span class="st" id="st-sv"></span></div>
+        <div><h3>Survival <span class="tag">NEW</span></h3><p>Endless quick-fire questions. One mistake and it’s over. How far can you go?</p><span class="st" id="st-sv"></span></div>
       </a>
       <a class="game" href="#timeline">
         <svg viewBox="0 0 72 72" aria-hidden="true"><line x1="10" y1="36" x2="62" y2="36" stroke="#a9c0b2" stroke-width="3"/><circle cx="14" cy="36" r="6" fill="#eef3ea"/><circle cx="30" cy="36" r="6" fill="#eef3ea"/><circle cx="46" cy="36" r="6" fill="#eef3ea"/><circle cx="60" cy="36" r="6" fill="#f6c945"/><text x="36" y="60" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#a9c0b2">2004 → 2024</text></svg>
-        <div><h3>Timeline <span class="tag">NUEVO</span></h3><p>Ordena cinco fichajes del más antiguo al más reciente.</p><span class="st" id="st-tl"></span></div>
+        <div><h3>Timeline <span class="tag">NEW</span></h3><p>Put five transfers in order, oldest to newest.</p><span class="st" id="st-tl"></span></div>
       </a>
       <a class="game" href="#link-up">
         <svg viewBox="0 0 72 72" aria-hidden="true"><circle cx="14" cy="18" r="9" fill="#eef3ea"/><circle cx="58" cy="54" r="9" fill="none" stroke="#f6c945" stroke-width="3" stroke-dasharray="4 3"/><circle cx="40" cy="30" r="6" fill="#a9c0b2"/><path d="M20 22 L35 28 M43 35 L54 47" stroke="#f6c945" stroke-width="3" stroke-dasharray="3 4" stroke-linecap="round"/></svg>
-        <div><h3>Link-Up <span class="tag">NUEVO</span></h3><p>Une a dos jugadores que nunca coincidieron a través de compañeros de vestuario.</p><span class="st" id="st-link"></span></div>
+        <div><h3>Link-Up <span class="tag">NEW</span></h3><p>Connect two players who never played together through their teammates.</p><span class="st" id="st-link"></span></div>
       </a>
       <a class="game" href="#grid">
         <svg viewBox="0 0 72 72" aria-hidden="true"><g fill="none" stroke="#a9c0b2" stroke-width="2"><rect x="8" y="8" width="56" height="56" rx="6"/><path d="M27 8v56M45 8v56M8 27h56M8 45h56"/></g><rect x="29" y="29" width="14" height="14" rx="2" fill="#f6c945"/><rect x="11" y="11" width="14" height="14" rx="2" fill="#eef3ea"/></svg>
-        <div><h3>Grid</h3><p>Rellena la rejilla 3×3 con jugadores que cumplan el club o país de su fila y su columna.</p><span class="st" id="st-grid"></span></div>
+        <div><h3>Grid</h3><p>Fill the 3×3 grid with players who match the club or country of their row and column.</p><span class="st" id="st-grid"></span></div>
       </a>
       <a class="game" href="#career">
         <svg viewBox="0 0 72 72" aria-hidden="true"><circle cx="12" cy="36" r="7" fill="#eef3ea"/><circle cx="36" cy="36" r="7" fill="#a9c0b2"/><circle cx="60" cy="36" r="7" fill="#f6c945"/><path d="M20 36h8M44 36h8" stroke="#f6c945" stroke-width="3"/><text x="36" y="62" text-anchor="middle" font-family="Barlow Condensed,sans-serif" font-weight="800" font-size="16" fill="#eef3ea">?</text></svg>
-        <div><h3>Career</h3><p>Adivina el jugador a partir de los clubes por los que pasó, con sus años.</p><span class="st" id="st-career"></span></div>
+        <div><h3>Career</h3><p>Guess the player from the clubs they played for, with the years.</p><span class="st" id="st-career"></span></div>
       </a>
       <a class="game" href="#odd-one-out">
         <svg viewBox="0 0 72 72" aria-hidden="true"><circle cx="20" cy="20" r="10" fill="#eef3ea"/><circle cx="52" cy="20" r="10" fill="#eef3ea"/><circle cx="20" cy="52" r="10" fill="#eef3ea"/><circle cx="52" cy="52" r="10" fill="none" stroke="#ff7a6b" stroke-width="3"/><path d="M47 47l10 10M57 47l-10 10" stroke="#ff7a6b" stroke-width="3"/></svg>
-        <div><h3>Odd One Out</h3><p>Tres compartieron club y uno no. Encuentra al intruso en cinco rondas.</p><span class="st" id="st-odd"></span></div>
+        <div><h3>Odd One Out</h3><p>Three shared a club and one didn’t. Spot the odd one out in five rounds.</p><span class="st" id="st-odd"></span></div>
       </a>
       <a class="game" href="#versus">
         <svg viewBox="0 0 72 72" aria-hidden="true"><circle cx="20" cy="26" r="10" fill="#eef3ea"/><path d="M6 56c2-10 8-14 14-14s12 4 14 14" fill="#eef3ea"/><circle cx="52" cy="26" r="10" fill="#f6c945"/><path d="M38 56c2-10 8-14 14-14s12 4 14 14" fill="#f6c945"/><text x="36" y="14" text-anchor="middle" font-family="Barlow Condensed,sans-serif" font-weight="800" font-size="12" fill="#a9c0b2">VS</text></svg>
-        <div><h3>Versus <span class="tag">ONLINE</span></h3><p>Crea una sala con tus amigos o juega ranked contra rivales de tu nivel y sube de división.</p><span class="st">Multijugador en directo</span></div>
+        <div><h3>Versus <span class="tag">ONLINE</span></h3><p>Create a room with friends or play ranked against opponents at your level and climb the divisions.</p><span class="st">Live multiplayer</span></div>
       </a>
     </div>
   </section>
@@ -437,21 +437,21 @@ footer{margin-top:40px;color:var(--chalk-dim);font-size:.82rem;border-top:2px da
   <section id="v-link-up" hidden>
     <div class="intro">
       <h2>Link-Up</h2>
-      <p>Estos dos jugadores nunca fueron compañeros. Conéctalos con una cadena de futbolistas que sí jugaron juntos en el mismo club y en la misma temporada. Cuantos menos eslabones, mejor.</p>
+      <p>These two players were never teammates. Connect them with a chain of players who did play together at the same club in the same season. The fewer links, the better.</p>
     </div>
-    <div class="meta"><span>Reto <b id="l-label">—</b></span><span>Mejor cadena posible <b id="l-par">—</b> pasos</span><span>Fallos <b id="l-strikes">0</b></span></div>
+    <div class="meta"><span>Puzzle <b id="l-label">—</b></span><span>Shortest possible chain <b id="l-par">—</b> steps</span><span>Misses <b id="l-strikes">0</b></span></div>
     <div class="chain" id="l-chain"></div>
     <div class="inline-search">
-      <label for="l-input" class="meta" id="l-ask">¿Con quién jugó?</label>
-      <input class="search" id="l-input" autocomplete="off" placeholder="Escribe un compañero…">
+      <label for="l-input" class="meta" id="l-ask">Who did they play with?</label>
+      <input class="search" id="l-input" autocomplete="off" placeholder="Type a teammate…">
       <ul class="results" id="l-results" hidden></ul>
     </div>
     <div class="bar">
-      <button class="btn" id="l-undo" type="button">Deshacer</button>
-      <button class="btn" id="l-hint" type="button">Pista</button>
-      <button class="btn" id="l-give" type="button">Rendirse</button>
-      <button class="btn primary" id="l-new" type="button">Nuevo reto</button>
-      <button class="btn" id="l-daily" type="button" hidden>Reto del día</button>
+      <button class="btn" id="l-undo" type="button">Undo</button>
+      <button class="btn" id="l-hint" type="button">Hint</button>
+      <button class="btn" id="l-give" type="button">Give up</button>
+      <button class="btn primary" id="l-new" type="button">New puzzle</button>
+      <button class="btn" id="l-daily" type="button" hidden>Daily puzzle</button>
       <span class="msg" id="l-msg" role="status"></span>
       <div class="share" id="sh-l" hidden></div>
     </div>
@@ -461,14 +461,14 @@ footer{margin-top:40px;color:var(--chalk-dim);font-size:.82rem;border-top:2px da
   <section id="v-grid" hidden>
     <div class="intro">
       <h2>Grid</h2>
-      <p>Rellena cada casilla con un jugador que haya pasado por los dos equipos (o equipo y país) que se cruzan. No puedes repetir jugador.</p>
+      <p>Fill each square with a player who played for both teams (or the team and country) that meet there. You can’t use the same player twice.</p>
     </div>
-    <div class="meta"><span>Reto <b id="g-label">—</b></span><span>Aciertos <b id="g-score">0/9</b></span></div>
-    <div class="grid" id="gridboard" aria-label="Rejilla 3 por 3"></div>
+    <div class="meta"><span>Puzzle <b id="g-label">—</b></span><span>Correct <b id="g-score">0/9</b></span></div>
+    <div class="grid" id="gridboard" aria-label="3 by 3 grid"></div>
     <div class="bar">
-      <button class="btn" id="g-reveal" type="button">Ver soluciones</button>
-      <button class="btn primary" id="g-new" type="button">Nueva rejilla</button>
-      <button class="btn" id="g-daily" type="button" hidden>Reto del día</button>
+      <button class="btn" id="g-reveal" type="button">Show answers</button>
+      <button class="btn primary" id="g-new" type="button">New grid</button>
+      <button class="btn" id="g-daily" type="button" hidden>Daily puzzle</button>
       <span class="msg" id="g-msg" role="status"></span>
       <div class="share" id="sh-g" hidden></div>
     </div>
@@ -478,20 +478,20 @@ footer{margin-top:40px;color:var(--chalk-dim);font-size:.82rem;border-top:2px da
   <section id="v-career" hidden>
     <div class="intro">
       <h2>Career</h2>
-      <p>Estos son los clubes por los que pasó un jugador, en orden y con sus temporadas. ¿Quién es? Cada fallo destapa una pista.</p>
+      <p>These are the clubs a player played for, in order and with their seasons. Who is it? Each wrong guess unlocks a hint.</p>
     </div>
-    <div class="meta"><span>Reto <b id="t-label">—</b></span><span class="tries" id="t-tries" aria-label="Intentos"></span></div>
+    <div class="meta"><span>Puzzle <b id="t-label">—</b></span><span class="tries" id="t-tries" aria-label="Guesses"></span></div>
     <div class="path" id="t-path"></div>
     <div class="hints" id="t-hints"></div>
     <div class="inline-search">
-      <label for="t-input" class="meta">Tu respuesta</label>
-      <input class="search" id="t-input" autocomplete="off" placeholder="Escribe un nombre…">
+      <label for="t-input" class="meta">Your answer</label>
+      <input class="search" id="t-input" autocomplete="off" placeholder="Type a name…">
       <ul class="results" id="t-results" hidden></ul>
     </div>
     <ul class="guesses" id="t-guesses"></ul>
     <div class="bar">
-      <button class="btn primary" id="t-new" type="button">Otro jugador</button>
-      <button class="btn" id="t-daily" type="button" hidden>Reto del día</button>
+      <button class="btn primary" id="t-new" type="button">Another player</button>
+      <button class="btn" id="t-daily" type="button" hidden>Daily puzzle</button>
       <span class="msg" id="t-msg" role="status"></span>
       <div class="share" id="sh-t" hidden></div>
     </div>
@@ -501,15 +501,15 @@ footer{margin-top:40px;color:var(--chalk-dim);font-size:.82rem;border-top:2px da
   <section id="v-odd-one-out" hidden>
     <div class="intro">
       <h2>Odd One Out</h2>
-      <p>Tres de estos jugadores pasaron por el mismo club. Uno nunca jugó allí. Encuéntralo.</p>
+      <p>Three of these players played for the same club. One never did. Find them.</p>
     </div>
-    <div class="meta"><span>Reto <b id="o-label">—</b></span><span>Ronda <b id="o-round">1/5</b></span><span class="dots" id="o-dots"></span></div>
-    <p class="odd-q">¿Quién es el intruso?</p>
+    <div class="meta"><span>Puzzle <b id="o-label">—</b></span><span>Round <b id="o-round">1/5</b></span><span class="dots" id="o-dots"></span></div>
+    <p class="odd-q">Who is the odd one out?</p>
     <div class="odd" id="o-opts"></div>
     <div class="bar">
-      <button class="btn primary" id="o-next" type="button" hidden>Siguiente ronda</button>
-      <button class="btn" id="o-new" type="button">Nueva partida</button>
-      <button class="btn" id="o-daily" type="button" hidden>Reto del día</button>
+      <button class="btn primary" id="o-next" type="button" hidden>Next round</button>
+      <button class="btn" id="o-new" type="button">New game</button>
+      <button class="btn" id="o-daily" type="button" hidden>Daily puzzle</button>
       <span class="msg" id="o-msg" role="status"></span>
       <div class="share" id="sh-o" hidden></div>
     </div>
@@ -519,20 +519,20 @@ footer{margin-top:40px;color:var(--chalk-dim);font-size:.82rem;border-top:2px da
   <section id="v-lineup" hidden>
     <div class="intro">
       <h2>Lineup</h2>
-      <p>Adivina el once titular de este partido. Escribe nombres o apellidos de uno en uno; cada acierto aparece en su posición.</p>
+      <p>Guess the starting XI for this match. Type first names or surnames one at a time; each correct one appears in its position.</p>
     </div>
-    <div class="meta"><span>Reto <b id="lu-label">—</b></span><span>Acertados <b id="lu-score">0/11</b></span><span>Fallos <b id="lu-miss">0</b></span></div>
+    <div class="meta"><span>Puzzle <b id="lu-label">—</b></span><span>Found <b id="lu-score">0/11</b></span><span>Misses <b id="lu-miss">0</b></span></div>
     <div class="match" id="lu-match"></div>
     <div class="pitch" id="lu-pitch"></div>
     <div class="inline-search">
-      <label for="lu-input" class="meta">Escribe un jugador y pulsa Enter</label>
-      <div class="row"><input class="search" id="lu-input" autocomplete="off" placeholder="Ej.: Iniesta"><button class="btn" id="lu-try" type="button">Probar</button></div>
+      <label for="lu-input" class="meta">Type a player and press Enter</label>
+      <div class="row"><input class="search" id="lu-input" autocomplete="off" placeholder="e.g. Iniesta"><button class="btn" id="lu-try" type="button">Try</button></div>
     </div>
     <div class="bar">
-      <button class="btn" id="lu-hint" type="button">Pista</button>
-      <button class="btn" id="lu-give" type="button">Rendirse</button>
-      <button class="btn primary" id="lu-new" type="button">Otro partido</button>
-      <button class="btn" id="lu-daily" type="button" hidden>Reto del día</button>
+      <button class="btn" id="lu-hint" type="button">Hint</button>
+      <button class="btn" id="lu-give" type="button">Give up</button>
+      <button class="btn primary" id="lu-new" type="button">Another match</button>
+      <button class="btn" id="lu-daily" type="button" hidden>Daily puzzle</button>
       <span class="msg" id="lu-msg" role="status"></span>
       <div class="share" id="sh-lu" hidden></div>
     </div>
@@ -542,19 +542,19 @@ footer{margin-top:40px;color:var(--chalk-dim);font-size:.82rem;border-top:2px da
   <section id="v-54321" hidden>
     <div class="intro">
       <h2>5-4-3-2-1</h2>
-      <p>Cinco niveles. En el primero nombra 5 jugadores que cumplan la condición, en el segundo 4, y así hasta 1. Cada nivel es más difícil. Tienes 3 vidas para toda la partida.</p>
+      <p>Five levels. In the first, name 5 players who meet the condition, in the second 4, and so on down to 1. Each level is harder. You have 3 lives for the whole game.</p>
     </div>
-    <div class="meta"><span>Reto <b id="f-label">—</b></span><span>Vidas <b id="f-lives">❤️❤️❤️</b></span></div>
+    <div class="meta"><span>Puzzle <b id="f-label">—</b></span><span>Lives <b id="f-lives">❤️❤️❤️</b></span></div>
     <div class="levels" id="f-levels"></div>
     <div class="inline-search" id="f-search">
-      <label for="f-input" class="meta" id="f-ask">Tu respuesta</label>
-      <input class="search" id="f-input" autocomplete="off" placeholder="Escribe un jugador…">
+      <label for="f-input" class="meta" id="f-ask">Your answer</label>
+      <input class="search" id="f-input" autocomplete="off" placeholder="Type a player…">
       <ul class="results" id="f-results" hidden></ul>
     </div>
     <div class="bar">
-      <button class="btn" id="f-give" type="button">Rendirse</button>
-      <button class="btn primary" id="f-new" type="button">Otra partida</button>
-      <button class="btn" id="f-daily" type="button" hidden>Reto del día</button>
+      <button class="btn" id="f-give" type="button">Give up</button>
+      <button class="btn primary" id="f-new" type="button">New game</button>
+      <button class="btn" id="f-daily" type="button" hidden>Daily puzzle</button>
       <span class="msg" id="f-msg" role="status"></span>
       <div class="share" id="sh-f" hidden></div>
     </div>
@@ -564,30 +564,30 @@ footer{margin-top:40px;color:var(--chalk-dim);font-size:.82rem;border-top:2px da
   <section id="v-higher-lower" hidden>
     <div class="intro">
       <h2>Higher or Lower</h2>
-      <p>¿El segundo jugador tiene más o menos que el primero? Acierta y sigue; un fallo y vuelta a empezar. Cifras de toda su carrera en clubes.</p>
+      <p>Does the second player have more or less than the first? Get it right and keep going; one mistake and you start again. Club career totals.</p>
     </div>
-    <div class="meta"><span>Racha <b id="h-streak">0</b></span><span>Récord <b id="h-best">0</b></span></div>
-    <div class="cats" id="h-cats" role="group" aria-label="Estadística"></div>
+    <div class="meta"><span>Streak <b id="h-streak">0</b></span><span>Best <b id="h-best">0</b></span></div>
+    <div class="cats" id="h-cats" role="group" aria-label="Stat"></div>
     <div class="hl" id="h-board"></div>
     <div class="bar">
-      <button class="btn primary" id="h-restart" type="button" hidden>Jugar otra vez</button>
+      <button class="btn primary" id="h-restart" type="button" hidden>Play again</button>
       <span class="msg" id="h-msg" role="status"></span>
       <div class="share" id="sh-h" hidden></div>
     </div>
-    <p class="beta">Versión beta: cifras aproximadas (≈) de toda la carrera en clubes, en todas las competiciones. Solo se comparan jugadores con diferencias claras.</p>
+    <p class="beta">Beta: approximate (≈) club-career totals across all competitions. Only players with clear differences are compared.</p>
   </section>
 
   <!-- SURVIVAL -->
   <section id="v-survival" hidden>
     <div class="intro">
       <h2>Survival</h2>
-      <p>Preguntas sin fin con 10 segundos cada una. Aguanta todo lo que puedas: el primer fallo termina la partida.</p>
+      <p>Endless questions with 10 seconds each. Last as long as you can: the first mistake ends the game.</p>
     </div>
-    <div class="meta"><span>Racha <b id="s-streak">0</b></span><span>Récord <b id="s-best">0</b></span></div>
+    <div class="meta"><span>Streak <b id="s-streak">0</b></span><span>Best <b id="s-best">0</b></span></div>
     <div id="s-start" class="box" style="margin-top:12px">
-      <h3>¿Preparado?</h3>
-      <p>Compañeros de vestuario, clubes, trayectorias. Sin pistas y sin segundas oportunidades.</p>
-      <button class="btn primary" id="s-go" type="button">Empezar</button>
+      <h3>Ready?</h3>
+      <p>Teammates, clubs, careers. No hints and no second chances.</p>
+      <button class="btn primary" id="s-go" type="button">Start</button>
     </div>
     <div id="s-play" hidden>
       <div class="timer"><i id="s-bar"></i></div>
@@ -595,11 +595,11 @@ footer{margin-top:40px;color:var(--chalk-dim);font-size:.82rem;border-top:2px da
       <span class="msg" id="s-fb" role="status"></span>
     </div>
     <div id="s-over" class="box" style="margin-top:12px" hidden>
-      <h3>Fin de la racha</h3>
+      <h3>Streak over</h3>
       <div class="big" id="s-final">0</div>
       <p id="s-overtxt"></p>
       <div class="share" id="sh-s" hidden></div>
-      <button class="btn primary" id="s-again" type="button">Otra vez</button>
+      <button class="btn primary" id="s-again" type="button">Again</button>
     </div>
   </section>
 
@@ -607,14 +607,14 @@ footer{margin-top:40px;color:var(--chalk-dim);font-size:.82rem;border-top:2px da
   <section id="v-timeline" hidden>
     <div class="intro">
       <h2>Timeline</h2>
-      <p>Ordena estos fichajes del más antiguo (arriba) al más reciente (abajo). Usa las flechas para moverlos.</p>
+      <p>Order these transfers from oldest (top) to newest (bottom). Use the arrows to move them.</p>
     </div>
-    <div class="meta"><span>Reto <b id="tl-label">—</b></span><span>Resultado <b id="tl-score">—</b></span></div>
+    <div class="meta"><span>Puzzle <b id="tl-label">—</b></span><span>Result <b id="tl-score">—</b></span></div>
     <ol class="tl" id="tl-list"></ol>
     <div class="bar">
-      <button class="btn primary" id="tl-check" type="button">Comprobar</button>
-      <button class="btn" id="tl-new" type="button">Otro reto</button>
-      <button class="btn" id="tl-daily" type="button" hidden>Reto del día</button>
+      <button class="btn primary" id="tl-check" type="button">Check</button>
+      <button class="btn" id="tl-new" type="button">New puzzle</button>
+      <button class="btn" id="tl-daily" type="button" hidden>Daily puzzle</button>
       <span class="msg" id="tl-msg" role="status"></span>
       <div class="share" id="sh-tl" hidden></div>
     </div>
@@ -623,27 +623,27 @@ footer{margin-top:40px;color:var(--chalk-dim);font-size:.82rem;border-top:2px da
   <!-- CROMOS -->
   <section id="v-album" hidden>
     <div class="intro">
-      <h2>Cromos y trofeos</h2>
-      <p>Cada reto diario que completas te da un sobre con 3 cromos (uno por juego y día). Los trofeos dan sobres extra. Completa el álbum e intercambia repetidos con tus amigos.</p>
+      <h2>Cards &amp; trophies</h2>
+      <p>Every daily puzzle you complete gives you a pack of 3 cards (one per game per day). Trophies give extra packs. Complete the album and swap duplicates with friends.</p>
     </div>
-    <div class="meta"><span>Sobres <b id="c-npacks">0</b></span><span>Colección <b id="c-count">0</b></span><span>Trofeos <b id="c-ntro">0</b></span></div>
+    <div class="meta"><span>Packs <b id="c-npacks">0</b></span><span>Collection <b id="c-count">0</b></span><span>Trophies <b id="c-ntro">0</b></span></div>
     <div class="tabs" role="tablist">
-      <button type="button" data-tab="packs" aria-selected="true">Sobres</button>
-      <button type="button" data-tab="album" aria-selected="false">Álbum</button>
-      <button type="button" data-tab="wheel" aria-selected="false">Ruleta</button>
-      <button type="button" data-tab="trophies" aria-selected="false">Trofeos</button>
-      <button type="button" data-tab="trade" aria-selected="false">Intercambiar</button>
+      <button type="button" data-tab="packs" aria-selected="true">Packs</button>
+      <button type="button" data-tab="album" aria-selected="false">Album</button>
+      <button type="button" data-tab="wheel" aria-selected="false">Wheel</button>
+      <button type="button" data-tab="trophies" aria-selected="false">Trophies</button>
+      <button type="button" data-tab="trade" aria-selected="false">Trade</button>
     </div>
     <div id="c-tab-packs">
       <div class="packbox">
-        <div class="pack" aria-hidden="true"><span>DUGOUT</span><b>SOBRE</b><small>3 cromos</small></div>
+        <div class="pack" aria-hidden="true"><span>DUGOUT</span><b>PACK</b><small>3 cards</small></div>
         <div>
           <p id="c-packtxt"></p>
-          <button class="btn primary" id="c-open" type="button">Abrir sobre</button>
+          <button class="btn primary" id="c-open" type="button">Open pack</button>
         </div>
       </div>
       <div class="reveal" id="c-reveal"></div>
-      <p class="beta">Probabilidad por cromo: Común 50 % · Rara 30 % · Épica 16 % · Leyenda 4 %.</p>
+      <p class="beta">Odds per card: Common 50% · Rare 30% · Epic 16% · Legend 4%.</p>
     </div>
     <div id="c-tab-album" hidden>
       <div class="cats" id="c-filters"></div>
@@ -658,8 +658,8 @@ footer{margin-top:40px;color:var(--chalk-dim);font-size:.82rem;border-top:2px da
         </div>
         <div class="wheelside">
           <p id="w-txt"></p>
-          <button class="btn primary" id="w-spin" type="button">Girar</button>
-          <p class="freezes">Congeladores de racha: <b id="w-fz">0</b>/2</p>
+          <button class="btn primary" id="w-spin" type="button">Spin</button>
+          <p class="freezes">Streak freezes: <b id="w-fz">0</b>/2</p>
           <ul class="prizes" id="w-prizes"></ul>
         </div>
       </div>
@@ -670,20 +670,20 @@ footer{margin-top:40px;color:var(--chalk-dim);font-size:.82rem;border-top:2px da
       <ul class="trolist" id="c-trolist"></ul>
     </div>
     <div id="c-tab-trade" hidden>
-      <div class="notice" id="tr-offline" hidden>No hay conexión con el servidor ahora mismo. Comprueba tu conexión a internet y recarga la página.</div>
+      <div class="notice" id="tr-offline" hidden>Can’t reach the server right now. Check your internet connection and reload the page.</div>
       <div id="tr-setup" class="vs-panel">
-        <div class="box"><h3>Crear intercambio</h3><p>Te damos un código para que tu amigo se una.</p><button class="btn primary" id="tr-create" type="button">Crear</button></div>
-        <div class="box"><h3>Unirse con código</h3><div class="row"><input class="search" id="tr-code" maxlength="5" autocomplete="off" placeholder="CÓDIGO" style="text-transform:uppercase;letter-spacing:.2em"><button class="btn" id="tr-join" type="button">Entrar</button></div></div>
+        <div class="box"><h3>Start a trade</h3><p>We’ll give you a code for your friend to join.</p><button class="btn primary" id="tr-create" type="button">Create</button></div>
+        <div class="box"><h3>Join with a code</h3><div class="row"><input class="search" id="tr-code" maxlength="5" autocomplete="off" placeholder="CODE" style="text-transform:uppercase;letter-spacing:.2em"><button class="btn" id="tr-join" type="button">Join</button></div></div>
       </div>
       <div id="tr-live" hidden>
-        <div class="meta" style="margin-top:12px"><span>Código <b id="tr-codeshow">—</b></span><span id="tr-partner">Esperando a tu amigo…</span></div>
+        <div class="meta" style="margin-top:12px"><span>Code <b id="tr-codeshow">—</b></span><span id="tr-partner">Waiting for your friend…</span></div>
         <div class="trade">
-          <div class="box"><h3>Tú ofreces</h3><div id="tr-mine"></div><p>Elige un cromo de tu colección (los repetidos aparecen primero):</p><div class="chips" id="tr-pick"></div></div>
-          <div class="box"><h3>Tu amigo ofrece</h3><div id="tr-theirs"><p>Aún no ha elegido.</p></div></div>
+          <div class="box"><h3>You offer</h3><div id="tr-mine"></div><p>Pick a card from your collection (duplicates first):</p><div class="chips" id="tr-pick"></div></div>
+          <div class="box"><h3>Your friend offers</h3><div id="tr-theirs"><p>Hasn’t chosen yet.</p></div></div>
         </div>
         <div class="bar">
-          <button class="btn primary" id="tr-accept" type="button" disabled>Aceptar intercambio</button>
-          <button class="btn" id="tr-leave" type="button">Salir</button>
+          <button class="btn primary" id="tr-accept" type="button" disabled>Accept trade</button>
+          <button class="btn" id="tr-leave" type="button">Leave</button>
           <span class="msg" id="tr-msg" role="status"></span>
         </div>
       </div>
@@ -695,38 +695,38 @@ footer{margin-top:40px;color:var(--chalk-dim);font-size:.82rem;border-top:2px da
   <section id="v-versus" hidden>
     <div class="intro">
       <h2>Versus</h2>
-      <p>Duelo online: 10 preguntas mezcladas de trayectorias, compañeros de vestuario, clubes e intrusos. 15 segundos por pregunta; cuanto antes aciertes, más puntos.</p>
+      <p>Online duel: 10 mixed questions on careers, teammates, clubs and odd ones out. 15 seconds per question; the faster you answer, the more points.</p>
     </div>
 
     <div id="vs-setup">
-      <div class="notice" id="vs-offline" hidden>No hay conexión con el servidor ahora mismo. Comprueba tu conexión a internet y recarga la página. Mientras tanto puedes jugar el duelo en solitario.</div>
+      <div class="notice" id="vs-offline" hidden>Can’t reach the server right now. Check your internet connection and reload the page. Meanwhile you can play the duel solo.</div>
       <div class="vs-panel">
         <div class="box">
-          <h3>Tu apodo</h3>
-          <input class="search" id="vs-nick" maxlength="20" autocomplete="off" placeholder="Ej.: ElNueveDeArea">
-          <p>Es lo que verán los demás en el marcador.</p>
+          <h3>Your nickname</h3>
+          <input class="search" id="vs-nick" maxlength="20" autocomplete="off" placeholder="e.g. TargetMan9">
+          <p>This is what others will see on the scoreboard.</p>
         </div>
         <div class="box">
-          <h3>Crear sala</h3>
-          <p>Te damos un código y un enlace para invitar a tus amigos.</p>
-          <button class="btn primary" id="vs-create" type="button">Crear partida</button>
+          <h3>Create a room</h3>
+          <p>You’ll get a code and a link to invite your friends.</p>
+          <button class="btn primary" id="vs-create" type="button">Create game</button>
         </div>
         <div class="box">
-          <h3>Unirse con código</h3>
-          <div class="row"><input class="search" id="vs-code" maxlength="5" autocomplete="off" placeholder="CÓDIGO" style="text-transform:uppercase;letter-spacing:.2em"><button class="btn" id="vs-join" type="button">Entrar</button></div>
+          <h3>Join with a code</h3>
+          <div class="row"><input class="search" id="vs-code" maxlength="5" autocomplete="off" placeholder="CODE" style="text-transform:uppercase;letter-spacing:.2em"><button class="btn" id="vs-join" type="button">Join</button></div>
         </div>
         <div class="box rankbox">
           <h3>Ranked</h3>
-          <div class="rk"><span class="dv" id="rk-div">🥈 Plata</span><span>ELO <b id="rk-elo">1000</b></span><span id="rk-rec">0V · 0E · 0D</span></div>
-          <p>Duelos 1 contra 1 con rivales de tu nivel. Ganar sube tu ELO y perder lo baja. Abandonar cuenta como derrota.</p>
-          <button class="btn primary" id="rk-find" type="button">Buscar partida</button>
+          <div class="rk"><span class="dv" id="rk-div">🥈 Silver</span><span>ELO <b id="rk-elo">1000</b></span><span id="rk-rec">0W · 0D · 0L</span></div>
+          <p>1v1 duels against opponents at your level. Winning raises your ELO and losing lowers it. Leaving counts as a loss.</p>
+          <button class="btn primary" id="rk-find" type="button">Find a match</button>
           <span class="msg" id="rk-msg" role="status"></span>
-          <p class="beta">🥉 Bronce · 🥈 Plata 900 · 🥇 Oro 1100 · 💠 Platino 1300 · 💎 Diamante 1500 · 👑 Leyenda 1700</p>
+          <p class="beta">🥉 Bronze · 🥈 Silver 900 · 🥇 Gold 1100 · 💠 Platinum 1300 · 💎 Diamond 1500 · 👑 Legend 1700</p>
         </div>
         <div class="box">
-          <h3>Practicar solo</h3>
-          <p>El mismo duelo, sin rivales.</p>
-          <button class="btn" id="vs-solo" type="button">Jugar en solitario</button>
+          <h3>Practice solo</h3>
+          <p>The same duel, no opponents.</p>
+          <button class="btn" id="vs-solo" type="button">Play solo</button>
         </div>
       </div>
       <span class="msg" id="vs-msg" role="status"></span>
@@ -735,20 +735,20 @@ footer{margin-top:40px;color:var(--chalk-dim);font-size:.82rem;border-top:2px da
     <div id="vs-lobby" hidden>
       <div class="vs-panel">
         <div class="box">
-          <h3>Código de la sala</h3>
+          <h3>Room code</h3>
           <div class="code" id="vs-codeshow">—</div>
           <div class="row">
-            <button class="btn" id="vs-copycode" type="button">Copiar código</button>
-            <button class="btn" id="vs-copylink" type="button">Copiar enlace</button>
+            <button class="btn" id="vs-copycode" type="button">Copy code</button>
+            <button class="btn" id="vs-copylink" type="button">Copy link</button>
           </div>
           <p id="vs-linktext" style="overflow-wrap:anywhere;font-family:var(--mono);font-size:.75rem"></p>
         </div>
         <div class="box">
-          <h3>Jugadores</h3>
+          <h3>Players</h3>
           <ul class="players" id="vs-lobbylist"></ul>
-          <button class="btn primary" id="vs-start" type="button">Empezar duelo</button>
-          <p id="vs-wait">Esperando a que el anfitrión empiece…</p>
-          <button class="btn" id="vs-leave" type="button">Salir de la sala</button>
+          <button class="btn primary" id="vs-start" type="button">Start duel</button>
+          <p id="vs-wait">Waiting for the host to start…</p>
+          <button class="btn" id="vs-leave" type="button">Leave room</button>
         </div>
       </div>
     </div>
@@ -756,13 +756,13 @@ footer{margin-top:40px;color:var(--chalk-dim);font-size:.82rem;border-top:2px da
     <div id="vs-play" hidden>
       <div class="vs-layout">
         <div>
-          <div class="meta"><span>Pregunta <b id="vs-qn">1/10</b></span><span>Tus puntos <b id="vs-score">0</b></span></div>
+          <div class="meta"><span>Question <b id="vs-qn">1/10</b></span><span>Your points <b id="vs-score">0</b></span></div>
           <div class="timer"><i id="vs-bar"></i></div>
           <div class="qcard" id="vs-q"></div>
           <span class="msg" id="vs-fb" role="status"></span>
         </div>
         <div class="box" id="vs-boardbox">
-          <h3>Marcador</h3>
+          <h3>Scoreboard</h3>
           <ul class="players" id="vs-board"></ul>
         </div>
       </div>
@@ -770,14 +770,14 @@ footer{margin-top:40px;color:var(--chalk-dim);font-size:.82rem;border-top:2px da
 
     <div id="vs-results" hidden>
       <div class="box">
-        <h3 id="vs-restitle">Resultado</h3>
+        <h3 id="vs-restitle">Result</h3>
         <ul class="players" id="vs-final"></ul>
         <p id="vs-reswait"></p>
         <p class="rkres" id="vs-elo" hidden></p>
         <div class="row">
-          <button class="btn primary" id="vs-again" type="button">Revancha</button>
-          <button class="btn primary" id="rk-again" type="button" hidden>Buscar otra ranked</button>
-          <button class="btn" id="vs-exit" type="button">Salir</button>
+          <button class="btn primary" id="vs-again" type="button">Rematch</button>
+          <button class="btn primary" id="rk-again" type="button" hidden>Find another ranked</button>
+          <button class="btn" id="vs-exit" type="button">Leave</button>
         </div>
       </div>
     </div>
@@ -785,13 +785,13 @@ footer{margin-top:40px;color:var(--chalk-dim);font-size:.82rem;border-top:2px da
   </main>
   <div class="toast" id="toast" role="status" hidden></div>
 
-  <footer>Juego de aficionados sin relación con ningún club ni liga. Los escudos son insignias genéricas con las siglas de cada equipo. Base de datos: <span id="count"></span> jugadores; las temporadas se indican por año de inicio (2013–2018 = de la 13/14 a la 17/18).<br><span id="dg-status">Servidor: conectando…</span></footer>
+  <footer>Fan-made game, not affiliated with any club or league. Badges are generic emblems with each team’s initials. Database: <span id="count"></span> players; seasons are shown by starting year (2013–2018 = 2013/14 to 2017/18). Player data from Wikidata.<br><span id="dg-status">Server: connecting…</span></footer>
 </div>
 
 <div class="picker" id="picker" hidden>
   <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="p-q">
     <p class="q" id="p-q"></p>
-    <input class="search" id="p-input" autocomplete="off" placeholder="Busca un jugador…">
+    <input class="search" id="p-input" autocomplete="off" placeholder="Search for a player…">
     <ul class="results" id="p-results"></ul>
   </div>
 </div>
@@ -799,22 +799,22 @@ footer{margin-top:40px;color:var(--chalk-dim);font-size:.82rem;border-top:2px da
 <script>
 // ---------- Datos ----------
 const CLUBS = {
-  RMA:["Real Madrid","#f4f4f4","#1d3f8f"], FCB:["Barcelona","#004d98","#edbb00"], ATM:["Atlético","#cb3524","#fff"],
+  RMA:["Real Madrid","#f4f4f4","#1d3f8f"], FCB:["Barcelona","#004d98","#edbb00"], ATM:["Atlético Madrid","#cb3524","#fff"],
   SEV:["Sevilla","#fff","#d71920"], VAL:["Valencia","#1a1a1a","#f18e00"], VIL:["Villarreal","#ffe667","#005187"],
   BET:["Betis","#0bb363","#fff"], ATH:["Athletic","#ee2523","#fff"], RSO:["Real Sociedad","#0067b1","#fff"],
   MUN:["Man. United","#da291c","#fbe122"], MCI:["Man. City","#6cabdd","#1c2c5b"], LIV:["Liverpool","#c8102e","#fff"],
   CHE:["Chelsea","#034694","#fff"], ARS:["Arsenal","#ef0107","#fff"], TOT:["Tottenham","#fff","#132257"],
   JUV:["Juventus","#111","#fff"], MIL:["Milan","#fb090b","#111"], INT:["Inter","#010e80","#fff"],
   NAP:["Napoli","#12a0d7","#fff"], ROM:["Roma","#8e1f2f","#f0bc42"], BAY:["Bayern","#dc052d","#fff"],
-  BVB:["Dortmund","#fde100","#111"], PSG:["PSG","#004170","#fff"], MON:["Mónaco","#e7182e","#fff"],
-  LYO:["Lyon","#fff","#1d4a9f"], MAR:["Marsella","#2faee0","#fff"], BEN:["Benfica","#e83030","#fff"],
-  POR:["Oporto","#00428c","#fff"], SPO:["Sporting CP","#008057","#fff"], AJA:["Ajax","#fff","#d2122e"],
+  BVB:["Dortmund","#fde100","#111"], PSG:["PSG","#004170","#fff"], MON:["Monaco","#e7182e","#fff"],
+  LYO:["Lyon","#fff","#1d4a9f"], MAR:["Marseille","#2faee0","#fff"], BEN:["Benfica","#e83030","#fff"],
+  POR:["Porto","#00428c","#fff"], SPO:["Sporting CP","#008057","#fff"], AJA:["Ajax","#fff","#d2122e"],
   PSV:["PSV","#ed1c24","#fff"], BOC:["Boca Juniors","#103f79","#f3b229"], RIV:["River Plate","#fff","#e30613"],
   INM:["Inter Miami","#f7b5cd","#231f20"], ALN:["Al-Nassr","#fcd116","#1c3c94"], LEV:["Leverkusen","#e32221","#111"],
   CEL:["Celtic","#018749","#fff"], GAL:["Galatasaray","#a90432","#fdb912"], HIL:["Al-Hilal","#1d4ed8","#fff"],
   SCH:["Schalke","#004d9d","#fff"], GEN:["Genk","#0c3ea1","#fff"], WOL:["Wolfsburg","#65b32e","#fff"]
 };
-const NATS = {ESP:["España","🇪🇸"],ARG:["Argentina","🇦🇷"],BRA:["Brasil","🇧🇷"],FRA:["Francia","🇫🇷"],GER:["Alemania","🇩🇪"],POR:["Portugal","🇵🇹"],ENG:["Inglaterra","🏴󠁧󠁢󠁥󠁮󠁧󠁿"],NED:["Países Bajos","🇳🇱"],CRO:["Croacia","🇭🇷"],URU:["Uruguay","🇺🇾"],BEL:["Bélgica","🇧🇪"],ITA:["Italia","🇮🇹"],COL:["Colombia","🇨🇴"],POL:["Polonia","🇵🇱"],NOR:["Noruega","🇳🇴"],EGY:["Egipto","🇪🇬"],SEN:["Senegal","🇸🇳"],SWE:["Suecia","🇸🇪"],WAL:["Gales","🏴󠁧󠁢󠁷󠁬󠁳󠁿"],CIV:["Costa de Marfil","🇨🇮"],CMR:["Camerún","🇨🇲"],MAR:["Marruecos","🇲🇦"],SVN:["Eslovenia","🇸🇮"],CHI:["Chile","🇨🇱"],CRC:["Costa Rica","🇨🇷"],TUR:["Turquía","🇹🇷"],KOR:["Corea del Sur","🇰🇷"],JPN:["Japón","🇯🇵"],GHA:["Ghana","🇬🇭"],MNE:["Montenegro","🇲🇪"],BIH:["Bosnia","🇧🇦"],MLI:["Malí","🇲🇱"],ISL:["Islandia","🇮🇸"],MEX:["México","🇲🇽"],DEN:["Dinamarca","🇩🇰"],BUL:["Bulgaria","🇧🇬"],UKR:["Ucrania","🇺🇦"],SRB:["Serbia","🇷🇸"],NGA:["Nigeria","🇳🇬"],GEO:["Georgia","🇬🇪"],SVK:["Eslovaquia","🇸🇰"],GRE:["Grecia","🇬🇷"],CZE:["Chequia","🇨🇿"],ECU:["Ecuador","🇪🇨"],USA:["Estados Unidos","🇺🇸"],GAB:["Gabón","🇬🇦"],ALG:["Argelia","🇩🇿"],FIN:["Finlandia","🇫🇮"],SCO:["Escocia","🏴󠁧󠁢󠁳󠁣󠁴󠁿"],HUN:["Hungría","🇭🇺"],AUT:["Austria","🇦🇹"],CAN:["Canadá","🇨🇦"],ARM:["Armenia","🇦🇲"],SUI:["Suiza","🇨🇭"]};
+const NATS = {ESP:["Spain","🇪🇸"],ARG:["Argentina","🇦🇷"],BRA:["Brazil","🇧🇷"],FRA:["France","🇫🇷"],GER:["Germany","🇩🇪"],POR:["Portugal","🇵🇹"],ENG:["England","🏴󠁧󠁢󠁥󠁮󠁧󠁿"],NED:["Netherlands","🇳🇱"],CRO:["Croatia","🇭🇷"],URU:["Uruguay","🇺🇾"],BEL:["Belgium","🇧🇪"],ITA:["Italy","🇮🇹"],COL:["Colombia","🇨🇴"],POL:["Poland","🇵🇱"],NOR:["Norway","🇳🇴"],EGY:["Egypt","🇪🇬"],SEN:["Senegal","🇸🇳"],SWE:["Sweden","🇸🇪"],WAL:["Wales","🏴󠁧󠁢󠁷󠁬󠁳󠁿"],CIV:["Côte d'Ivoire","🇨🇮"],CMR:["Cameroon","🇨🇲"],MAR:["Morocco","🇲🇦"],SVN:["Slovenia","🇸🇮"],CHI:["Chile","🇨🇱"],CRC:["Costa Rica","🇨🇷"],TUR:["Türkiye","🇹🇷"],KOR:["South Korea","🇰🇷"],JPN:["Japan","🇯🇵"],GHA:["Ghana","🇬🇭"],MNE:["Montenegro","🇲🇪"],BIH:["Bosnia and Herzegovina","🇧🇦"],MLI:["Mali","🇲🇱"],ISL:["Iceland","🇮🇸"],MEX:["Mexico","🇲🇽"],DEN:["Denmark","🇩🇰"],BUL:["Bulgaria","🇧🇬"],UKR:["Ukraine","🇺🇦"],SRB:["Serbia","🇷🇸"],NGA:["Nigeria","🇳🇬"],GEO:["Georgia","🇬🇪"],SVK:["Slovakia","🇸🇰"],GRE:["Greece","🇬🇷"],CZE:["Czech Republic","🇨🇿"],ECU:["Ecuador","🇪🇨"],USA:["United States","🇺🇸"],GAB:["Gabon","🇬🇦"],ALG:["Algeria","🇩🇿"],FIN:["Finland","🇫🇮"],SCO:["Scotland","🏴󠁧󠁢󠁳󠁣󠁴󠁿"],HUN:["Hungary","🇭🇺"],AUT:["Austria","🇦🇹"],CAN:["Canada","🇨🇦"],ARM:["Armenia","🇦🇲"],SUI:["Switzerland","🇨🇭"]};
 
 // Nombre | país | CLUB:temporadaInicio-temporadaFin;...  (fin exclusivo: 2013-2018 = 13/14 a 17/18; préstamos incluidos)
 const RAW = window.DG_PLAYERS || "";
@@ -856,10 +856,10 @@ function seasons(s,e){const f=y=>String(y%100).padStart(2,"0");return e-s===1?`$
 function rng(seed){let s=seed>>>0||1;return()=>{s^=s<<13;s>>>=0;s^=s>>17;s^=s<<5;s>>>=0;return s/4294967296}}
 function hash(str){let h=2166136261;for(const c of str){h^=c.charCodeAt(0);h=Math.imul(h,16777619)}return h>>>0}
 const today=new Date(); const baseDay=today.getFullYear()+"-"+(today.getMonth()+1)+"-"+today.getDate();
-const DIFF_NAMES={easy:"Principiante",mid:"Intermedio",hard:"Experto"};
+const DIFF_NAMES={easy:"Beginner",mid:"Intermediate",hard:"Expert"};
 let DIFF="mid";try{const d=localStorage.getItem("pq-diff");if(DIFF_NAMES[d])DIFF=d}catch(e){}
 let dayKey=baseDay+(DIFF==="mid"?"":"-"+DIFF);
-const dayLabel=today.toLocaleDateString("es-ES",{day:"numeric",month:"short"});
+const dayLabel=today.toLocaleDateString("en-GB",{day:"numeric",month:"short"});
 const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 function shuffle(a,r){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 function clubBadge(k,cls=""){
@@ -880,7 +880,7 @@ function search(q,limit=8){
 let act=0;
 function listResults(ul,q,usedSet){
   const r=search(q); act=0;
-  ul.innerHTML=r.length?r.map((p,n)=>`<li><button type="button" data-id="${p.id}" class="${n===0?"act":""} ${usedSet&&usedSet.has(p.id)?"used":""}">${p.name}<span>${flag(p)}</span></button></li>`).join(""):(q.trim()?`<li class="none">No está en nuestra base de datos. Prueba con el apellido.</li>`:"");
+  ul.innerHTML=r.length?r.map((p,n)=>`<li><button type="button" data-id="${p.id}" class="${n===0?"act":""} ${usedSet&&usedSet.has(p.id)?"used":""}">${p.name}<span>${flag(p)}</span></button></li>`).join(""):(q.trim()?`<li class="none">Not in our database. Try the surname.</li>`:"");
 }
 function keyNav(e,ul,onPick){
   const items=[...ul.querySelectorAll("button")]; if(!items.length) return;
@@ -921,46 +921,46 @@ function startLink(daily){
 }
 function saveLink(){if(L.daily)store.set("link-"+dayKey,{a:L.a,b:L.b,chain:L.chain,strikes:L.strikes,hints:L.hints,over:L.over,won:L.won,gaveUp:L.gaveUp});updateHome()}
 function plCard(id,cls,role){const p=PLAYERS[id];return `<div class="pl ${cls}"><span class="flag" aria-hidden="true">${flag(p)}</span><div><div class="rl">${role}</div><div class="nm">${p.name}</div></div></div>`}
-function linkRow(x,y){const m=MATES[x].get(y);return `<div class="link">${clubBadge(m.club,"sm")}<span>Juntos en el <b>${clubName(m.club)}</b> <span class="pill">${seasons(m.s,m.e)}</span></span></div>`}
+function linkRow(x,y){const m=MATES[x].get(y);return `<div class="link">${clubBadge(m.club,"sm")}<span>Together at <b>${clubName(m.club)}</b> <span class="pill">${seasons(m.s,m.e)}</span></span></div>`}
 function renderLink(){
   let h="";
   L.chain.forEach((id,i)=>{
     if(i>0) h+=linkRow(L.chain[i-1],id);
     const isGoal=id===L.b;
-    h+=plCard(id,i===0?"start":isGoal?"goal reached":"mid",i===0?"Salida":isGoal?"Meta":"Eslabón "+i);
+    h+=plCard(id,i===0?"start":isGoal?"goal reached":"mid",i===0?"Start":isGoal?"Target":"Link "+i);
   });
   if(!L.won){
     if(L.gaveUp){
       // mostrar la ruta más corta desde el último eslabón
       const {prev}=bfs(L.b); let cur=L.chain[L.chain.length-1];
-      while(cur!==L.b){const nx=prev[cur];h+=linkRow(cur,nx).replace('class="link"','class="link gap"');h+=plCard(nx,nx===L.b?"goal":"mid",nx===L.b?"Meta":"Solución");cur=nx}
+      while(cur!==L.b){const nx=prev[cur];h+=linkRow(cur,nx).replace('class="link"','class="link gap"');h+=plCard(nx,nx===L.b?"goal":"mid",nx===L.b?"Target":"Solution");cur=nx}
     } else {
-      h+=`<div class="link gap"><span>Faltan eslabones…</span></div>`+plCard(L.b,"goal","Meta");
+      h+=`<div class="link gap"><span>Missing links…</span></div>`+plCard(L.b,"goal","Target");
     }
   }
   document.getElementById("l-chain").innerHTML=h;
   const last=PLAYERS[L.chain[L.chain.length-1]];
-  document.getElementById("l-ask").textContent=`¿Con quién jugó ${last.name}?`;
+  document.getElementById("l-ask").textContent=`Who did ${last.name} play with?`;
   document.getElementById("l-strikes").textContent=L.strikes;
   document.getElementById("l-input").disabled=L.over;
   document.getElementById("l-input").parentElement.hidden=L.over;
   document.getElementById("l-undo").disabled=L.over||L.chain.length<2;
   document.getElementById("l-hint").disabled=L.over;
   document.getElementById("l-give").disabled=L.over;
-  if(L.won){const steps=L.chain.length-1;setMsg("l-msg",steps===L.par?`¡Cadena perfecta! ${steps} pasos, igual que la mejor posible.`:`¡Conectados en ${steps} pasos! La mejor cadena tenía ${L.par}.`,"ok")}
-  else if(L.gaveUp) setMsg("l-msg","Esta es una cadena posible desde tu último eslabón.","bad");
+  if(L.won){const steps=L.chain.length-1;setMsg("l-msg",steps===L.par?`Perfect chain! ${steps} steps, the shortest possible.`:`Connected in ${steps} steps! The shortest chain had ${L.par}.`,"ok")}
+  else if(L.gaveUp) setMsg("l-msg","Here’s a possible chain from your last link.","bad");
 }
 function pickLink(id){
   if(L.over) return; const cur=L.chain[L.chain.length-1], p=PLAYERS[id];
-  if(L.chain.includes(id)){setMsg("l-msg",`${p.name} ya está en tu cadena.`,"bad");return}
+  if(L.chain.includes(id)){setMsg("l-msg",`${p.name} is already in your chain.`,"bad");return}
   if(!MATES[cur].has(id)){
-    L.strikes++; setMsg("l-msg",`${p.name} y ${PLAYERS[cur].name} nunca coincidieron en el mismo vestuario.`,"bad");
+    L.strikes++; setMsg("l-msg",`${p.name} and ${PLAYERS[cur].name} were never teammates.`,"bad");
     const c=document.getElementById("l-input");c.classList.add("shake");setTimeout(()=>c.classList.remove("shake"),400);
     saveLink();renderLink();return;
   }
   L.chain.push(id);
   if(id===L.b){L.over=true;L.won=true}
-  else{const m=MATES[cur].get(id);setMsg("l-msg",`Bien: coincidieron en el ${clubName(m.club)}. ${L.distB[id]===1?"¡Este jugó con la meta!":""}`,"ok")}
+  else{const m=MATES[cur].get(id);setMsg("l-msg",`Nice: they played together at ${clubName(m.club)}. ${L.distB[id]===1?"This one played with the target!":""}`,"ok")}
   saveLink();renderLink(); if(!L.over)document.getElementById("l-input").focus();
 }
 inlineSearch("l-input","l-results",()=>new Set(L.chain),pickLink);
@@ -969,8 +969,8 @@ document.getElementById("l-hint").onclick=()=>{
   const cur=L.chain[L.chain.length-1]; const dc=L.distB[cur];
   const opts=[...MATES[cur].keys()].filter(v=>L.distB[v]===dc-1);
   const v=opts[0]; L.hints++;
-  if(v===L.b){setMsg("l-msg",`Pista: ¡${PLAYERS[cur].name} ya jugó con la meta! Escríbelo.`,"ok")}
-  else{const m=MATES[cur].get(v);setMsg("l-msg",`Pista: busca a alguien que jugara en el ${clubName(m.club)} durante ${seasons(m.s,m.e)}.`,"ok")}
+  if(v===L.b){setMsg("l-msg",`Hint: ${PLAYERS[cur].name} already played with the target! Type them in.`,"ok")}
+  else{const m=MATES[cur].get(v);setMsg("l-msg",`Hint: look for someone who played at ${clubName(m.club)} in ${seasons(m.s,m.e)}.`,"ok")}
   saveLink();
 };
 document.getElementById("l-give").onclick=()=>{L.over=true;L.gaveUp=true;saveLink();renderLink()};
@@ -1022,15 +1022,15 @@ function startGrid(daily){
 }
 function saveGrid(){if(G.daily)store.set("grid-"+dayKey,{filled:G.filled,tries:G.tries,revealed:G.revealed,over:G.over});updateHome()}
 function renderGrid(){
-  let h=`<div class="corner"><b>${G.tries}</b>intentos</div>`;
+  let h=`<div class="corner"><b>${G.tries}</b>guesses</div>`;
   G.cols.forEach(c=>h+=`<div class="hd">${badge(c)}<span>${catName(c)}</span></div>`);
   G.rows.forEach((ro,i)=>{
     h+=`<div class="hd">${badge(ro)}<span>${catName(ro)}</span></div>`;
     G.cols.forEach((co,j)=>{
-      const k=i*3+j, f=G.filled[k], label=`${catName(ro)} y ${catName(co)}`;
-      if(f!=null){const p=PLAYERS[f];h+=`<button class="cell filled" disabled aria-label="${label}: ${p.name}"><span class="nm">${p.name}</span><span class="sub">${flag(p)} ${G.answers[i][j].length} posibles</span></button>`}
-      else if(G.revealed){const a=G.answers[i][j];h+=`<div class="cell reveal" aria-label="${label}"><span class="nm">${a.slice(0,2).map(p=>p.name).join(" · ")}</span><span class="sub">${a.length} posibles</span></div>`}
-      else h+=`<button class="cell" data-k="${k}" aria-label="Elegir jugador para ${label}" ${G.over?"disabled":""}><span class="plus">+</span></button>`;
+      const k=i*3+j, f=G.filled[k], label=`${catName(ro)} and ${catName(co)}`;
+      if(f!=null){const p=PLAYERS[f];h+=`<button class="cell filled" disabled aria-label="${label}: ${p.name}"><span class="nm">${p.name}</span><span class="sub">${flag(p)} ${G.answers[i][j].length} possible</span></button>`}
+      else if(G.revealed){const a=G.answers[i][j];h+=`<div class="cell reveal" aria-label="${label}"><span class="nm">${a.slice(0,2).map(p=>p.name).join(" · ")}</span><span class="sub">${a.length} possible</span></div>`}
+      else h+=`<button class="cell" data-k="${k}" aria-label="Pick a player for ${label}" ${G.over?"disabled":""}><span class="plus">+</span></button>`;
     });
   });
   document.getElementById("gridboard").innerHTML=h;
@@ -1052,13 +1052,13 @@ pRes.addEventListener("click",e=>{const b=e.target.closest("button[data-id]");if
 picker.addEventListener("click",e=>{if(e.target===picker)closePicker()});
 function choose(id){
   const k=pk;closePicker();const i=Math.floor(k/3),j=k%3,p=PLAYERS[id];
-  if(G.filled.includes(id)){setMsg("g-msg",`${p.name} ya está en la rejilla.`,"bad");return}
+  if(G.filled.includes(id)){setMsg("g-msg",`${p.name} is already on the grid.`,"bad");return}
   G.tries--; const ok=fits(p,G.rows[i])&&fits(p,G.cols[j]);
-  if(ok){G.filled[k]=id;setMsg("g-msg",`¡Bien! ${p.name} encaja.`,"ok")}
-  else setMsg("g-msg",`${p.name} no cumple ${catName(G.rows[i])} y ${catName(G.cols[j])}.`,"bad");
+  if(ok){G.filled[k]=id;setMsg("g-msg",`Nice! ${p.name} fits.`,"ok")}
+  else setMsg("g-msg",`${p.name} doesn’t match ${catName(G.rows[i])} and ${catName(G.cols[j])}.`,"bad");
   const n=G.filled.filter(x=>x!=null).length;
-  if(n===9){G.over=true;setMsg("g-msg",`¡Rejilla completa con ${12-G.tries} intentos!`,"ok")}
-  else if(G.tries<=0){G.over=true;G.revealed=true;setMsg("g-msg",`Sin intentos. Has acertado ${n} de 9.`,"bad")}
+  if(n===9){G.over=true;setMsg("g-msg",`Grid complete in ${12-G.tries} guesses!`,"ok")}
+  else if(G.tries<=0){G.over=true;G.revealed=true;setMsg("g-msg",`Out of guesses. You got ${n} of 9.`,"bad")}
   saveGrid();renderGrid();
   if(!ok){const c=document.querySelector(`.cell[data-k="${k}"]`);if(c){c.classList.add("shake");setTimeout(()=>c.classList.remove("shake"),400)}}
 }
@@ -1084,20 +1084,20 @@ function renderTray(){
   const p=T.p;
   document.getElementById("t-path").innerHTML=p.stints.map(st=>`<div class="stop">${clubBadge(st.club)}<span class="lbl">${clubName(st.club)}</span><span class="yr">${seasons(st.s,st.e)}</span></div>`).join('<span class="arrow" aria-hidden="true">→</span>');
   const wrong=T.guesses.filter(g=>g!==p.id).length+(DIFF==="easy"?1:0),show=n=>T.over||wrong>=n;
-  const hints=[["Nacionalidad",1,()=>flag(p)+" "+NATS[p.nat][0]],["Clubes distintos",2,()=>p.set.size],["Iniciales",3,()=>p.name.split(" ").map(w=>w[0]).join(". ")+"."],["Nombre",4,()=>masked(p.name)]];
-  document.getElementById("t-hints").innerHTML=hints.map(([k,n,f])=>`<div class="hint ${show(n)?"":"locked"}"><div class="k">${k}</div><div class="v">${show(n)?f():"Tras "+n+" fallo"+(n>1?"s":"")}</div></div>`).join("");
-  document.getElementById("t-tries").innerHTML="Intentos "+Array.from({length:MAXT},(_,i)=>`<i class="${i<T.guesses.length?"spent":""}"></i>`).join("");
-  document.getElementById("t-guesses").innerHTML=T.guesses.map(id=>`<li class="${id===p.id?"y":"x"}">${PLAYERS[id].name}<span>${id===p.id?"Correcto":"No"}</span></li>`).join("");
+  const hints=[["Nationality",1,()=>flag(p)+" "+NATS[p.nat][0]],["Different clubs",2,()=>p.set.size],["Initials",3,()=>p.name.split(" ").map(w=>w[0]).join(". ")+"."],["Name",4,()=>masked(p.name)]];
+  document.getElementById("t-hints").innerHTML=hints.map(([k,n,f])=>`<div class="hint ${show(n)?"":"locked"}"><div class="k">${k}</div><div class="v">${show(n)?f():"After "+n+" miss"+(n>1?"es":"")}</div></div>`).join("");
+  document.getElementById("t-tries").innerHTML="Guesses "+Array.from({length:MAXT},(_,i)=>`<i class="${i<T.guesses.length?"spent":""}"></i>`).join("");
+  document.getElementById("t-guesses").innerHTML=T.guesses.map(id=>`<li class="${id===p.id?"y":"x"}">${PLAYERS[id].name}<span>${id===p.id?"Correct":"No"}</span></li>`).join("");
   document.getElementById("t-input").disabled=T.over;
-  if(T.over)setMsg("t-msg",T.won?`¡Correcto! Era ${p.name}.`:`Era ${p.name}.`,T.won?"ok":"bad");
+  if(T.over)setMsg("t-msg",T.won?`Correct! It was ${p.name}.`:`It was ${p.name}.`,T.won?"ok":"bad");
 }
 function guessT(id){
   if(T.over)return;
-  if(T.guesses.includes(id)){setMsg("t-msg","Ya has probado con ese jugador.","bad");return}
+  if(T.guesses.includes(id)){setMsg("t-msg","You already tried that player.","bad");return}
   T.guesses.push(id);
   if(id===T.p.id){T.over=true;T.won=true}
   else if(T.guesses.length>=MAXT)T.over=true;
-  else setMsg("t-msg",`No es ${PLAYERS[id].name}. Nueva pista desbloqueada.`,"bad");
+  else setMsg("t-msg",`Not ${PLAYERS[id].name}. New hint unlocked.`,"bad");
   if(T.daily)store.set("tray-"+dayKey,{pid:T.p.id,guesses:T.guesses,over:T.over,won:T.won});
   updateHome();renderTray();if(!T.over)document.getElementById("t-input").focus();
 }
@@ -1115,8 +1115,12 @@ function makeOdd(seed){
     // intruso con algo en común con el grupo (país o un club compartido), para despistar
     const outs=PP().filter(p=>!p.set.has(club)&&ins.some(q=>q.nat===p.nat||[...q.set].some(c=>CLUBS[c]&&p.set.has(c))));
     if(ins.length<3||!outs.length)continue;
+    // sin ambigüedad: ningún otro club puede tener a 3 de los 4 dejando fuera a otro jugador
+    const unique=o=>{const four=[...ins,o];const clubs=new Set(four.flatMap(p=>[...p.set]));
+      for(const c of clubs){if(c===club)continue;const inC=four.filter(p=>p.set.has(c));if(inC.length===3&&inC.includes(o))return false}return true};
+    const odd=shuffle(outs,r).slice(0,40).find(unique);
+    if(!odd)continue;
     usedClubs.add(club);
-    const odd=outs[Math.floor(r()*outs.length)];
     rounds.push({club,odd:odd.id,opts:shuffle([...ins.map(p=>p.id),odd.id],r)});
   }
   return rounds;
@@ -1137,7 +1141,7 @@ function renderOdd(){
   document.getElementById("o-opts").innerHTML=R.opts.map(id=>{
     const p=PLAYERS[id];let cls="",why="";
     if(done){
-      if(id===R.odd){cls="right";why="Nunca jugó en el "+clubName(R.club)}
+      if(id===R.odd){cls="right";why="Never played for "+clubName(R.club)}
       else{const st=p.stints.filter(s=>s.club===R.club).map(s=>seasons(s.s,s.e)).join(", ");why=`${clubName(R.club)} · ${st}`}
       if(id===O.picked&&id!==R.odd)cls="wrong";
     }
@@ -1145,12 +1149,12 @@ function renderOdd(){
   }).join("");
   const last=O.i===ROUNDS-1;
   document.getElementById("o-next").hidden=!done||last;
-  if(done&&last){const n=O.res.filter(Boolean).length;setMsg("o-msg",`Partida terminada: ${n} de ${ROUNDS} aciertos.`,n>=3?"ok":"bad")}
+  if(done&&last){const n=O.res.filter(Boolean).length;setMsg("o-msg",`Game over: ${n} of ${ROUNDS} correct.`,n>=3?"ok":"bad")}
 }
 document.getElementById("o-opts").addEventListener("click",e=>{
   const b=e.target.closest(".opt");if(!b||O.picked!=null)return;
   const id=+b.dataset.id,R=O.rounds[O.i];O.picked=id;O.res[O.i]=id===R.odd;
-  setMsg("o-msg",O.res[O.i]?`¡Bien visto! Los otros tres jugaron en el ${clubName(R.club)}.`:`No. El intruso era ${PLAYERS[R.odd].name}.`,O.res[O.i]?"ok":"bad");
+  setMsg("o-msg",O.res[O.i]?`Well spotted! The other three played for ${clubName(R.club)}.`:`No. The odd one out was ${PLAYERS[R.odd].name}.`,O.res[O.i]?"ok":"bad");
   saveOdd();renderOdd();
 });
 document.getElementById("o-next").onclick=()=>{O.i++;O.picked=null;setMsg("o-msg","");saveOdd();renderOdd()};
@@ -1161,17 +1165,17 @@ document.getElementById("o-daily").onclick=()=>startOdd(true);
 function updateHome(){
   const set=(id,done,txt)=>{const e=document.getElementById(id);e.textContent=txt;e.className="st"+(done?" done":"")};
   const l=store.get("link-"+dayKey,null),g=store.get("grid-"+dayKey,null),t=store.get("tray-"+dayKey,null),o=store.get("odd-"+dayKey,null);
-  set("st-link",l&&l.over,l&&l.over?(l.won?`Hecho · ${l.chain.length-1} pasos`:"Hecho · rendido"):"Reto de hoy pendiente");
-  set("st-grid",g&&g.over,g&&g.over?`Hecho · ${g.filled.filter(x=>x!=null).length}/9`:"Reto de hoy pendiente");
-  set("st-career",t&&t.over,t&&t.over?(t.won?`Hecho · ${t.guesses.length} intento${t.guesses.length>1?"s":""}`:"Hecho · fallado"):"Reto de hoy pendiente");
+  set("st-link",l&&l.over,l&&l.over?(l.won?`Done · ${l.chain.length-1} steps`:"Done · gave up"):"Today’s puzzle waiting");
+  set("st-grid",g&&g.over,g&&g.over?`Done · ${g.filled.filter(x=>x!=null).length}/9`:"Today’s puzzle waiting");
+  set("st-career",t&&t.over,t&&t.over?(t.won?`Done · ${t.guesses.length} guess${t.guesses.length>1?"es":""}`:"Done · missed"):"Today’s puzzle waiting");
   const od=o&&o.res&&o.res.length===ROUNDS;
-  set("st-odd",od,od?`Hecho · ${o.res.filter(Boolean).length}/${ROUNDS}`:"Reto de hoy pendiente");
+  set("st-odd",od,od?`Done · ${o.res.filter(Boolean).length}/${ROUNDS}`:"Today’s puzzle waiting");
   const hb=Math.max(...HL_CATS.map(c=>store.get("hl-best-"+c.k,0)));
-  set("st-hl",false,hb?`Tu mejor racha: ${hb}`:"Sin límite de partidas");
-  const sb=store.get("sv-best",0); set("st-sv",false,sb?`Tu récord: ${sb}`:"Sin límite de partidas");
-  const tl=store.get("tl-"+dayKey,null); set("st-tl",tl&&tl.done,tl&&tl.done?"Hecho hoy":"Reto de hoy pendiente");
-  const lu=store.get("lu-"+dayKey,null); set("st-lu",lu&&lu.over,lu&&lu.over?`Hecho · ${lu.got.length}/11`:"Reto de hoy pendiente");
-  const fv=store.get("five-"+dayKey,null); set("st-54",fv&&fv.over,fv&&fv.over?(fv.won?"Hecho · 5/5 niveles":`Hecho · nivel ${fv.lv+1}`):"Reto de hoy pendiente");
+  set("st-hl",false,hb?`Your best streak: ${hb}`:"Unlimited games");
+  const sb=store.get("sv-best",0); set("st-sv",false,sb?`Your record: ${sb}`:"Unlimited games");
+  const tl=store.get("tl-"+dayKey,null); set("st-tl",tl&&tl.done,tl&&tl.done?"Done today":"Today’s puzzle waiting");
+  const lu=store.get("lu-"+dayKey,null); set("st-lu",lu&&lu.over,lu&&lu.over?`Done · ${lu.got.length}/11`:"Today’s puzzle waiting");
+  const fv=store.get("five-"+dayKey,null); set("st-54",fv&&fv.over,fv&&fv.over?(fv.won?"Done · 5/5 levels":`Done · level ${fv.lv+1}`):"Today’s puzzle waiting");
 }
 // ---------- VERSUS ----------
 const ARTIFACT_URL=location.origin+location.pathname;
@@ -1193,22 +1197,22 @@ function genQuestions(seed){
       if(k==="career"){
         const p=pick(T_MID); if(used.has(p.id))continue;
         const ds=others(new Set([p.id]),T_MID,3,x=>x.nat===p.nat);
-        q={kind:"Career",title:"¿De quién es esta trayectoria?",path:p.stints,opts:shuffle([{t:p.name,ok:true},...ds.map(d=>({t:d.name}))],r),reveal:`Era ${p.name}.`};used.add(p.id);
+        q={kind:"Career",title:"Whose career is this?",path:p.stints,opts:shuffle([{t:p.name,ok:true},...ds.map(d=>({t:d.name}))],r),reveal:`It was ${p.name}.`};used.add(p.id);
       } else if(k==="mates"){
         const a=pick(MIDP); let b,yes=r()<0.5&&MATES[a.id].size>0;
         if(yes){b=mateIn(a,MID_SET)}else{b=pick(MIDP);if(b.id===a.id||MATES[a.id].has(b.id))continue}
         const m=yes?MATES[a.id].get(b.id):null;
-        q={kind:"Vestuario",title:`¿Fueron compañeros de equipo ${a.name} y ${b.name}?`,opts:[{t:"Sí",ok:yes},{t:"No",ok:!yes}],reveal:yes?`Sí: juntos en el ${clubName(m.club)} (${seasons(m.s,m.e)}).`:"No, nunca coincidieron en un club."};
+        q={kind:"Teammates",title:`Were ${a.name} and ${b.name} ever teammates?`,opts:[{t:"Yes",ok:yes},{t:"No",ok:!yes}],reveal:yes?`Yes: together at ${clubName(m.club)} (${seasons(m.s,m.e)}).`:"No, they never played together."};
       } else if(k==="both"){
         const a=pick(CLUB_TOP),b=pick(CLUB_TOP); if(a===b)continue;
         const inter=MIDP.filter(p=>p.set.has(a)&&p.set.has(b)); if(!inter.length)continue;
         const ans=pick(inter), ds=shuffle(MIDP.filter(p=>p.set.has(a)!==p.set.has(b)),r).slice(0,3); if(ds.length<3)continue;
-        q={kind:"Doble club",title:`¿Quién jugó en el ${clubName(a)} y en el ${clubName(b)}?`,opts:shuffle([{t:ans.name,ok:true},...ds.map(d=>({t:d.name}))],r),reveal:`${ans.name} pasó por los dos.`};
+        q={kind:"Two clubs",title:`Who played for ${clubName(a)} and ${clubName(b)}?`,opts:shuffle([{t:ans.name,ok:true},...ds.map(d=>({t:d.name}))],r),reveal:`${ans.name} played for both.`};
       } else {
         const club=pick(CLUB_TOP); const ins=shuffle(MIDP.filter(p=>p.set.has(club)),r).slice(0,3);
         const outs=MIDP.filter(p=>!p.set.has(club)&&ins.some(x=>x.nat===p.nat)); if(ins.length<3||!outs.length)continue;
         const odd=pick(outs);
-        q={kind:"Intruso",title:`¿Quién NUNCA jugó en el ${clubName(club)}?`,opts:shuffle([{t:odd.name,ok:true},...ins.map(d=>({t:d.name}))],r),reveal:`${odd.name} nunca jugó allí.`};
+        q={kind:"Odd one out",title:`Who NEVER played for ${clubName(club)}?`,opts:shuffle([{t:odd.name,ok:true},...ins.map(d=>({t:d.name}))],r),reveal:`${odd.name} never played there.`};
       }
       if(q){qs.push(q);break}
     }
@@ -1218,10 +1222,10 @@ function genQuestions(seed){
 
 // Vistas internas
 function vsShow(m){V.mode=m;["setup","lobby","play","results"].forEach(x=>$("vs-"+x).hidden=x!==m)}
-function nick(){return ($("vs-nick").value.trim()||"Jugador").slice(0,20)}
+function nick(){return ($("vs-nick").value.trim()||"Player").slice(0,20)}
 try{$("vs-nick").value=localStorage.getItem("pq-nick")||""}catch(e){}
 $("vs-nick").addEventListener("change",()=>{const n=$("vs-nick").value.trim();try{localStorage.setItem("pq-nick",n)}catch(e){}if(n.length>=2&&window.DG)DG.setNick(n)});
-if(window.DG&&DG.ready)DG.ready.then(()=>{if(DG.profile&&!$("vs-nick").value.trim()&&!/^Jugador\d+$/.test(DG.profile.nick))$("vs-nick").value=DG.profile.nick});
+if(window.DG&&DG.ready)DG.ready.then(()=>{if(DG.profile&&!$("vs-nick").value.trim()&&!/^(Jugador|Player)\d+$/.test(DG.profile.nick))$("vs-nick").value=DG.profile.nick});
 const room=()=>V.r;
 function pres(patch){if(V.r)V.r.presence(patch).catch(()=>{})}
 function peers(){return V.r?V.r.peers().filter(p=>p.kind==="viewer"&&p.presence&&p.presence.nick):[]}
@@ -1237,8 +1241,8 @@ function hostPeer(){
 const COLORS=["#f6c945","#7fd69a","#7fc4ff","#ff9f80","#d7a6ff","#eef3ea"];
 function playerRows(list,withScore){
   return list.map((p,i)=>{const pr=p.presence;const me=p.sameTab;
-    const sub=withScore?(pr.done?"Terminado":`Pregunta ${Math.min((pr.q||0)+1,NQ)}/${NQ}`):(pr.host?"Anfitrión":"Listo");
-    return `<li class="${me?"me":""}"><span class="pos">${i+1}</span><span class="who">${esc(pr.nick)}${me?" (tú)":""}${p.guest?" · invitado":""}<small>${sub}</small></span><span class="pts">${withScore?(pr.score|0):""}</span></li>`}).join("");
+    const sub=withScore?(pr.done?"Finished":`Question ${Math.min((pr.q||0)+1,NQ)}/${NQ}`):(pr.host?"Host":"Ready");
+    return `<li class="${me?"me":""}"><span class="pos">${i+1}</span><span class="who">${esc(pr.nick)}${me?" (you)":""}${p.guest?" · guest":""}<small>${sub}</small></span><span class="pts">${withScore?(pr.score|0):""}</span></li>`}).join("");
 }
 function renderBoards(){
   if(V.solo){
@@ -1247,7 +1251,7 @@ function renderBoards(){
   }
   const ps=peers();
   if(V.mode==="lobby"){
-    $("vs-lobbylist").innerHTML=playerRows(ps,false)||`<li><span></span><span class="who">Conectando…</span><span></span></li>`;
+    $("vs-lobbylist").innerHTML=playerRows(ps,false)||`<li><span></span><span class="who">Connecting…</span><span></span></li>`;
     $("vs-start").hidden=!V.host; $("vs-wait").hidden=V.host;
   }
   const inGame=ps.filter(p=>p.presence.game===V.game).sort((a,b)=>(b.presence.score|0)-(a.presence.score|0));
@@ -1255,9 +1259,9 @@ function renderBoards(){
   $("vs-final").innerHTML=playerRows(inGame,true);
   if(V.mode==="results"){
     const pending=inGame.filter(p=>!p.presence.done).length;
-    $("vs-reswait").textContent=pending?`Esperando a ${pending} jugador${pending>1?"es":""}…`:(V.host?"Todos han terminado. ¿Revancha?":"Todos han terminado. El anfitrión puede lanzar la revancha.");
+    $("vs-reswait").textContent=pending?`Waiting for ${pending} player${pending>1?"s":""}…`:(V.host?"Everyone has finished. Rematch?":"Everyone has finished. The host can start a rematch.");
     $("vs-again").hidden=!V.host;
-    const top=inGame[0]; $("vs-restitle").textContent=!pending&&top?`Gana ${top.presence.nick}`:"Resultado provisional";
+    const top=inGame[0]; $("vs-restitle").textContent=!pending&&top?`${top.presence.nick} wins`:"Provisional result";
   }
 }
 function sync(){
@@ -1272,14 +1276,14 @@ function sync(){
 
 async function enterRoom(code,asHost){
   code=code.toLowerCase().replace(/[^a-z0-9]/g,"");
-  if(code.length<4){setMsg("vs-msg","El código tiene 5 caracteres.","bad");return}
-  if(!V.api){setMsg("vs-msg","No se puede conectar al modo online desde esta vista.","bad");return}
-  setMsg("vs-msg","Conectando…");
-  try{V.r=await V.api.join("pq-"+code)}catch(e){setMsg("vs-msg","No se pudo entrar en la sala. Inténtalo de nuevo en unos segundos.","bad");return}
+  if(code.length<4){setMsg("vs-msg","The code has 5 characters.","bad");return}
+  if(!V.api){setMsg("vs-msg","Can’t connect to online mode right now.","bad");return}
+  setMsg("vs-msg","Connecting…");
+  try{V.r=await V.api.join("pq-"+code)}catch(e){setMsg("vs-msg","Couldn’t join the room. Try again in a few seconds.","bad");return}
   V.code=code;V.host=asHost;V.solo=false;V.game=0;V.sawHost=asHost;V.joinedAt=Date.now();
   if(asHost)V.seed=Math.floor(Math.random()*1e9);
   pres({nick:nick(),host:asHost,seed:asHost?V.seed:null,game:0,state:"lobby",score:0,q:0,done:false});
-  V.unsub=V.r.onPeers(sync,()=>{setMsg("vs-msg","Se perdió la conexión con la sala.","bad")});
+  V.unsub=V.r.onPeers(sync,()=>{setMsg("vs-msg","Lost connection to the room.","bad")});
   $("vs-codeshow").textContent=code.toUpperCase();
   $("vs-linktext").textContent=`${ARTIFACT_URL}#vs-${code}`;
   setMsg("vs-msg","");vsShow("lobby");renderBoards();
@@ -1315,7 +1319,7 @@ function answer(i){
   const left=Math.max(0,QTIME-(performance.now()-V.t0));
   const pts=ok?100+Math.round(left/QTIME*100):0;V.score+=pts;
   [...$("vs-q").querySelectorAll(".opt")].forEach((b,k)=>{b.disabled=true;if(q.opts[k].ok)b.classList.add("right");else if(k===i)b.classList.add("wrong")});
-  setMsg("vs-fb",(i<0?"¡Tiempo! ":ok?`+${pts} puntos. `:"Fallo. ")+q.reveal,ok?"ok":"bad");
+  setMsg("vs-fb",(i<0?"Time’s up! ":ok?`+${pts} points. `:"Wrong. ")+q.reveal,ok?"ok":"bad");
   $("vs-score").textContent=V.score;
   const last=V.qi===NQ-1;
   pres({score:V.score,q:V.qi+1,done:last});
@@ -1329,7 +1333,7 @@ $("vs-solo").onclick=()=>{V.solo=true;V.host=true;V.r=null;startDuel(Math.floor(
 $("vs-start").onclick=()=>{V.seed=Math.floor(Math.random()*1e9);startDuel(V.seed,V.game+1)};
 $("vs-again").onclick=()=>{if(V.solo){$("vs-solo").onclick();return}V.seed=Math.floor(Math.random()*1e9);startDuel(V.seed,V.game+1)};
 $("vs-leave").onclick=leaveRoom;$("vs-exit").onclick=leaveRoom;
-function copy(text,btn){const done=()=>{const o=btn.textContent;btn.textContent="Copiado";setTimeout(()=>btn.textContent=o,1500)};
+function copy(text,btn){const done=()=>{const o=btn.textContent;btn.textContent="Copied";setTimeout(()=>btn.textContent=o,1500)};
   try{navigator.clipboard.writeText(text).then(done,()=>{selectText()})}catch(e){selectText()}
   function selectText(){const s=getSelection(),r=document.createRange();r.selectNodeContents($("vs-linktext"));s.removeAllRanges();s.addRange(r)}}
 $("vs-copycode").onclick=e=>copy(V.code.toUpperCase(),e.currentTarget);
@@ -1338,7 +1342,7 @@ $("vs-copylink").onclick=e=>copy(`${ARTIFACT_URL}#vs-${V.code}`,e.currentTarget)
   try{V.api=window.claude&&window.claude.use?await window.claude.use("room"):null}catch(e){V.api=null}
   $("vs-offline").hidden=!!V.api; $("vs-create").disabled=!V.api; $("vs-join").disabled=!V.api;
   const m=location.hash.match(/^#vs-([a-z0-9]{4,6})$/);
-  if(m&&V.api&&!V.r){$("vs-code").value=m[1].toUpperCase();if($("vs-nick").value.trim())enterRoom(m[1],false);else setMsg("vs-msg","Escribe tu apodo y pulsa Entrar para unirte a la sala.","ok")}
+  if(m&&V.api&&!V.r){$("vs-code").value=m[1].toUpperCase();if($("vs-nick").value.trim())enterRoom(m[1],false);else setMsg("vs-msg","Type your nickname and press Join to enter the room.","ok")}
 })();
 
 // ---------- HIGHER OR LOWER ----------
@@ -1392,7 +1396,7 @@ Pepe|35|15|200|15
 Mario Balotelli|200|40|70|8
 Arturo Vidal|130|100|180|10
 Javier Mascherano|5|20|170|7`;
-const HL_CATS=[{k:"g",n:"Goles",u:"goles"},{k:"a",n:"Asistencias",u:"asistencias"},{k:"ga",n:"Goles + asist.",u:"goles + asistencias"},{k:"y",n:"Amarillas",u:"tarjetas amarillas"},{k:"r",n:"Rojas",u:"tarjetas rojas"}];
+const HL_CATS=[{k:"g",n:"Goals",u:"goals"},{k:"a",n:"Assists",u:"assists"},{k:"ga",n:"Goals + assists",u:"goals + assists"},{k:"y",n:"Yellow cards",u:"yellow cards"},{k:"r",n:"Red cards",u:"red cards"}];
 const STATS=STATS_RAW.trim().split("\n").map(l=>{const [n,g,a,y,r]=l.split("|");const p=PLAYERS.find(x=>x.name===n);return {name:n,nat:p?p.nat:"",g:+g,a:+a,ga:+g+ +a,y:+y,r:+r}});
 function clearlyDifferent(x,y){const hi=Math.max(x,y),lo=Math.min(x,y);return hi-lo>=Math.max(3,hi*0.15)}
 const H={cat:"g",a:null,b:null,streak:0,busy:false,over:false};
@@ -1407,7 +1411,7 @@ function hlStart(){
   H.a=a;H.b=hlPickNext(a);$("h-restart").hidden=true;setMsg("h-msg","");hlRender(false);
 }
 function hlCard(s,show,cls=""){const c=HL_CATS.find(c=>c.k===H.cat);
-  return `<div class="hlc ${cls}"><span class="flag" aria-hidden="true">${NATS[s.nat]?.[1]||""}</span><span class="nm">${esc(s.name)}</span>${show?`<span class="val">≈${s[H.cat]}</span><span class="unit">${c.u}</span>`:`<span class="unit">tiene…</span><div class="hlbtns"><button class="btn primary" type="button" data-hl="1">▲ Más</button><button class="btn" type="button" data-hl="-1">▼ Menos</button></div><span class="unit">${c.u} que ${esc(H.a.name.split(" ").slice(-1)[0])}</span>`}</div>`}
+  return `<div class="hlc ${cls}"><span class="flag" aria-hidden="true">${NATS[s.nat]?.[1]||""}</span><span class="nm">${esc(s.name)}</span>${show?`<span class="val">≈${s[H.cat]}</span><span class="unit">${c.u}</span>`:`<span class="unit">has…</span><div class="hlbtns"><button class="btn primary" type="button" data-hl="1">▲ More</button><button class="btn" type="button" data-hl="-1">▼ Fewer</button></div><span class="unit">${c.u} than ${esc(H.a.name.split(" ").slice(-1)[0])}</span>`}</div>`}
 function hlRender(revealB,cls){
   $("h-cats").innerHTML=HL_CATS.map(c=>`<button class="btn" type="button" data-cat="${c.k}" aria-pressed="${c.k===H.cat}">${c.n}</button>`).join("");
   $("h-board").innerHTML=hlCard(H.a,true)+`<span class="hlvs">VS</span>`+hlCard(H.b,revealB,cls||"");
@@ -1419,9 +1423,9 @@ $("h-board").addEventListener("click",e=>{
   const guess=+b.dataset.hl, ok=(H.b[H.cat]>H.a[H.cat])===(guess>0);
   hlRender(true,ok?"right":"wrong");
   if(ok){H.streak++;if(H.streak>hlBest())store.set("hl-best-"+H.cat,H.streak);$("h-streak").textContent=H.streak;$("h-best").textContent=hlBest();
-    setMsg("h-msg","¡Correcto!","ok");
+    setMsg("h-msg","Correct!","ok");
     setTimeout(()=>{H.a=H.b;H.b=hlPickNext(H.a);H.busy=false;setMsg("h-msg","");hlRender(false);updateHome()},1100);}
-  else{H.over=true;setMsg("h-msg",`Fallo. Racha final: ${H.streak}.`,"bad");$("h-restart").hidden=false;updateHome()}
+  else{H.over=true;setMsg("h-msg",`Wrong. Final streak: ${H.streak}.`,"bad");$("h-restart").hidden=false;updateHome()}
 });
 $("h-restart").onclick=hlStart;
 
@@ -1435,23 +1439,23 @@ function svQuestion(){
       const a=pick(PP());const yes=r()<0.5&&MATES[a.id].size>0;let b;
       if(yes)b=mateIn(a,PPSET());else{b=pick(PP());if(b.id===a.id||MATES[a.id].has(b.id))continue}
       const m=yes?MATES[a.id].get(b.id):null;
-      return {kind:"Vestuario",title:`¿${a.name} y ${b.name} fueron compañeros?`,opts:[{t:"Sí",ok:yes},{t:"No",ok:!yes}],reveal:yes?`Sí: ${clubName(m.club)}, ${seasons(m.s,m.e)}.`:"Nunca coincidieron."};
+      return {kind:"Teammates",title:`Were ${a.name} and ${b.name} teammates?`,opts:[{t:"Yes",ok:yes},{t:"No",ok:!yes}],reveal:yes?`Yes: ${clubName(m.club)}, ${seasons(m.s,m.e)}.`:"They never played together."};
     }
     if(kind==="club"){
       const p=pick(PP());const mine=[...p.set].filter(c=>CLUBS[c]);const yes=r()<0.5&&mine.length>0;
       const club=yes?pick(mine):pick((DIFF==="easy"?BIG:MAJOR).filter(c=>!p.set.has(c)));
-      return {kind:"Club",title:`¿${p.name} jugó en el ${clubName(club)}?`,opts:[{t:"Sí",ok:yes},{t:"No",ok:!yes}],reveal:yes?`Sí: ${p.stints.filter(s=>s.club===club).map(s=>seasons(s.s,s.e)).join(", ")}.`:`No, nunca jugó allí.`};
+      return {kind:"Club",title:`Did ${p.name} play for ${clubName(club)}?`,opts:[{t:"Yes",ok:yes},{t:"No",ok:!yes}],reveal:yes?`Yes: ${p.stints.filter(s=>s.club===club).map(s=>seasons(s.s,s.e)).join(", ")}.`:`No, never.`};
     }
     const a=pick(CP()),b=pick(CP());if(a===b)continue;
     const inter=PLAYERS.filter(p=>p.set.has(a)&&p.set.has(b));if(!inter.length)continue;
     const ans=pick(inter),ds=shuffle(PP().filter(p=>p.set.has(a)!==p.set.has(b)),r).slice(0,3);if(ds.length<3)continue;
-    return {kind:"Doble club",title:`¿Quién jugó en el ${clubName(a)} y en el ${clubName(b)}?`,opts:shuffle([{t:ans.name,ok:true},...ds.map(d=>({t:d.name}))],r),reveal:`${ans.name} pasó por los dos.`};
+    return {kind:"Two clubs",title:`Who played for ${clubName(a)} and ${clubName(b)}?`,opts:shuffle([{t:ans.name,ok:true},...ds.map(d=>({t:d.name}))],r),reveal:`${ans.name} played for both.`};
   }
 }
 function svShow(which){["start","play","over"].forEach(x=>$("s-"+x).hidden=x!==which)}
 function svNext(){
   SV.q=svQuestion();SV.locked=false;const q=SV.q;setMsg("s-fb","");
-  $("s-q").innerHTML=`<div class="qt">${q.kind} · pregunta ${SV.streak+1}</div><h3>${esc(q.title)}</h3><div class="odd">${q.opts.map((o,i)=>`<button class="opt" type="button" data-i="${i}"><span class="nm">${esc(o.t)}</span></button>`).join("")}</div>`;
+  $("s-q").innerHTML=`<div class="qt">${q.kind} · question ${SV.streak+1}</div><h3>${esc(q.title)}</h3><div class="odd">${q.opts.map((o,i)=>`<button class="opt" type="button" data-i="${i}"><span class="nm">${esc(o.t)}</span></button>`).join("")}</div>`;
   SV.t0=performance.now();const T=DIFF==="easy"?15000:DIFF==="hard"?7000:10000;
   const tick=()=>{const left=Math.max(0,1-(performance.now()-SV.t0)/T);$("s-bar").style.transform=`scaleX(${left})`;if(left<=0)svAnswer(-1);else if(!SV.locked)SV.raf=requestAnimationFrame(tick)};
   cancelAnimationFrame(SV.raf);SV.raf=requestAnimationFrame(tick);
@@ -1461,10 +1465,10 @@ function svAnswer(i){
   const q=SV.q,ok=i>=0&&q.opts[i].ok;
   [...$("s-q").querySelectorAll(".opt")].forEach((b,k)=>{b.disabled=true;if(q.opts[k].ok)b.classList.add("right");else if(k===i)b.classList.add("wrong")});
   if(ok){SV.streak++;if(SV.streak>store.get("sv-best",0))store.set("sv-best",SV.streak);$("s-streak").textContent=SV.streak;$("s-best").textContent=store.get("sv-best",0);
-    setMsg("s-fb","¡Bien! "+q.reveal,"ok");setTimeout(svNext,900)}
-  else{setMsg("s-fb",(i<0?"¡Tiempo! ":"Fallo. ")+q.reveal,"bad");
+    setMsg("s-fb","Nice! "+q.reveal,"ok");setTimeout(svNext,900)}
+  else{setMsg("s-fb",(i<0?"Time’s up! ":"Wrong. ")+q.reveal,"bad");
     setTimeout(()=>{svShow("over");$("s-final").textContent=SV.streak;const best=store.get("sv-best",0);
-      $("s-overtxt").textContent=SV.streak>=best&&SV.streak>0?"¡Nuevo récord personal!":`Tu récord está en ${best}.`;updateHome()},1600)}
+      $("s-overtxt").textContent=SV.streak>=best&&SV.streak>0?"New personal best!":`Your best is ${best}.`;updateHome()},1600)}
 }
 $("s-q").addEventListener("click",e=>{const b=e.target.closest(".opt");if(b)svAnswer(+b.dataset.i)});
 function svGo(){SV.streak=0;$("s-streak").textContent=0;svShow("play");svNext()}
@@ -1491,10 +1495,10 @@ function tlCorrect(){const sorted=TL.items.map((_,i)=>i).sort((a,b)=>TL.items[a]
 function renderTimeline(){
   const okArr=TL.done?tlCorrect():[];
   $("tl-list").innerHTML=TL.order.map((ix,k)=>{const it=TL.items[ix];
-    return `<li class="${TL.done?(okArr[k]?"ok":"ko"):""}"><span class="n">${k+1}</span><span class="tx">${clubBadge(it.club,"sm")}<span><b>${esc(it.p.name)}</b><br><span>ficha por el ${esc(clubName(it.club))}</span></span></span>${TL.done?`<span class="yr">${it.y}</span>`:`<span class="mv"><button type="button" data-k="${k}" data-d="-1" aria-label="Subir" ${k===0?"disabled":""}>▲</button><button type="button" data-k="${k}" data-d="1" aria-label="Bajar" ${k===4?"disabled":""}>▼</button></span>`}</li>`}).join("");
+    return `<li class="${TL.done?(okArr[k]?"ok":"ko"):""}"><span class="n">${k+1}</span><span class="tx">${clubBadge(it.club,"sm")}<span><b>${esc(it.p.name)}</b><br><span>joins ${esc(clubName(it.club))}</span></span></span>${TL.done?`<span class="yr">${it.y}</span>`:`<span class="mv"><button type="button" data-k="${k}" data-d="-1" aria-label="Move up" ${k===0?"disabled":""}>▲</button><button type="button" data-k="${k}" data-d="1" aria-label="Move down" ${k===4?"disabled":""}>▼</button></span>`}</li>`}).join("");
   $("tl-check").hidden=TL.done;
   const n=okArr.filter(Boolean).length;$("tl-score").textContent=TL.done?`${n}/5`:"—";
-  if(TL.done)setMsg("tl-msg",n===5?"¡Orden perfecto!":`${n} de 5 en su sitio. Las verdes estaban bien colocadas.`,n>=3?"ok":"bad");
+  if(TL.done)setMsg("tl-msg",n===5?"Perfect order!":`${n} of 5 in the right place. The green ones were correct.`,n>=3?"ok":"bad");
 }
 $("tl-list").addEventListener("click",e=>{const b=e.target.closest("button[data-k]");if(!b||TL.done)return;const k=+b.dataset.k,j=k+ +b.dataset.d;[TL.order[k],TL.order[j]]=[TL.order[j],TL.order[k]];renderTimeline();const nb=$("tl-list").querySelector(`button[data-k="${j}"][data-d="${b.dataset.d}"]`)||$("tl-list").querySelector(`button[data-k="${j}"]`);nb&&nb.focus()});
 $("tl-check").onclick=()=>{TL.done=true;if(TL.daily)store.set("tl-"+dayKey,{order:TL.order,done:true});renderTimeline();updateHome()};
@@ -1505,23 +1509,23 @@ const SITE_URL=ARTIFACT_URL;
 function renderShare(k,text){
   const el=$("sh-"+k); if(!text){el.hidden=true;return}
   const full=text+"\n"+SITE_URL, enc=encodeURIComponent(full);
-  el.innerHTML=`<pre>${esc(text)}</pre><div class="row"><button class="btn primary" type="button" data-copy>Copiar resultado</button><a class="btn" href="https://wa.me/?text=${enc}" target="_blank" rel="noopener">WhatsApp</a><a class="btn" href="https://twitter.com/intent/tweet?text=${enc}" target="_blank" rel="noopener">X</a></div>`;
+  el.innerHTML=`<pre>${esc(text)}</pre><div class="row"><button class="btn primary" type="button" data-copy>Copy result</button><a class="btn" href="https://wa.me/?text=${enc}" target="_blank" rel="noopener">WhatsApp</a><a class="btn" href="https://twitter.com/intent/tweet?text=${enc}" target="_blank" rel="noopener">X</a></div>`;
   el.hidden=false;
   el.querySelector("[data-copy]").onclick=e=>{const b=e.currentTarget;
-    const ok=()=>{b.textContent="¡Copiado!";setTimeout(()=>b.textContent="Copiar resultado",1500)};
-    const sel=()=>{const r=document.createRange();r.selectNodeContents(el.querySelector("pre"));const s=getSelection();s.removeAllRanges();s.addRange(r);b.textContent="Selecciona y copia"};
+    const ok=()=>{b.textContent="Copied!";setTimeout(()=>b.textContent="Copy result",1500)};
+    const sel=()=>{const r=document.createRange();r.selectNodeContents(el.querySelector("pre"));const s=getSelection();s.removeAllRanges();s.addRange(r);b.textContent="Select and copy"};
     try{navigator.clipboard.writeText(full).then(ok,sel)}catch(err){sel()}};
 }
-const tag=d=>(d?dayLabel:"partida libre")+" · "+DIFF_NAMES[DIFF];
+const tag=d=>(d?dayLabel:"free play")+" · "+DIFF_NAMES[DIFF];
 const _rl=renderLink;renderLink=function(){_rl();
   if(!L.over){renderShare("l",null);return}
   const steps=L.chain.length-1;
-  renderShare("l",`Dugout · Link-Up (${tag(L.daily)})\n${PLAYERS[L.a].name} → ${PLAYERS[L.b].name}\n`+(L.won?`${"🔗".repeat(steps)} ${steps} pasos (mejor posible: ${L.par})${steps===L.par?" ⭐":""}`:"🏳️ Me rendí")+(L.strikes?`\n${"❌".repeat(Math.min(L.strikes,10))}`:"")+(L.hints?` 💡×${L.hints}`:""));
+  renderShare("l",`Dugout · Link-Up (${tag(L.daily)})\n${PLAYERS[L.a].name} → ${PLAYERS[L.b].name}\n`+(L.won?`${"🔗".repeat(steps)} ${steps} steps (best possible: ${L.par})${steps===L.par?" ⭐":""}`:"🏳️ Gave up")+(L.strikes?`\n${"❌".repeat(Math.min(L.strikes,10))}`:"")+(L.hints?` 💡×${L.hints}`:""));
 };
 const _rg=renderGrid;renderGrid=function(){_rg();
   if(!G.over){renderShare("g",null);return}
   const n=G.filled.filter(x=>x!=null).length;
-  renderShare("g",`Dugout · Grid (${tag(G.daily)}) ${n}/9\n`+[0,1,2].map(i=>[0,1,2].map(j=>G.filled[i*3+j]!=null?"🟩":"⬛").join("")).join("\n")+`\n${12-G.tries} intentos`);
+  renderShare("g",`Dugout · Grid (${tag(G.daily)}) ${n}/9\n`+[0,1,2].map(i=>[0,1,2].map(j=>G.filled[i*3+j]!=null?"🟩":"⬛").join("")).join("\n")+`\n${12-G.tries} guesses`);
 };
 const _rt=renderTray;renderTray=function(){_rt();
   if(!T.over){renderShare("t",null);return}
@@ -1540,11 +1544,11 @@ const _rtl=renderTimeline;renderTimeline=function(){_rtl();
 const _hr=hlRender;hlRender=function(rb,cls){_hr(rb,cls);
   if(!H.over){renderShare("h",null);return}
   const c=HL_CATS.find(c=>c.k===H.cat);
-  renderShare("h",`Dugout · Higher or Lower (${c.n})\n📈 Racha de ${H.streak}${H.streak>=hlBest()&&H.streak>0?" · ¡récord!":""}`);
+  renderShare("h",`Dugout · Higher or Lower (${c.n})\n📈 Streak of ${H.streak}${H.streak>=hlBest()&&H.streak>0?" · new best!":""}`);
 };
-$("h-board").addEventListener("click",()=>{if(H.over)setTimeout(()=>{const c=HL_CATS.find(c=>c.k===H.cat);renderShare("h",`Dugout · Higher or Lower (${c.n})\n📈 Racha de ${H.streak}${H.streak>=hlBest()&&H.streak>0?" · ¡récord!":""}`)},0)});
+$("h-board").addEventListener("click",()=>{if(H.over)setTimeout(()=>{const c=HL_CATS.find(c=>c.k===H.cat);renderShare("h",`Dugout · Higher or Lower (${c.n})\n📈 Streak of ${H.streak}${H.streak>=hlBest()&&H.streak>0?" · new best!":""}`)},0)});
 $("h-restart").addEventListener("click",()=>renderShare("h",null));
-new MutationObserver(()=>{if(!$("s-over").hidden)renderShare("s",`Dugout · Survival\n🔥 Aguanté ${SV.streak} pregunta${SV.streak===1?"":"s"} seguidas`);}).observe($("s-over"),{attributes:true,attributeFilter:["hidden"]});
+new MutationObserver(()=>{if(!$("s-over").hidden)renderShare("s",`Dugout · Survival\n🔥 Survived ${SV.streak} question${SV.streak===1?"":"s"} in a row`);}).observe($("s-over"),{attributes:true,attributeFilter:["hidden"]});
 
 // Racha de días: cuenta los días en que completas al menos un reto diario
 function isoDay(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
@@ -1560,27 +1564,27 @@ function renderStreak(){
   while(set.has(isoDay(d))){n++;d.setDate(d.getDate()-1)}
   const best=Math.max(n,store.get("days-best",0));store.set("days-best",best);
   const week=[];const w=new Date();for(let i=6;i>=0;i--){const x=new Date(w);x.setDate(w.getDate()-i);week.push(frozen.has(isoDay(x))?"fz":set.has(isoDay(x))?"on":"")}
-  $("streak").innerHTML=`<span>🔥 Racha <b>${n}</b> día${n===1?"":"s"}</span><span>Mejor <b>${best}</b></span><span class="days" aria-label="Últimos 7 días">${week.map(x=>`<i class="${x}"></i>`).join("")}</span>`+(store.get("freezes",0)?`<span>❄️ <b>${store.get("freezes",0)}</b></span>`:"")+(spinAvailable()?`<span style="border-color:var(--card)"><a href="#album" data-go-wheel style="color:inherit;text-decoration:none">🎡 Tirada gratis</a></span>`:"")+(set.has(today)?"":`<span style="border-color:var(--card)">Completa un reto hoy para ${n?"mantenerla":"empezarla"}</span>`);
+  $("streak").innerHTML=`<span>🔥 Streak <b>${n}</b> day${n===1?"":"s"}</span><span>Best <b>${best}</b></span><span class="days" aria-label="Last 7 days">${week.map(x=>`<i class="${x}"></i>`).join("")}</span>`+(store.get("freezes",0)?`<span>❄️ <b>${store.get("freezes",0)}</b></span>`:"")+(spinAvailable()?`<span style="border-color:var(--card)"><a href="#album" data-go-wheel style="color:inherit;text-decoration:none">🎡 Free spin</a></span>`:"")+(set.has(today)?"":`<span style="border-color:var(--card)">Complete a puzzle today to ${n?"keep it going":"start one"}</span>`);
 }
 const _uh=updateHome;updateHome=function(){_uh();renderStreak()};
 
 // ---------- LINEUP ----------
 // Onces titulares de partidos históricos. Cada línea va de portería a ataque.
 const LINEUPS=[
- {comp:"Final del Mundial 2010",res:"España 1–0 Países Bajos (prórroga)",team:"España",fm:"4-2-3-1",lines:[["Iker Casillas|casillas,iker"],["Sergio Ramos|ramos","Gerard Piqué|pique","Carles Puyol|puyol","Joan Capdevila|capdevila"],["Sergio Busquets|busquets","Xabi Alonso|alonso,xabi"],["Pedro|pedro,pedro rodriguez","Xavi|xavi,xavi hernandez","Andrés Iniesta|iniesta"],["David Villa|villa"]]},
- {comp:"Final de la Eurocopa 2012",res:"España 4–0 Italia",team:"España",fm:"4-3-3",lines:[["Iker Casillas|casillas,iker"],["Álvaro Arbeloa|arbeloa","Gerard Piqué|pique","Sergio Ramos|ramos","Jordi Alba|alba"],["Xavi|xavi,xavi hernandez","Sergio Busquets|busquets","Xabi Alonso|alonso,xabi"],["David Silva|silva","Cesc Fàbregas|fabregas,cesc","Andrés Iniesta|iniesta"]]},
- {comp:"Final del Mundial 2014",res:"Alemania 1–0 Argentina (prórroga)",team:"Alemania",fm:"4-3-3",lines:[["Manuel Neuer|neuer"],["Philipp Lahm|lahm","Jérôme Boateng|boateng","Mats Hummels|hummels","Benedikt Höwedes|howedes,hoewedes"],["Bastian Schweinsteiger|schweinsteiger","Christoph Kramer|kramer","Toni Kroos|kroos"],["Thomas Müller|muller,mueller","Miroslav Klose|klose","Mesut Özil|ozil,oezil"]]},
- {comp:"Final del Mundial 2018",res:"Francia 4–2 Croacia",team:"Francia",fm:"4-2-3-1",lines:[["Hugo Lloris|lloris"],["Benjamin Pavard|pavard","Raphaël Varane|varane","Samuel Umtiti|umtiti","Lucas Hernández|hernandez,lucas"],["N'Golo Kanté|kante","Paul Pogba|pogba"],["Kylian Mbappé|mbappe","Antoine Griezmann|griezmann","Blaise Matuidi|matuidi"],["Olivier Giroud|giroud"]]},
- {comp:"Final del Mundial 2022",res:"Argentina 3–3 Francia (penaltis)",team:"Argentina",fm:"4-3-3",lines:[["Emiliano Martínez|martinez,dibu,emiliano martinez"],["Nahuel Molina|molina","Cristian Romero|romero,cuti","Nicolás Otamendi|otamendi","Nicolás Tagliafico|tagliafico"],["Rodrigo De Paul|de paul,depaul","Enzo Fernández|enzo,fernandez","Alexis Mac Allister|mac allister,macallister"],["Lionel Messi|messi","Julián Álvarez|alvarez,julian","Ángel Di María|di maria,dimaria"]]},
- {comp:"Final de la Champions 2005",res:"Liverpool 3–3 Milan (penaltis)",team:"Liverpool",fm:"4-4-1-1",lines:[["Jerzy Dudek|dudek"],["Steve Finnan|finnan","Jamie Carragher|carragher","Sami Hyypiä|hyypia","Djimi Traoré|traore"],["Luis García|garcia,luis garcia","Steven Gerrard|gerrard","Xabi Alonso|alonso,xabi","John Arne Riise|riise"],["Harry Kewell|kewell"],["Milan Baroš|baros"]]},
- {comp:"Final de la Champions 2011",res:"Barcelona 3–1 Man. United",team:"Barcelona",fm:"4-3-3",lines:[["Víctor Valdés|valdes"],["Dani Alves|alves","Gerard Piqué|pique","Javier Mascherano|mascherano","Éric Abidal|abidal"],["Xavi|xavi,xavi hernandez","Sergio Busquets|busquets","Andrés Iniesta|iniesta"],["Pedro|pedro,pedro rodriguez","Lionel Messi|messi","David Villa|villa"]]},
- {comp:"Final de la Champions 2014",res:"Real Madrid 4–1 Atlético (prórroga)",team:"Real Madrid",fm:"4-3-3",lines:[["Iker Casillas|casillas,iker"],["Dani Carvajal|carvajal","Raphaël Varane|varane","Sergio Ramos|ramos","Fábio Coentrão|coentrao"],["Sami Khedira|khedira","Luka Modrić|modric","Ángel Di María|di maria,dimaria"],["Gareth Bale|bale","Karim Benzema|benzema","Cristiano Ronaldo|cristiano,ronaldo,cr7"]]},
- {comp:"Final de la Champions 2016",res:"Real Madrid 1–1 Atlético (penaltis)",team:"Real Madrid",fm:"4-3-3",lines:[["Keylor Navas|navas,keylor"],["Dani Carvajal|carvajal","Pepe|pepe","Sergio Ramos|ramos","Marcelo|marcelo"],["Toni Kroos|kroos","Casemiro|casemiro","Luka Modrić|modric"],["Gareth Bale|bale","Karim Benzema|benzema","Cristiano Ronaldo|cristiano,ronaldo,cr7"]]},
- {comp:"Final de la Champions 2019",res:"Liverpool 2–0 Tottenham",team:"Liverpool",fm:"4-3-3",lines:[["Alisson Becker|alisson"],["Trent Alexander-Arnold|alexander-arnold,alexander arnold,trent,arnold","Joël Matip|matip","Virgil van Dijk|van dijk,vandijk,virgil","Andrew Robertson|robertson,robbo"],["Jordan Henderson|henderson","Fabinho|fabinho","Georginio Wijnaldum|wijnaldum"],["Mohamed Salah|salah","Roberto Firmino|firmino","Sadio Mané|mane"]]}
+ {comp:"2010 World Cup final",res:"Spain 1–0 Netherlands (a.e.t.)",team:"Spain",fm:"4-2-3-1",lines:[["Iker Casillas|casillas,iker"],["Sergio Ramos|ramos","Gerard Piqué|pique","Carles Puyol|puyol","Joan Capdevila|capdevila"],["Sergio Busquets|busquets","Xabi Alonso|alonso,xabi"],["Pedro|pedro,pedro rodriguez","Xavi|xavi,xavi hernandez","Andrés Iniesta|iniesta"],["David Villa|villa"]]},
+ {comp:"Euro 2012 final",res:"Spain 4–0 Italy",team:"Spain",fm:"4-3-3",lines:[["Iker Casillas|casillas,iker"],["Álvaro Arbeloa|arbeloa","Gerard Piqué|pique","Sergio Ramos|ramos","Jordi Alba|alba"],["Xavi|xavi,xavi hernandez","Sergio Busquets|busquets","Xabi Alonso|alonso,xabi"],["David Silva|silva","Cesc Fàbregas|fabregas,cesc","Andrés Iniesta|iniesta"]]},
+ {comp:"2014 World Cup final",res:"Germany 1–0 Argentina (a.e.t.)",team:"Germany",fm:"4-3-3",lines:[["Manuel Neuer|neuer"],["Philipp Lahm|lahm","Jérôme Boateng|boateng","Mats Hummels|hummels","Benedikt Höwedes|howedes,hoewedes"],["Bastian Schweinsteiger|schweinsteiger","Christoph Kramer|kramer","Toni Kroos|kroos"],["Thomas Müller|muller,mueller","Miroslav Klose|klose","Mesut Özil|ozil,oezil"]]},
+ {comp:"2018 World Cup final",res:"France 4–2 Croatia",team:"France",fm:"4-2-3-1",lines:[["Hugo Lloris|lloris"],["Benjamin Pavard|pavard","Raphaël Varane|varane","Samuel Umtiti|umtiti","Lucas Hernández|hernandez,lucas"],["N'Golo Kanté|kante","Paul Pogba|pogba"],["Kylian Mbappé|mbappe","Antoine Griezmann|griezmann","Blaise Matuidi|matuidi"],["Olivier Giroud|giroud"]]},
+ {comp:"2022 World Cup final",res:"Argentina 3–3 France (pens)",team:"Argentina",fm:"4-3-3",lines:[["Emiliano Martínez|martinez,dibu,emiliano martinez"],["Nahuel Molina|molina","Cristian Romero|romero,cuti","Nicolás Otamendi|otamendi","Nicolás Tagliafico|tagliafico"],["Rodrigo De Paul|de paul,depaul","Enzo Fernández|enzo,fernandez","Alexis Mac Allister|mac allister,macallister"],["Lionel Messi|messi","Julián Álvarez|alvarez,julian","Ángel Di María|di maria,dimaria"]]},
+ {comp:"2005 Champions League final",res:"Liverpool 3–3 Milan (pens)",team:"Liverpool",fm:"4-4-1-1",lines:[["Jerzy Dudek|dudek"],["Steve Finnan|finnan","Jamie Carragher|carragher","Sami Hyypiä|hyypia","Djimi Traoré|traore"],["Luis García|garcia,luis garcia","Steven Gerrard|gerrard","Xabi Alonso|alonso,xabi","John Arne Riise|riise"],["Harry Kewell|kewell"],["Milan Baroš|baros"]]},
+ {comp:"2011 Champions League final",res:"Barcelona 3–1 Man. United",team:"Barcelona",fm:"4-3-3",lines:[["Víctor Valdés|valdes"],["Dani Alves|alves","Gerard Piqué|pique","Javier Mascherano|mascherano","Éric Abidal|abidal"],["Xavi|xavi,xavi hernandez","Sergio Busquets|busquets","Andrés Iniesta|iniesta"],["Pedro|pedro,pedro rodriguez","Lionel Messi|messi","David Villa|villa"]]},
+ {comp:"2014 Champions League final",res:"Real Madrid 4–1 Atlético Madrid (a.e.t.)",team:"Real Madrid",fm:"4-3-3",lines:[["Iker Casillas|casillas,iker"],["Dani Carvajal|carvajal","Raphaël Varane|varane","Sergio Ramos|ramos","Fábio Coentrão|coentrao"],["Sami Khedira|khedira","Luka Modrić|modric","Ángel Di María|di maria,dimaria"],["Gareth Bale|bale","Karim Benzema|benzema","Cristiano Ronaldo|cristiano,ronaldo,cr7"]]},
+ {comp:"2016 Champions League final",res:"Real Madrid 1–1 Atlético Madrid (pens)",team:"Real Madrid",fm:"4-3-3",lines:[["Keylor Navas|navas,keylor"],["Dani Carvajal|carvajal","Pepe|pepe","Sergio Ramos|ramos","Marcelo|marcelo"],["Toni Kroos|kroos","Casemiro|casemiro","Luka Modrić|modric"],["Gareth Bale|bale","Karim Benzema|benzema","Cristiano Ronaldo|cristiano,ronaldo,cr7"]]},
+ {comp:"2019 Champions League final",res:"Liverpool 2–0 Tottenham",team:"Liverpool",fm:"4-3-3",lines:[["Alisson Becker|alisson"],["Trent Alexander-Arnold|alexander-arnold,alexander arnold,trent,arnold","Joël Matip|matip","Virgil van Dijk|van dijk,vandijk,virgil","Andrew Robertson|robertson,robbo"],["Jordan Henderson|henderson","Fabinho|fabinho","Georginio Wijnaldum|wijnaldum"],["Mohamed Salah|salah","Roberto Firmino|firmino","Sadio Mané|mane"]]}
 ];
 LINEUPS.forEach(m=>{m.players=[];m.lines=m.lines.map((ln,li)=>ln.map(str=>{const [n,al]=str.split("|");const pl={n,li,keys:new Set([norm(n),...al.split(",").map(a=>norm(a.trim()))].map(k=>k.replace(/-/g," ")))};m.players.push(pl);return pl}))});
 const POS=["POR","DEF","MED","MED","DEL"];
-function posLabel(m,li){const L=m.lines.length;if(li===0)return "POR";if(li===1)return "DEF";if(li===L-1)return "DEL";return "MED"}
+function posLabel(m,li){const L=m.lines.length;if(li===0)return "GK";if(li===1)return "DEF";if(li===L-1)return "FWD";return "MID"}
 const LU={};
 function startLineup(daily){
   const seed=daily?hash("lu"+dayKey):Math.floor(Math.random()*1e9);
@@ -1592,13 +1596,13 @@ function startLineup(daily){
 function saveLineup(){if(LU.daily)store.set("lu-"+dayKey,{idx:LU.idx,got:LU.got,miss:LU.miss,hints:LU.hints,over:LU.over,gave:LU.gave});updateHome()}
 function renderLineup(){
   const m=LU.m;
-  $("lu-match").innerHTML=`<span class="comp">${esc(m.comp)}</span><span class="fm">Sistema ${m.fm}</span><span class="res">${esc(m.res.replace(m.team,"§"))}</span>`.replace("§",`<em>${esc(m.team)}</em>`);
+  $("lu-match").innerHTML=`<span class="comp">${esc(m.comp)}</span><span class="fm">Formation ${m.fm}</span><span class="res">${esc(m.res.replace(m.team,"§"))}</span>`.replace("§",`<em>${esc(m.team)}</em>`);
   $("lu-pitch").innerHTML=m.lines.slice().reverse().map(ln=>`<div class="pline">${ln.map(pl=>{const i=m.players.indexOf(pl),got=LU.got.includes(i),show=got||LU.over;
     const h=LU.hints[i]||(DIFF==="easy"?initialOf(pl.n):null);return `<div class="slot ${got?"got":LU.over?"lost":""}"><span class="dot">${got?"✓":h?esc(h):"?"}</span><span class="nm">${show?esc(pl.n):""}</span><span class="ps">${posLabel(m,pl.li)}</span></div>`}).join("")}</div>`).join("");
   $("lu-score").textContent=`${LU.got.length}/11`;$("lu-miss").textContent=LU.miss;
   $("lu-input").disabled=LU.over;$("lu-try").disabled=LU.over;$("lu-hint").disabled=LU.over;$("lu-give").disabled=LU.over;
   if(LU.over){
-    setMsg("lu-msg",LU.gave?`Has acertado ${LU.got.length} de 11.`:`¡Once completo con ${LU.miss} fallo${LU.miss===1?"":"s"}!`,LU.gave?"bad":"ok");
+    setMsg("lu-msg",LU.gave?`You got ${LU.got.length} of 11.`:`Full XI with ${LU.miss} miss${LU.miss===1?"":"es"}!`,LU.gave?"bad":"ok");
     renderShare("lu",`Dugout · Lineup (${tag(LU.daily)})\n${m.comp} · ${m.team}\n${m.players.map((_,i)=>LU.got.includes(i)?"🟩":"⬛").join("")} ${LU.got.length}/11`+(LU.miss?` · ❌${LU.miss}`:"")+(Object.keys(LU.hints).length?` · 💡${Object.keys(LU.hints).length}`:""));
   } else renderShare("lu",null);
 }
@@ -1606,30 +1610,30 @@ function tryLineup(){
   if(LU.over)return;const raw=$("lu-input").value;const q=norm(raw.trim()).replace(/-/g," ");if(!q)return;$("lu-input").value="";
   const m=LU.m;const hits=m.players.map((pl,i)=>i).filter(i=>m.players[i].keys.has(q));
   const fresh=hits.filter(i=>!LU.got.includes(i));
-  if(fresh.length){LU.got.push(...fresh);setMsg("lu-msg",`¡Sí! ${fresh.map(i=>m.players[i].n).join(" y ")}.`,"ok");if(LU.got.length===11)LU.over=true}
-  else if(hits.length)setMsg("lu-msg","Ese ya lo tienes.","bad");
-  else{LU.miss++;setMsg("lu-msg",`${raw.trim()} no fue titular en este partido.`,"bad");const c=$("lu-input");c.classList.add("shake");setTimeout(()=>c.classList.remove("shake"),400)}
+  if(fresh.length){LU.got.push(...fresh);setMsg("lu-msg",`Yes! ${fresh.map(i=>m.players[i].n).join(" and ")}.`,"ok");if(LU.got.length===11)LU.over=true}
+  else if(hits.length)setMsg("lu-msg","You already have that one.","bad");
+  else{LU.miss++;setMsg("lu-msg",`${raw.trim()} didn’t start this match.`,"bad");const c=$("lu-input");c.classList.add("shake");setTimeout(()=>c.classList.remove("shake"),400)}
   saveLineup();renderLineup();if(!LU.over)$("lu-input").focus();
 }
 $("lu-try").onclick=tryLineup;$("lu-input").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();tryLineup()}});
 $("lu-hint").onclick=()=>{const m=LU.m;const left=m.players.map((_,i)=>i).filter(i=>!LU.got.includes(i)&&!LU.hints[i]);if(!left.length)return;
   const i=left[Math.floor(Math.random()*left.length)];const parts=m.players[i].n.split(" ");LU.hints[i]=parts.length>1?parts[parts.length-1][0]:parts[0][0];
-  setMsg("lu-msg",`Pista: un ${posLabel(m,m.players[i].li)==="POR"?"portero":posLabel(m,m.players[i].li)==="DEF"?"defensa":posLabel(m,m.players[i].li)==="MED"?"centrocampista":"delantero"} cuyo apellido empieza por ${LU.hints[i]}.`,"ok");saveLineup();renderLineup()};
+  setMsg("lu-msg",`Hint: a ${posLabel(m,m.players[i].li)==="GK"?"goalkeeper":posLabel(m,m.players[i].li)==="DEF"?"defender":posLabel(m,m.players[i].li)==="MID"?"midfielder":"forward"} whose surname starts with ${LU.hints[i]}.`,"ok");saveLineup();renderLineup()};
 $("lu-give").onclick=()=>{LU.over=true;LU.gave=true;saveLineup();renderLineup()};
 $("lu-new").onclick=()=>startLineup(false);$("lu-daily").onclick=()=>startLineup(true);
 
 // ---------- 5-4-3-2-1 ----------
-const NAT_ADJ={ESP:"españoles",ARG:"argentinos",BRA:"brasileños",FRA:"franceses",GER:"alemanes",POR:"portugueses",ENG:"ingleses",NED:"neerlandeses",CRO:"croatas",URU:"uruguayos",BEL:"belgas",ITA:"italianos",COL:"colombianos",CHI:"chilenos"};
+const NAT_ADJ={ESP:"Spanish",ARG:"Argentine",BRA:"Brazilian",FRA:"French",GER:"German",POR:"Portuguese",ENG:"English",NED:"Dutch",CRO:"Croatian",URU:"Uruguayan",BEL:"Belgian",ITA:"Italian",COL:"Colombian",CHI:"Chilean"};
 function makeFive(seed){
   const r=rng(seed),pick=a=>a[Math.floor(r()*a.length)],levels=[];
   const count=f=>PLAYERS.filter(f);
   const tryN=(fn,lo,hi)=>{for(let t=0;t<3000;t++){const L=fn();if(L){const a=count(L.test);if(a.length>=lo&&a.length<=hi){L.ans=a.map(p=>p.id);return L}}}};
-  levels.push(tryN(()=>{const c=pick(CLUB_TOP);return {text:`5 jugadores que hayan jugado en el ${clubName(c)}`,test:p=>p.set.has(c)}},12,99));
-  levels.push(tryN(()=>{const c=pick(CLUB_TOP),n=pick(Object.keys(NAT_ADJ));return {text:`4 jugadores ${NAT_ADJ[n]} que hayan jugado en el ${clubName(c)}`,test:p=>p.nat===n&&p.set.has(c)}},5,9));
-  levels.push(tryN(()=>{const a=pick(CLUB_TOP),b=pick(CLUB_TOP);if(a===b)return null;return {text:`3 jugadores que hayan jugado en el ${clubName(a)} y en el ${clubName(b)}`,test:p=>p.set.has(a)&&p.set.has(b)}},3,6));
-  levels.push(tryN(()=>{if(r()<0.5){const a=pick(CLUB_TOP),b=pick(CLUB_TOP),n=pick(Object.keys(NAT_ADJ));if(a===b)return null;return {text:`2 jugadores ${NAT_ADJ[n]} que hayan jugado en el ${clubName(a)} y en el ${clubName(b)}`,test:p=>p.nat===n&&p.set.has(a)&&p.set.has(b)}}
-    const a=pick(CLUB_TOP),b=pick(CLUB_TOP),c=pick(CLUB_TOP);if(new Set([a,b,c]).size<3)return null;return {text:`2 jugadores que hayan jugado en el ${clubName(a)}, el ${clubName(b)} y el ${clubName(c)}`,test:p=>p.set.has(a)&&p.set.has(b)&&p.set.has(c)}},2,3));
-  levels.push(tryN(()=>{const A=pick(MIDP),B=pick(MIDP);if(A===B||MATES[A.id].has(B.id))return null;return {text:`1 jugador que fuera compañero de equipo de ${A.name} y también de ${B.name}`,test:p=>MATES[A.id].has(p.id)&&MATES[B.id].has(p.id)}},1,2));
+  levels.push(tryN(()=>{const c=pick(CLUB_TOP);return {text:`5 players who played for ${clubName(c)}`,test:p=>p.set.has(c)}},12,99));
+  levels.push(tryN(()=>{const c=pick(CLUB_TOP),n=pick(Object.keys(NAT_ADJ));return {text:`4 ${NAT_ADJ[n]} players who played for ${clubName(c)}`,test:p=>p.nat===n&&p.set.has(c)}},5,9));
+  levels.push(tryN(()=>{const a=pick(CLUB_TOP),b=pick(CLUB_TOP);if(a===b)return null;return {text:`3 players who played for ${clubName(a)} and ${clubName(b)}`,test:p=>p.set.has(a)&&p.set.has(b)}},3,6));
+  levels.push(tryN(()=>{if(r()<0.5){const a=pick(CLUB_TOP),b=pick(CLUB_TOP),n=pick(Object.keys(NAT_ADJ));if(a===b)return null;return {text:`2 ${NAT_ADJ[n]} players who played for ${clubName(a)} and ${clubName(b)}`,test:p=>p.nat===n&&p.set.has(a)&&p.set.has(b)}}
+    const a=pick(CLUB_TOP),b=pick(CLUB_TOP),c=pick(CLUB_TOP);if(new Set([a,b,c]).size<3)return null;return {text:`2 players who played for ${clubName(a)}, ${clubName(b)} and ${clubName(c)}`,test:p=>p.set.has(a)&&p.set.has(b)&&p.set.has(c)}},2,3));
+  levels.push(tryN(()=>{const A=pick(MIDP),B=pick(MIDP);if(A===B||MATES[A.id].has(B.id))return null;return {text:`1 player who was a teammate of both ${A.name} and ${B.name}`,test:p=>MATES[A.id].has(p.id)&&MATES[B.id].has(p.id)}},1,2));
   return levels.map((L,i)=>({...L,need:5-i}));
 }
 const F={};
@@ -1646,21 +1650,21 @@ function renderFive(){
     if(F.over&&!F.won&&i>=F.lv){const sol=L.ans.filter(id=>!pk.includes(id)).slice(0,L.need-pk.length);chips+=sol.map(id=>`<span class="sol">${esc(PLAYERS[id].name)}</span>`).join("")}
     else chips+=Array.from({length:L.need-pk.length},()=>`<span>?</span>`).join("");
     const showCond=i<=F.lv||F.over;
-    return `<div class="lvl ${st}"><span class="num">${L.need}</span><span class="cond">${showCond?esc(L.text):"Nivel bloqueado"}</span><span class="picks">${chips}</span></div>`}).join("");
+    return `<div class="lvl ${st}"><span class="num">${L.need}</span><span class="cond">${showCond?esc(L.text):"Level locked"}</span><span class="picks">${chips}</span></div>`}).join("");
   $("f-lives").textContent="❤️".repeat(F.lives)+"🖤".repeat(3-F.lives);
   $("f-search").hidden=F.over;$("f-give").disabled=F.over;
-  if(!F.over)$("f-ask").textContent=`Nivel ${F.lv+1}: ${F.levels[F.lv].text}`;
+  if(!F.over)$("f-ask").textContent=`Level ${F.lv+1}: ${F.levels[F.lv].text}`;
   if(F.over){
-    setMsg("f-msg",F.won?`¡Has superado los 5 niveles con ${F.lives} vida${F.lives===1?"":"s"}!`:`Te quedaste en el nivel ${F.lv+1}. En gris, respuestas válidas.`,F.won?"ok":"bad");
+    setMsg("f-msg",F.won?`You cleared all 5 levels with ${F.lives} li${F.lives===1?"fe":"ves"} left!`:`You reached level ${F.lv+1}. Valid answers are shown in grey.`,F.won?"ok":"bad");
     renderShare("f",`Dugout · 5-4-3-2-1 (${tag(F.daily)})\n`+F.levels.map((L,i)=>`${["5️⃣","4️⃣","3️⃣","2️⃣","1️⃣"][i]}${i<F.lv||F.won?"✅":i===F.lv?"❌":"⬛"}`).join(" ")+`\n${"❤️".repeat(F.lives)}${"🖤".repeat(3-F.lives)}`);
   } else renderShare("f",null);
 }
 function pickFive(id){
   if(F.over)return;const L=F.levels[F.lv],p=PLAYERS[id],pk=F.picks[F.lv];
-  if(pk.includes(id)){setMsg("f-msg",`${p.name} ya está en este nivel.`,"bad");return}
-  if(L.test(p)){pk.push(id);setMsg("f-msg",`¡Bien! ${p.name} vale.`,"ok");
-    if(pk.length===L.need){if(F.lv===4){F.over=true;F.won=true}else{F.lv++;setMsg("f-msg",`¡Nivel superado! Ahora necesitas ${5-F.lv}.`,"ok")}}}
-  else{F.lives--;setMsg("f-msg",`${p.name} no cumple la condición.`,"bad");if(F.lives<=0)F.over=true;const c=$("f-input");c.classList.add("shake");setTimeout(()=>c.classList.remove("shake"),400)}
+  if(pk.includes(id)){setMsg("f-msg",`${p.name} is already in this level.`,"bad");return}
+  if(L.test(p)){pk.push(id);setMsg("f-msg",`Nice! ${p.name} counts.`,"ok");
+    if(pk.length===L.need){if(F.lv===4){F.over=true;F.won=true}else{F.lv++;setMsg("f-msg",`Level cleared! Now you need ${5-F.lv}.`,"ok")}}}
+  else{F.lives--;setMsg("f-msg",`${p.name} doesn’t meet the condition.`,"bad");if(F.lives<=0)F.over=true;const c=$("f-input");c.classList.add("shake");setTimeout(()=>c.classList.remove("shake"),400)}
   saveFive();renderFive();if(!F.over)$("f-input").focus();
 }
 inlineSearch("f-input","f-results",()=>new Set(F.picks[F.lv]||[]),pickFive);
@@ -1668,7 +1672,7 @@ $("f-give").onclick=()=>{F.over=true;F.lives=0;saveFive();renderFive()};
 $("f-new").onclick=()=>startFive(false);$("f-daily").onclick=()=>startFive(true);
 
 // ---------- Nivel de dificultad ----------
-const DIFF_TXT={easy:"Solo estrellas y grandes clubes, más tiempo y más pistas. Ideal si sabes poco de fútbol.",mid:"Todos los jugadores y clubes. El nivel estándar.",hard:"Cadenas más largas, menos tiempo, trayectorias menos conocidas y rejillas con menos respuestas."};
+const DIFF_TXT={easy:"Only stars and big clubs, more time and more hints. Great if you don’t follow football closely.",mid:"Well-known players and clubs. The standard level.",hard:"All 2,800+ players, longer chains, less time, lesser-known careers and grids with fewer answers."};
 function renderDiff(){document.querySelectorAll("[data-diff]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.diff===DIFF));$("diff-txt").textContent=DIFF_TXT[DIFF]}
 document.querySelector(".diff").addEventListener("click",e=>{const b=e.target.closest("[data-diff]");if(!b||b.dataset.diff===DIFF)return;
   DIFF=b.dataset.diff;try{localStorage.setItem("pq-diff",DIFF)}catch(err){}
@@ -1681,7 +1685,7 @@ renderDiff();
 
 // ---------- CROMOS Y TROFEOS ----------
 const LEGENDS=["Lionel Messi","Cristiano Ronaldo","Ronaldo Nazário","Zinedine Zidane","Ronaldinho","Kylian Mbappé","Erling Haaland","Lamine Yamal","Kaká","Thierry Henry","Andrés Iniesta","Xavi Hernández","Francesco Totti","Gianluigi Buffon"];
-const RAR_INFO={legend:{n:"Leyenda",p:.04},epic:{n:"Épica",p:.16},rare:{n:"Rara",p:.30},common:{n:"Común",p:.50}};
+const RAR_INFO={legend:{n:"Legend",p:.04},epic:{n:"Epic",p:.16},rare:{n:"Rare",p:.30},common:{n:"Common",p:.50}};
 const STAT_NAMES=new Set(STATS.map(s=>s.name));
 PLAYERS.forEach(p=>{p.rar=LEGENDS.includes(p.name)?"legend":STARS_SET.has(p.id)?"epic":(STAT_NAMES.has(p.name)||p.pop>=70)?"rare":"common"});
 const BY_RAR={};Object.keys(RAR_INFO).forEach(k=>BY_RAR[k]=PLAYERS.filter(p=>p.rar===k));
@@ -1693,12 +1697,12 @@ function owned(){const a=album();return Object.keys(a).filter(k=>a[k]>0).length}
 function cardHTML(p,o={}){
   const first=p.stints[0],last=p.stints[p.stints.length-1];const clubs=[...new Set(p.stints.map(s=>s.club))];
   const big=clubs.filter(c=>CLUBS[c]).slice(0,5);
-  return `<div class="ccard ${p.rar}">${o.tag?`<span class="tagn ${o.tag==="NUEVO"?"":"dup"}">${o.tag}</span>`:""}<div class="top"><span>${RAR_INFO[p.rar].n}</span><span>#${String(p.id+1).padStart(3,"0")}</span></div><span class="fl" aria-hidden="true">${flag(p)}</span><span class="nm">${esc(p.name)}</span><span class="ft">${first.s}–${last.e>=2026?"hoy":last.e} · ${clubs.length} clubes</span><div class="cl">${big.map(c=>clubBadge(c)).join("")}</div>${o.count>1?`<span class="ft">×${o.count}</span>`:""}</div>`;
+  return `<div class="ccard ${p.rar}">${o.tag?`<span class="tagn ${o.tag==="NEW"?"":"dup"}">${o.tag}</span>`:""}<div class="top"><span>${RAR_INFO[p.rar].n}</span><span>#${String(p.id+1).padStart(3,"0")}</span></div><span class="fl" aria-hidden="true">${flag(p)}</span><span class="nm">${esc(p.name)}</span><span class="ft">${first.s}–${last.e>=2026?"now":last.e} · ${clubs.length} clubs</span><div class="cl">${big.map(c=>clubBadge(c)).join("")}</div>${o.count>1?`<span class="ft">×${o.count}</span>`:""}</div>`;
 }
 function drawCard(){let x=Math.random(),acc=0,r="common";for(const k of ["legend","epic","rare","common"]){acc+=RAR_INFO[k].p;if(x<acc){r=k;break}}const L=BY_RAR[r];return L[Math.floor(Math.random()*L.length)]}
 function openPack(){
   if(packs()<1)return;const a=album();const got=[];
-  for(let i=0;i<3;i++){const p=drawCard();const isNew=!(a[p.id]>0);a[p.id]=(a[p.id]||0)+1;got.push({p,tag:isNew?"NUEVO":"×"+a[p.id]})}
+  for(let i=0;i<3;i++){const p=drawCard();const isNew=!(a[p.id]>0);a[p.id]=(a[p.id]||0)+1;got.push({p,tag:isNew?"NEW":"×"+a[p.id]})}
   store.set("album",a);store.set("packs",packs()-1);
   $("c-reveal").innerHTML=got.map(g=>cardHTML(g.p,{tag:g.tag})).join("");
   checkTrophies();renderAlbum();
@@ -1706,31 +1710,31 @@ function openPack(){
 // Trofeos
 function streakNow(){const set=daySet();let n=0;const d=new Date();if(!set.has(isoDay(d)))d.setDate(d.getDate()-1);while(set.has(isoDay(d))){n++;d.setDate(d.getDate()-1)}return n}
 const TROPHIES=[
- {id:"first",ic:"⚽",n:"Primer reto",d:"Completa tu primer reto diario.",t:()=>store.get("dailies",0)>=1},
- {id:"str3",ic:"🔥",n:"Racha de 3",d:"Juega 3 días seguidos.",t:()=>streakNow()>=3},
- {id:"str7",ic:"🔥",n:"Semana completa",d:"Juega 7 días seguidos.",t:()=>streakNow()>=7},
- {id:"str30",ic:"🏅",n:"Un mes en el banquillo",d:"Juega 30 días seguidos.",t:()=>streakNow()>=30},
- {id:"link",ic:"🔗",n:"Cadena perfecta",d:"Resuelve un Link-Up con la cadena más corta.",t:()=>L.won&&L.chain.length-1===L.par},
- {id:"grid",ic:"🟩",n:"Rejilla llena",d:"Completa las 9 casillas del Grid.",t:()=>G.over&&G.filled.every(x=>x!=null)},
- {id:"lineup",ic:"📋",n:"Once perfecto",d:"Acierta un once completo en Lineup.",t:()=>LU.over&&!LU.gave},
- {id:"five",ic:"5️⃣",n:"Cinco de cinco",d:"Supera los 5 niveles de 5-4-3-2-1.",t:()=>F.won},
- {id:"tl",ic:"⏳",n:"Orden perfecto",d:"Ordena los 5 fichajes del Timeline sin fallo.",t:()=>TL.done&&tlCorrect().every(Boolean)},
- {id:"sv10",ic:"💪",n:"Superviviente",d:"Llega a 10 en Survival.",t:()=>store.get("sv-best",0)>=10},
- {id:"sv25",ic:"🦾",n:"Indestructible",d:"Llega a 25 en Survival.",t:()=>store.get("sv-best",0)>=25},
- {id:"hl10",ic:"📈",n:"Ojo de ojeador",d:"Racha de 10 en Higher or Lower.",t:()=>Math.max(...HL_CATS.map(c=>store.get("hl-best-"+c.k,0)))>=10},
- {id:"col25",ic:"📒",n:"Coleccionista",d:"Consigue 25 cromos distintos.",t:()=>owned()>=25},
- {id:"col75",ic:"📚",n:"Medio álbum",d:"Consigue 75 cromos distintos.",t:()=>owned()>=75},
- {id:"col177",ic:"🏆",n:"Álbum completo",d:"Consigue todos los cromos del álbum.",t:()=>owned()>=PLAYERS.length},
- {id:"legend",ic:"⭐",n:"Primera leyenda",d:"Consigue un cromo de Leyenda.",t:()=>BY_RAR.legend.some(p=>album()[p.id]>0)},
- {id:"spin",ic:"🎡",n:"A la suerte",d:"Gira la ruleta por primera vez.",t:()=>Object.keys((()=>{try{return localStorage}catch(e){return {}}})()).some(k=>k.startsWith("spin-"))},
- {id:"trade",ic:"🤝",n:"Primer intercambio",d:"Intercambia un cromo con un amigo.",t:()=>store.get("trades",0)>=1}
+ {id:"first",ic:"⚽",n:"First puzzle",d:"Complete your first daily puzzle.",t:()=>store.get("dailies",0)>=1},
+ {id:"str3",ic:"🔥",n:"3-day streak",d:"Play 3 days in a row.",t:()=>streakNow()>=3},
+ {id:"str7",ic:"🔥",n:"Full week",d:"Play 7 days in a row.",t:()=>streakNow()>=7},
+ {id:"str30",ic:"🏅",n:"A month in the dugout",d:"Play 30 days in a row.",t:()=>streakNow()>=30},
+ {id:"link",ic:"🔗",n:"Perfect chain",d:"Solve a Link-Up with the shortest chain.",t:()=>L.won&&L.chain.length-1===L.par},
+ {id:"grid",ic:"🟩",n:"Full grid",d:"Fill all 9 squares of the Grid.",t:()=>G.over&&G.filled.every(x=>x!=null)},
+ {id:"lineup",ic:"📋",n:"Perfect XI",d:"Name a full XI in Lineup.",t:()=>LU.over&&!LU.gave},
+ {id:"five",ic:"5️⃣",n:"Five out of five",d:"Clear all 5 levels of 5-4-3-2-1.",t:()=>F.won},
+ {id:"tl",ic:"⏳",n:"Perfect order",d:"Order all 5 Timeline transfers correctly.",t:()=>TL.done&&tlCorrect().every(Boolean)},
+ {id:"sv10",ic:"💪",n:"Survivor",d:"Reach 10 in Survival.",t:()=>store.get("sv-best",0)>=10},
+ {id:"sv25",ic:"🦾",n:"Indestructible",d:"Reach 25 in Survival.",t:()=>store.get("sv-best",0)>=25},
+ {id:"hl10",ic:"📈",n:"Scout’s eye",d:"Streak of 10 in Higher or Lower.",t:()=>Math.max(...HL_CATS.map(c=>store.get("hl-best-"+c.k,0)))>=10},
+ {id:"col25",ic:"📒",n:"Collector",d:"Collect 25 different cards.",t:()=>owned()>=25},
+ {id:"col75",ic:"📚",n:"Album builder",d:"Collect 75 different cards.",t:()=>owned()>=75},
+ {id:"col177",ic:"🏆",n:"Complete album",d:"Collect every card in the album.",t:()=>owned()>=PLAYERS.length},
+ {id:"legend",ic:"⭐",n:"First legend",d:"Get a Legend card.",t:()=>BY_RAR.legend.some(p=>album()[p.id]>0)},
+ {id:"spin",ic:"🎡",n:"Feeling lucky",d:"Spin the wheel for the first time.",t:()=>Object.keys((()=>{try{return localStorage}catch(e){return {}}})()).some(k=>k.startsWith("spin-"))},
+ {id:"trade",ic:"🤝",n:"First trade",d:"Trade a card with a friend.",t:()=>store.get("trades",0)>=1}
 ];
 const toastQ=[];let toastOn=false;
 function toast(t){toastQ.push(t);if(!toastOn)nextToast()}
 function nextToast(){const t=toastQ.shift();if(!t){toastOn=false;$("toast").hidden=true;return}toastOn=true;$("toast").textContent=t;$("toast").hidden=false;setTimeout(nextToast,2600)}
 function checkTrophies(){
   const got=store.get("trophies",{});let changed=false;
-  for(const T of TROPHIES){if(!got[T.id]){let ok=false;try{ok=T.t()}catch(e){}if(ok){got[T.id]=true;changed=true;addPacks(1);toast(`🏆 Trofeo: ${T.n} · +1 sobre`)}}}
+  for(const T of TROPHIES){if(!got[T.id]){let ok=false;try{ok=T.t()}catch(e){}if(ok){got[T.id]=true;changed=true;addPacks(1);toast(`🏆 Trophy: ${T.n} · +1 pack`)}}}
   if(changed)store.set("trophies",got);
 }
 // Un sobre por cada reto diario completado (una vez por juego y día, sea cual sea el nivel)
@@ -1742,26 +1746,26 @@ const DAILY_GAMES=[
 function checkRewards(){
   const keys=[baseDay,baseDay+"-easy",baseDay+"-hard"];
   for(const [id,name,done] of DAILY_GAMES){const rk="rw-"+baseDay+"-"+id;if(store.get(rk,false))continue;
-    if(keys.some(k=>done(k))){store.set(rk,true);addPacks(1);store.set("dailies",store.get("dailies",0)+1);toast(`🎴 +1 sobre por completar ${name}`)}}
+    if(keys.some(k=>done(k))){store.set(rk,true);addPacks(1);store.set("dailies",store.get("dailies",0)+1);toast(`🎴 +1 pack for completing ${name}`)}}
   checkTrophies();
 }
 function renderAlbum(){
   const n=packs(),a=album(),got=store.get("trophies",{});
   $("c-npacks").textContent=n;$("c-count").textContent=`${owned()}/${PLAYERS.length}`;$("c-ntro").textContent=`${Object.keys(got).length}/${TROPHIES.length}`;
-  $("c-packtxt").textContent=n?`Tienes ${n} sobre${n===1?"":"s"} sin abrir.`:"No te quedan sobres. Completa retos diarios o desbloquea trofeos para conseguir más.";
+  $("c-packtxt").textContent=n?`You have ${n} unopened pack${n===1?"":"s"}.`:"No packs left. Complete daily puzzles or unlock trophies to get more.";
   $("c-open").disabled=n<1;
   document.querySelectorAll("[data-tab]").forEach(b=>b.setAttribute("aria-selected",b.dataset.tab===C.tab));
   ["packs","album","wheel","trophies","trade"].forEach(t=>$("c-tab-"+t).hidden=t!==C.tab);
   if(C.tab==="wheel")renderWheel();
   if(C.tab==="album"){
-    const F=[["all","Todos"],["legend","Leyenda"],["epic","Épica"],["rare","Rara"],["common","Común"],["dup","Repetidos"]];
+    const F=[["all","All"],["legend","Legend"],["epic","Epic"],["rare","Rare"],["common","Common"],["dup","Duplicates"]];
     $("c-filters").innerHTML=F.map(([k,t])=>`<button class="btn" type="button" data-filter="${k}" aria-pressed="${k===C.filter}">${t}</button>`).join("");
     const list=PLAYERS.filter(p=>C.filter==="all"||C.filter===p.rar||(C.filter==="dup"&&a[p.id]>1));
-    $("c-grid").innerHTML=list.map(p=>a[p.id]>0?cardHTML(p,{count:a[p.id]}):`<div class="ccard locked"><span class="q">?</span><span class="ft">#${String(p.id+1).padStart(3,"0")} · ${RAR_INFO[p.rar].n}</span></div>`).join("")||`<p class="beta">Aún no tienes cromos repetidos.</p>`;
+    $("c-grid").innerHTML=list.map(p=>a[p.id]>0?cardHTML(p,{count:a[p.id]}):`<div class="ccard locked"><span class="q">?</span><span class="ft">#${String(p.id+1).padStart(3,"0")} · ${RAR_INFO[p.rar].n}</span></div>`).join("")||`<p class="beta">You don’t have any duplicates yet.</p>`;
   }
   if(C.tab==="trophies")$("c-trolist").innerHTML=TROPHIES.map(T=>`<li class="${got[T.id]?"on":""}"><span class="ic" aria-hidden="true">${T.ic}</span><div><b>${T.n}</b><span>${T.d}</span></div></li>`).join("");
   if(C.tab==="trade")renderTrade();
-  const st=$("st-album");if(st){st.textContent=n?`${n} sobre${n===1?"":"s"} por abrir`:`${owned()}/${PLAYERS.length} cromos`;st.className="st"+(n?"":" done")}
+  const st=$("st-album");if(st){st.textContent=n?`${n} pack${n===1?"":"s"} to open`:`${owned()}/${PLAYERS.length} cards`;st.className="st"+(n?"":" done")}
 }
 document.querySelector(".tabs").addEventListener("click",e=>{const b=e.target.closest("[data-tab]");if(b){C.tab=b.dataset.tab;renderAlbum()}});
 $("c-filters").addEventListener("click",e=>{const b=e.target.closest("[data-filter]");if(b){C.filter=b.dataset.filter;renderAlbum()}});
@@ -1773,9 +1777,9 @@ const TR={r:null,code:null,offer:null,ok:null,done:new Set(),unsub:null};
 function trPartner(){if(!TR.r)return null;return TR.r.peers().find(p=>!p.sameTab&&p.kind==="viewer"&&p.presence&&p.presence.nick)||null}
 function trPres(patch){if(TR.r)TR.r.presence(patch).catch(()=>{})}
 async function trEnter(code){
-  code=code.toLowerCase().replace(/[^a-z0-9]/g,"");if(code.length<4){setMsg("tr-msg0","El código tiene 5 caracteres.","bad");return}
-  if(!V.api){setMsg("tr-msg0","No se puede conectar desde esta vista.","bad");return}
-  try{TR.r=await V.api.join("dg-trade-"+code)}catch(e){setMsg("tr-msg0","No se pudo entrar. Inténtalo de nuevo.","bad");return}
+  code=code.toLowerCase().replace(/[^a-z0-9]/g,"");if(code.length<4){setMsg("tr-msg0","The code has 5 characters.","bad");return}
+  if(!V.api){setMsg("tr-msg0","Can’t connect right now.","bad");return}
+  try{TR.r=await V.api.join("dg-trade-"+code)}catch(e){setMsg("tr-msg0","Couldn’t join. Please try again.","bad");return}
   TR.code=code;TR.offer=null;TR.ok=null;trPres({nick:nick(),offer:null,ok:null,done:null});
   TR.unsub=TR.r.onPeers(trSync);setMsg("tr-msg0","");renderTrade();
 }
@@ -1786,7 +1790,7 @@ function trSync(){
     if(po.mine===mo.theirs&&po.theirs===mo.mine){const sig=[mo.n,po.n].sort().join(":");
       if(!TR.done.has(sig)){const a=album();
         if(a[mo.mine]>0){a[mo.mine]--;a[mo.theirs]=(a[mo.theirs]||0)+1;store.set("album",a);store.set("trades",store.get("trades",0)+1);TR.done.add(sig);trPres({done:sig});
-          setMsg("tr-msg",`¡Intercambio hecho! Has recibido a ${PLAYERS[mo.theirs].name}.`,"ok");checkTrophies()}
+          setMsg("tr-msg",`Trade done! You received ${PLAYERS[mo.theirs].name}.`,"ok");checkTrophies()}
       }}}
   if(p&&TR.ok&&p.presence.done&&TR.done.has(p.presence.done)){TR.ok=null;TR.offer=null;trPres({ok:null,offer:null})}
   renderTrade();
@@ -1796,14 +1800,14 @@ function renderTrade(){
   $("tr-setup").hidden=!!TR.r;$("tr-live").hidden=!TR.r;if(!TR.r)return;
   $("tr-codeshow").textContent=TR.code.toUpperCase();
   const a=album(),p=trPartner();
-  $("tr-partner").textContent=p?`Intercambiando con ${p.presence.nick}`:"Esperando a tu amigo… pásale el código.";
-  $("tr-mine").innerHTML=TR.offer!=null?cardHTML(PLAYERS[TR.offer],{count:a[TR.offer]}):"<p>Ningún cromo elegido.</p>";
+  $("tr-partner").textContent=p?`Trading with ${p.presence.nick}`:"Waiting for your friend… send them the code.";
+  $("tr-mine").innerHTML=TR.offer!=null?cardHTML(PLAYERS[TR.offer],{count:a[TR.offer]}):"<p>No card chosen.</p>";
   const mine=PLAYERS.filter(x=>a[x.id]>0).sort((x,y)=>(a[y.id]>1)-(a[x.id]>1)||x.name.localeCompare(y.name));
-  $("tr-pick").innerHTML=mine.map(x=>`<button type="button" data-o="${x.id}" aria-pressed="${x.id===TR.offer}">${esc(x.name)}${a[x.id]>1?" ×"+a[x.id]:""}</button>`).join("")||"<p>Aún no tienes cromos. Abre un sobre primero.</p>";
+  $("tr-pick").innerHTML=mine.map(x=>`<button type="button" data-o="${x.id}" aria-pressed="${x.id===TR.offer}">${esc(x.name)}${a[x.id]>1?" ×"+a[x.id]:""}</button>`).join("")||"<p>You don’t have any cards yet. Open a pack first.</p>";
   const po=p&&Number.isInteger(p.presence.offer)&&PLAYERS[p.presence.offer]?p.presence.offer:null;
-  $("tr-theirs").innerHTML=po!=null?cardHTML(PLAYERS[po],{tag:a[po]>0?"Ya lo tienes":"NUEVO"})+(p.presence.ok?"<p>✅ Tu amigo ha aceptado.</p>":""):"<p>Aún no ha elegido.</p>";
+  $("tr-theirs").innerHTML=po!=null?cardHTML(PLAYERS[po],{tag:a[po]>0?"Already owned":"NEW"})+(p.presence.ok?"<p>✅ Your friend has accepted.</p>":""):"<p>Hasn’t chosen yet.</p>";
   $("tr-accept").disabled=!(p&&TR.offer!=null&&po!=null)||!!TR.ok;
-  $("tr-accept").textContent=TR.ok?"Esperando a tu amigo…":"Aceptar intercambio";
+  $("tr-accept").textContent=TR.ok?"Waiting for your friend…":"Accept trade";
 }
 $("tr-pick").addEventListener("click",e=>{const b=e.target.closest("[data-o]");if(!b)return;TR.offer=+b.dataset.o;TR.ok=null;trPres({offer:TR.offer,ok:null});setMsg("tr-msg","");renderTrade()});
 $("tr-accept").onclick=()=>{const p=trPartner();if(!p||TR.offer==null)return;TR.ok={mine:TR.offer,theirs:p.presence.offer,n:Math.random().toString(36).slice(2,10)};trPres({ok:TR.ok});trSync()};
@@ -1816,10 +1820,10 @@ const _uh2=updateHome;updateHome=function(){_uh2();checkRewards();renderAlbum()}
 
 // ---------- RULETA Y CONGELADOR DE RACHA ----------
 const PRIZES=[
- {k:"p1",ic:"🎴",n:"1 sobre",w:28,c:"#2f6b51"},{k:"fz",ic:"❄️",n:"Congelador de racha",w:15,c:"#3d6f8f"},
- {k:"rare",ic:"🔵",n:"Cromo Raro asegurado",w:16,c:"#285a44"},{k:"p2",ic:"🎴",n:"2 sobres",w:9,c:"#c99a2e"},
- {k:"none",ic:"✖️",n:"Sin premio",w:19,c:"#1d4837"},{k:"epic",ic:"🟣",n:"Cromo Épico asegurado",w:9,c:"#6d4f8f"},
- {k:"p3",ic:"🎴",n:"3 sobres",w:2,c:"#e0a92a"},{k:"legend",ic:"⭐",n:"Cromo Leyenda asegurado",w:2,c:"#f6c945"}];
+ {k:"p1",ic:"🎴",n:"1 pack",w:28,c:"#2f6b51"},{k:"fz",ic:"❄️",n:"Streak freeze",w:15,c:"#3d6f8f"},
+ {k:"rare",ic:"🔵",n:"Guaranteed Rare card",w:16,c:"#285a44"},{k:"p2",ic:"🎴",n:"2 packs",w:9,c:"#c99a2e"},
+ {k:"none",ic:"✖️",n:"No prize",w:19,c:"#1d4837"},{k:"epic",ic:"🟣",n:"Guaranteed Epic card",w:9,c:"#6d4f8f"},
+ {k:"p3",ic:"🎴",n:"3 packs",w:2,c:"#e0a92a"},{k:"legend",ic:"⭐",n:"Guaranteed Legend card",w:2,c:"#f6c945"}];
 const W_TOTAL=PRIZES.reduce((a,p)=>a+p.w,0);
 let wRot=0,wBusy=false;
 (function drawWheel(){
@@ -1832,9 +1836,9 @@ let wRot=0,wBusy=false;
 function spinAvailable(){return !store.get("spin-"+baseDay,false)}
 function renderWheel(){
   const av=spinAvailable();$("w-spin").disabled=!av||wBusy;$("w-fz").textContent=store.get("freezes",0);
-  $("w-txt").textContent=av?"Tienes una tirada gratis hoy.":"Ya has usado la tirada de hoy. Vuelve mañana.";
+  $("w-txt").textContent=av?"You have a free spin today.":"You’ve used today’s spin. Come back tomorrow.";
 }
-function giveCard(r){const L=BY_RAR[r],p=L[Math.floor(Math.random()*L.length)],a=album(),isNew=!(a[p.id]>0);a[p.id]=(a[p.id]||0)+1;store.set("album",a);return {p,tag:isNew?"NUEVO":"×"+a[p.id]}}
+function giveCard(r){const L=BY_RAR[r],p=L[Math.floor(Math.random()*L.length)],a=album(),isNew=!(a[p.id]>0);a[p.id]=(a[p.id]||0)+1;store.set("album",a);return {p,tag:isNew?"NEW":"×"+a[p.id]}}
 $("w-spin").onclick=()=>{
   if(!spinAvailable()||wBusy)return;wBusy=true;store.set("spin-"+baseDay,true);setMsg("w-msg","");$("w-reveal").innerHTML="";
   let x=Math.random()*W_TOTAL,acc=0,idx=0;for(let i=0;i<PRIZES.length;i++){if(x<acc+PRIZES[i].w){idx=i;break}acc+=PRIZES[i].w}
@@ -1842,10 +1846,10 @@ $("w-spin").onclick=()=>{
   const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
   wRot+=360*5+((360-target)-(wRot%360)+360)%360;$("w-wheel").style.transform=`rotate(${wRot}deg)`;renderWheel();
   setTimeout(()=>{wBusy=false;const P=PRIZES[idx];let txt="";
-    if(P.k==="p1"||P.k==="p2"||P.k==="p3"){const n=+P.k[1];addPacks(n);txt=`¡${n} sobre${n>1?"s":""}! Ábrelo${n>1?"s":""} en la pestaña Sobres.`}
-    else if(P.k==="fz"){const f=store.get("freezes",0);if(f<2){store.set("freezes",f+1);txt="¡Congelador de racha! Si un día no juegas, tu racha no se pierde."}else{addPacks(1);txt="Ya tenías 2 congeladores, así que te damos 1 sobre."}}
-    else if(P.k==="none")txt="Esta vez no ha habido suerte. Mañana tienes otra tirada.";
-    else{const g=giveCard(P.k);$("w-reveal").innerHTML=cardHTML(g.p,{tag:g.tag});txt=`¡Cromo ${RAR_INFO[P.k].n} para tu álbum!`;checkTrophies()}
+    if(P.k==="p1"||P.k==="p2"||P.k==="p3"){const n=+P.k[1];addPacks(n);txt=`${n} pack${n>1?"s":""}! Open ${n>1?"them":"it"} in the Packs tab.`}
+    else if(P.k==="fz"){const f=store.get("freezes",0);if(f<2){store.set("freezes",f+1);txt="Streak freeze! If you miss a day, your streak survives."}else{addPacks(1);txt="You already had 2 freezes, so here’s a pack instead."}}
+    else if(P.k==="none")txt="No luck this time. You get another spin tomorrow.";
+    else{const g=giveCard(P.k);$("w-reveal").innerHTML=cardHTML(g.p,{tag:g.tag});txt=`${RAR_INFO[P.k].n} card for your album!`;checkTrophies()}
     setMsg("w-msg",`${P.ic} ${txt}`,P.k==="none"?"bad":"ok");renderWheel();renderAlbum();updateHome();
   },reduce?50:4300);
 };
@@ -1857,26 +1861,26 @@ function applyFreezes(){
   while(!has(d)&&gap.length<31){gap.push(isoDay(d));d.setDate(d.getDate()-1)}
   if(!gap.length||gap.length>fz||!has(d))return;
   gap.forEach(g=>frozen.add(g));store.set("frozen",[...frozen].slice(-200));store.set("freezes",fz-gap.length);
-  toast(`❄️ Has usado ${gap.length} congelador${gap.length>1?"es":""}: tu racha sigue viva`);
+  toast(`❄️ Used ${gap.length} streak freeze${gap.length>1?"s":""}: your streak lives on`);
 }
 function daySet(){return new Set([...store.get("days",[]),...store.get("frozen",[])])}
 
 // ---------- RANKED ----------
-const DIVS=[[0,"Bronce","🥉"],[900,"Plata","🥈"],[1100,"Oro","🥇"],[1300,"Platino","💠"],[1500,"Diamante","💎"],[1700,"Leyenda","👑"]];
+const DIVS=[[0,"Bronze","🥉"],[900,"Silver","🥈"],[1100,"Gold","🥇"],[1300,"Platinum","💠"],[1500,"Diamond","💎"],[1700,"Legend","👑"]];
 function rk(){return store.get("ranked",{elo:1000,w:0,l:0,d:0,best:1000})}
 function divOf(e){let d=DIVS[0];for(const x of DIVS)if(e>=x[0])d=x;return d}
 const RQ={q:null,unsub:null,since:0,timer:null,proposed:null};
-function renderRanked(){const r=rk(),d=divOf(r.elo);$("rk-div").textContent=`${d[2]} ${d[1]}`;$("rk-elo").textContent=r.elo;$("rk-rec").textContent=`${r.w}V · ${r.d}E · ${r.l}D`;
-  $("rk-find").disabled=!V.api;$("rk-find").textContent=RQ.q?"Cancelar búsqueda":"Buscar partida"}
+function renderRanked(){const r=rk(),d=divOf(r.elo);$("rk-div").textContent=`${d[2]} ${d[1]}`;$("rk-elo").textContent=r.elo;$("rk-rec").textContent=`${r.w}W · ${r.d}D · ${r.l}L`;
+  $("rk-find").disabled=!V.api;$("rk-find").textContent=RQ.q?"Cancel search":"Find a match"}
 function rkCode(){const abc="abcdefghjkmnpqrstuvwxyz23456789";let c="";for(let i=0;i<6;i++)c+=abc[Math.floor(Math.random()*abc.length)];return c}
 async function rkFind(){
   if(RQ.q){await rkCancel();setMsg("rk-msg","");return}
-  if(!V.api){setMsg("rk-msg","El modo ranked no está disponible en esta vista.","bad");return}
-  try{RQ.q=await V.api.join("dg-ranked-queue")}catch(e){setMsg("rk-msg","No se pudo entrar en la cola. Inténtalo de nuevo.","bad");return}
+  if(!V.api){setMsg("rk-msg","Ranked mode isn’t available right now.","bad");return}
+  try{RQ.q=await V.api.join("dg-ranked-queue")}catch(e){setMsg("rk-msg","Couldn’t join the queue. Please try again.","bad");return}
   RQ.since=Date.now();RQ.proposed=null;
   RQ.q.presence({nick:nick(),elo:rk().elo,seeking:true,match:null}).catch(()=>{});
   RQ.unsub=RQ.q.onPeers(rkMatch);clearInterval(RQ.timer);RQ.timer=setInterval(rkMatch,2500);
-  setMsg("rk-msg","Buscando rival de tu nivel…");renderRanked();
+  setMsg("rk-msg","Looking for an opponent at your level…");renderRanked();
 }
 async function rkCancel(){clearInterval(RQ.timer);if(RQ.unsub)RQ.unsub();const q=RQ.q;RQ.q=null;RQ.unsub=null;RQ.proposed=null;if(q){try{await q.leave()}catch(e){}}renderRanked()}
 function rkMatch(){
@@ -1885,7 +1889,7 @@ function rkMatch(){
   const inv=ps.find(p=>!p.sameTab&&p.presence.match&&p.presence.match.with===me.peer);
   if(inv&&!V.r){const code=inv.presence.match.code;rkCancel();rkGo(code,false,inv.presence.elo);return}
   if(RQ.proposed){
-    if(Date.now()-RQ.proposed.t>15000&&(!V.r||peers().length<2)){RQ.proposed=null;RQ.q.presence({match:null}).catch(()=>{});if(V.r&&V.ranked)leaveRoom().then(()=>{setMsg("rk-msg","El rival no llegó. Seguimos buscando…")})}
+    if(Date.now()-RQ.proposed.t>15000&&(!V.r||peers().length<2)){RQ.proposed=null;RQ.q.presence({match:null}).catch(()=>{});if(V.r&&V.ranked)leaveRoom().then(()=>{setMsg("rk-msg","Your opponent didn’t show up. Still searching…")})}
     return}
   if(V.r)return;
   const my=rk().elo,range=150+(Date.now()-RQ.since)/1000*10;
@@ -1896,9 +1900,9 @@ function rkMatch(){
 }
 async function rkGo(code,asHost,oppElo){
   V.ranked=true;V.rkStarted=false;V.rkApplied=false;V.rkOpp=null;V.rkOppElo=oppElo|0||1000;
-  setMsg("rk-msg","¡Rival encontrado!","ok");
+  setMsg("rk-msg","Opponent found!","ok");
   await enterRoom(code,asHost);pres({elo:rk().elo,ranked:true});
-  $("vs-wait").textContent="Partida ranked: empieza sola en cuanto estéis los dos.";
+  $("vs-wait").textContent="Ranked match: it starts automatically once you’re both here.";
 }
 function rkFinalize(){
   if(!V.ranked||V.rkApplied||V.mode!=="results")return;
@@ -1907,7 +1911,7 @@ function rkFinalize(){
   const o=V.rkOpp;
   if(opp&&!opp.presence.done)return;
   const S=!o||!o.done?1:V.score>(o.score|0)?1:V.score<(o.score|0)?0:0.5;
-  rkApply(S,o&&typeof o.elo==="number"?o.elo:V.rkOppElo,!o||!o.done?"Tu rival abandonó: victoria.":"");
+  rkApply(S,o&&typeof o.elo==="number"?o.elo:V.rkOppElo,!o||!o.done?"Your opponent left: you win.":"");
 }
 function rkApply(S,oe,note){
   V.rkApplied=true;const r=rk(),before=divOf(r.elo);
@@ -1915,7 +1919,7 @@ function rkApply(S,oe,note){
   r.elo=Math.max(0,r.elo+delta);r.best=Math.max(r.best,r.elo);if(S===1)r.w++;else if(S===0)r.l++;else r.d++;
   store.set("ranked",r);const d=divOf(r.elo);
   const el=$("vs-elo");el.hidden=false;el.className="rkres "+(delta>=0?"up":"down");
-  el.textContent=`${S===1?"Victoria":S===0?"Derrota":"Empate"} · ${delta>=0?"+":""}${delta} ELO → ${d[2]} ${d[1]} (${r.elo})`+(d!==before?(delta>0?" · ¡Ascenso!":" · Descenso"):"")+(note?" · "+note:"");
+  el.textContent=`${S===1?"Win":S===0?"Loss":"Draw"} · ${delta>=0?"+":""}${delta} ELO → ${d[2]} ${d[1]} (${r.elo})`+(d!==before?(delta>0?" · Promoted!":" · Relegated"):"")+(note?" · "+note:"");
   renderRanked();checkTrophies();
 }
 const _syncR=sync;sync=function(){
@@ -1928,17 +1932,17 @@ const _syncR=sync;sync=function(){
 const _rbR=renderBoards;renderBoards=function(){_rbR();
   const r=!!V.ranked;$("rk-again").hidden=!r||V.mode!=="results";if(r){$("vs-start").hidden=true;$("vs-again").hidden=true;$("vs-wait").hidden=false}
   if(!r)$("vs-elo").hidden=true;
-  if(r&&V.mode==="results"&&!$("vs-reswait").textContent.startsWith("Esperando"))$("vs-reswait").textContent="Partida ranked terminada.";
+  if(r&&V.mode==="results"&&!$("vs-reswait").textContent.startsWith("Waiting"))$("vs-reswait").textContent="Ranked match finished.";
   if(r)rkFinalize();
 };
 const _lrR=leaveRoom;leaveRoom=async function(){
-  if(V.ranked&&V.mode==="play"&&!V.rkApplied)rkApply(0,V.rkOpp&&typeof V.rkOpp.elo==="number"?V.rkOpp.elo:V.rkOppElo,"Abandonaste la partida.");
+  if(V.ranked&&V.mode==="play"&&!V.rkApplied)rkApply(0,V.rkOpp&&typeof V.rkOpp.elo==="number"?V.rkOpp.elo:V.rkOppElo,"You left the match.");
   V.ranked=false;V.rkStarted=false;await _lrR();$("vs-elo").hidden=true;
 };
 $("rk-find").onclick=rkFind;
 $("rk-again").onclick=async()=>{await leaveRoom();rkFind()};
 $("vs-leave").onclick=()=>leaveRoom();$("vs-exit").onclick=()=>leaveRoom();
-TROPHIES.push({id:"rkwin",ic:"⚔️",n:"Primera victoria ranked",d:"Gana una partida ranked.",t:()=>rk().w>=1},{id:"rkgold",ic:"🥇",n:"Oro",d:"Llega a 1100 de ELO en ranked.",t:()=>rk().best>=1100},{id:"rkdia",ic:"💎",n:"Diamante",d:"Llega a 1500 de ELO en ranked.",t:()=>rk().best>=1500});
+TROPHIES.push({id:"rkwin",ic:"⚔️",n:"First ranked win",d:"Win a ranked match.",t:()=>rk().w>=1},{id:"rkgold",ic:"🥇",n:"Gold",d:"Reach 1100 ELO in ranked.",t:()=>rk().best>=1100},{id:"rkdia",ic:"💎",n:"Diamond",d:"Reach 1500 ELO in ranked.",t:()=>rk().best>=1500});
 setTimeout(renderRanked,1200);setTimeout(renderRanked,4000);
 
 const VIEWS=["home","link-up","grid","career","odd-one-out","lineup","54321","higher-lower","survival","timeline","versus","album"];

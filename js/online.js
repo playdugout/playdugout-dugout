@@ -37,9 +37,9 @@
   // Indicador de conexión en el pie de página
   DG.ready.then(() => {
     const el = document.getElementById("dg-status"); if (!el) return;
-    if (!sb) el.textContent = "Servidor: no disponible (no se pudo cargar Supabase).";
-    else if (DG.user) el.textContent = "Servidor: conectado ✓ (" + (DG.user.is_anonymous ? "cuenta anónima" : "cuenta") + ")";
-    else el.textContent = "Servidor: sin cuenta — " + (DG.error || "error desconocido");
+    if (!sb) el.textContent = "Server: unavailable (couldn’t load Supabase).";
+    else if (DG.user) el.textContent = "Server: connected ✓ (" + (DG.user.is_anonymous ? "guest account" : "account") + ")";
+    else el.textContent = "Server: no account — " + (DG.error || "unknown error");
   });
 
   DG.setNick = async (nick) => {
@@ -51,7 +51,7 @@
   const tabId = (crypto.randomUUID ? crypto.randomUUID() : String(Math.random())).replace(/-/g, "").slice(0, 16);
   const rooms = {};
   async function join(name) {
-    if (!sb) throw { code: "not_permitted", message: "Sin conexión" };
+    if (!sb) throw { code: "not_permitted", message: "Offline" };
     if (rooms[name]) return rooms[name];
     const ch = sb.channel("dg-" + name, { config: { presence: { key: tabId } } });
     let mine = {}, peers = Object.freeze([]), conn = false, pending = null;
@@ -72,7 +72,7 @@
     };
     ch.on("presence", { event: "sync" }, rebuild);
     await new Promise((res, rej) => {
-      const t = setTimeout(() => rej({ code: "upstream_error", message: "Sin respuesta" }), 10000);
+      const t = setTimeout(() => rej({ code: "upstream_error", message: "No response" }), 10000);
       ch.subscribe(status => {
         if (status === "SUBSCRIBED") { conn = true; clearTimeout(t); connHandlers.forEach(h => h(true)); res(); }
         else if (status === "CHANNEL_ERROR" || status === "TIMED_OUT" || status === "CLOSED") { conn = false; connHandlers.forEach(h => h(false)); }

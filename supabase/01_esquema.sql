@@ -15,7 +15,7 @@ create extension if not exists pgcrypto;
 
 create table if not exists public.profiles (
   id          uuid primary key references auth.users (id) on delete cascade,
-  nick        text not null default 'Jugador' check (char_length(nick) between 2 and 20),
+  nick        text not null default 'Player' check (char_length(nick) between 2 and 20),
   created_at  timestamptz not null default now(),
   packs       int  not null default 2 check (packs >= 0),          -- sobres sin abrir (2 de bienvenida)
   freezes     int  not null default 0 check (freezes between 0 and 2),
@@ -150,7 +150,7 @@ create or replace function public.handle_new_user() returns trigger
 language plpgsql security definer set search_path = public as $$
 begin
   insert into profiles (id, nick)
-  values (new.id, coalesce(nullif(left(new.raw_user_meta_data ->> 'nick', 20), ''), 'Jugador' || floor(random() * 9000 + 1000)::int))
+  values (new.id, coalesce(nullif(left(new.raw_user_meta_data ->> 'nick', 20), ''), 'Player' || floor(random() * 9000 + 1000)::int))
   on conflict (id) do nothing;
   return new;
 end $$;
