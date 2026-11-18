@@ -178,6 +178,19 @@ a:focus-visible,button:focus-visible,input:focus-visible,.cell:focus-visible{out
 .link b{color:var(--chalk);font-weight:600}
 .pill{font-family:var(--mono);font-size:.72rem;padding:2px 8px;border-radius:99px;border:1px solid var(--line);text-transform:uppercase;letter-spacing:.05em}
 
+/* Who Said It? + Deep Cut */
+.wq blockquote{margin:14px 0 6px;font-family:var(--display);font-size:1.55rem;line-height:1.2;font-weight:600;letter-spacing:.01em;overflow-wrap:anywhere}
+.wq .ctx{font-family:var(--mono);font-size:.75rem;color:var(--chalk-dim);margin-bottom:12px}
+.dcq,#dc-q{font-size:1.15rem;margin:12px 0 8px}
+.dcs{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:6px}
+.dcs li{display:flex;justify-content:space-between;gap:10px;padding:10px 12px;border:2px solid var(--line);border-radius:10px;min-width:0}
+.dcs li span:first-child{overflow-wrap:anywhere}
+.dcs li.y{border-color:var(--ok);background:rgba(127,214,154,.1)}
+.dcs li.x{border-color:var(--bad);background:rgba(255,122,107,.1)}
+.dcs li.empty{color:var(--chalk-dim);border-style:dashed}
+.dcs .pts{font-family:var(--mono);font-weight:700}
+.dcr{font-size:.85rem;color:var(--chalk-dim);margin:8px 0 0}
+.dcblk{margin-bottom:16px}
 /* Intruso */
 .odd-q{font-family:var(--display);font-size:1.15rem;text-transform:uppercase;letter-spacing:.04em;color:var(--chalk-dim);margin:14px 0 8px}
 .odd{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
@@ -366,6 +379,8 @@ footer{margin-top:40px;color:var(--chalk-dim);font-size:.82rem;border-top:2px da
       <a href="#higher-lower" id="nav-higher-lower">Higher/Lower</a>
       <a href="#survival" id="nav-survival">Survival</a>
       <a href="#timeline" id="nav-timeline">Timeline</a>
+      <a href="#who-said-it" id="nav-who-said-it">Who Said It?</a>
+      <a href="#deep-cut" id="nav-deep-cut">Deep Cut</a>
       <a href="#versus" id="nav-versus">Versus</a>
       <a href="#album" id="nav-album">Cards</a>
     </nav>
@@ -390,6 +405,14 @@ footer{margin-top:40px;color:var(--chalk-dim);font-size:.82rem;border-top:2px da
       <a class="game" href="#album">
         <svg viewBox="0 0 72 72" aria-hidden="true"><rect x="10" y="12" width="34" height="46" rx="4" fill="#a9c0b2" transform="rotate(-10 27 35)"/><rect x="26" y="10" width="34" height="46" rx="4" fill="#f6c945" stroke="#163a2c" stroke-width="2" transform="rotate(8 43 33)"/><text x="44" y="40" text-anchor="middle" font-family="Barlow Condensed,sans-serif" font-weight="800" font-size="16" fill="#163a2c" transform="rotate(8 43 33)">★</text></svg>
         <div><h3>Cards &amp; trophies <span class="tag">NEW</span></h3><p>Earn packs by playing, complete the album and swap duplicates with friends.</p><span class="st" id="st-album"></span></div>
+      </a>
+      <a class="game" href="#who-said-it">
+        <svg viewBox="0 0 72 72" aria-hidden="true"><path d="M10 14h52a6 6 0 0 1 6 6v24a6 6 0 0 1-6 6H32l-12 10v-10h-10a6 6 0 0 1-6-6V20a6 6 0 0 1 6-6z" fill="none" stroke="#eef3ea" stroke-width="3"/><text x="36" y="42" text-anchor="middle" font-family="Barlow Condensed,sans-serif" font-weight="800" font-size="26" fill="#f6c945">“ ”</text></svg>
+        <div><h3>Who Said It? <span class="tag">NEW</span></h3><p>Famous football quotes. Guess the player, manager or commentator behind each one.</p><span class="st" id="st-who"></span></div>
+      </a>
+      <a class="game" href="#deep-cut">
+        <svg viewBox="0 0 72 72" aria-hidden="true"><rect x="8" y="10" width="56" height="12" rx="3" fill="#eef3ea"/><rect x="8" y="28" width="56" height="12" rx="3" fill="#a9c0b2"/><rect x="8" y="46" width="56" height="12" rx="3" fill="#f6c945"/><text x="58" y="56" text-anchor="end" font-family="JetBrains Mono,monospace" font-weight="700" font-size="10" fill="#163a2c">100</text><text x="58" y="20" text-anchor="end" font-family="JetBrains Mono,monospace" font-weight="700" font-size="10" fill="#163a2c">1</text></svg>
+        <div><h3>Deep Cut <span class="tag">NEW</span></h3><p>Three answers per question. The more obscure your answer, the more points you score.</p><span class="st" id="st-deep"></span></div>
       </a>
       <a class="game" href="#lineup">
         <svg viewBox="0 0 72 72" aria-hidden="true"><rect x="8" y="4" width="56" height="64" rx="4" fill="none" stroke="#a9c0b2" stroke-width="2"/><line x1="8" y1="36" x2="64" y2="36" stroke="#a9c0b2" stroke-width="1.5"/><circle cx="36" cy="60" r="4" fill="#f6c945"/><circle cx="18" cy="48" r="4" fill="#eef3ea"/><circle cx="30" cy="48" r="4" fill="#eef3ea"/><circle cx="42" cy="48" r="4" fill="#eef3ea"/><circle cx="54" cy="48" r="4" fill="#eef3ea"/><circle cx="24" cy="30" r="4" fill="#eef3ea"/><circle cx="36" cy="30" r="4" fill="#eef3ea"/><circle cx="48" cy="30" r="4" fill="#eef3ea"/><circle cx="22" cy="14" r="4" fill="none" stroke="#f6c945" stroke-width="2"/><circle cx="36" cy="12" r="4" fill="none" stroke="#f6c945" stroke-width="2"/><circle cx="50" cy="14" r="4" fill="none" stroke="#f6c945" stroke-width="2"/></svg>
@@ -619,6 +642,50 @@ footer{margin-top:40px;color:var(--chalk-dim);font-size:.82rem;border-top:2px da
       <span class="msg" id="tl-msg" role="status"></span>
       <div class="share" id="sh-tl" hidden></div>
     </div>
+  </section>
+
+  <!-- WHO SAID IT? -->
+  <section id="v-who-said-it" hidden>
+    <div class="intro">
+      <h2>Who Said It?</h2>
+      <p>Five famous quotes from football. Who said each one? On Intermediate you can reveal the context; on Beginner it’s always shown.</p>
+    </div>
+    <div class="meta"><span>Puzzle <b id="w2-label">—</b></span><span>Quote <b id="w2-round">1/5</b></span><span class="dots" id="w2-dots"></span></div>
+    <div class="wq" id="w2-quote"></div>
+    <div class="odd" id="w2-opts"></div>
+    <div class="bar">
+      <button class="btn" id="w2-hint" type="button">Show context</button>
+      <button class="btn primary" id="w2-next" type="button" hidden>Next quote</button>
+      <button class="btn" id="w2-new" type="button">New game</button>
+      <button class="btn" id="w2-daily" type="button" hidden>Daily puzzle</button>
+      <span class="msg" id="w2-msg" role="status"></span>
+      <div class="share" id="sh-w2" hidden></div>
+    </div>
+    <p class="beta">Quotes are well-documented public statements; ones marked “translated” were said in another language.</p>
+  </section>
+
+  <!-- DEEP CUT -->
+  <section id="v-deep-cut" hidden>
+    <div class="intro">
+      <h2>Deep Cut</h2>
+      <p>Three questions, three answers each. Every valid answer scores 1–100 points depending on how obscure it is: the obvious star gets 1, the forgotten squad player gets 100. A wrong answer loses the slot.</p>
+    </div>
+    <div class="meta"><span>Puzzle <b id="dc-label">—</b></span><span>Question <b id="dc-round">1/3</b></span><span>Points <b id="dc-total">0</b></span></div>
+    <div id="dc-q"></div>
+    <div id="dc-slots"></div>
+    <div class="inline-search" id="dc-search">
+      <label for="dc-input" class="meta">Your answer</label>
+      <input class="search" id="dc-input" autocomplete="off" placeholder="Type a player…">
+      <ul class="results" id="dc-results" hidden></ul>
+    </div>
+    <div class="bar">
+      <button class="btn primary" id="dc-next" type="button" hidden>Next question</button>
+      <button class="btn" id="dc-new" type="button">New game</button>
+      <button class="btn" id="dc-daily" type="button" hidden>Daily puzzle</button>
+      <span class="msg" id="dc-msg" role="status"></span>
+      <div class="share" id="sh-dc" hidden></div>
+    </div>
+    <p class="beta">Rarity is based on how widely each player is covered on Wikipedia.</p>
   </section>
 
   <!-- CROMOS -->
@@ -915,7 +982,7 @@ function startLink(daily){
   Object.assign(L,makeLink(seed),{daily,chain:[],strikes:0,hints:0,over:false,won:false,gaveUp:false});
   L.chain=[L.a]; L.distB=bfs(L.b).d;
   if(daily){const s=store.get("link-"+dayKey,null);if(s&&s.a===L.a&&s.b===L.b)Object.assign(L,s)}
-  document.getElementById("l-label").textContent=daily?dayLabel:"libre";
+  document.getElementById("l-label").textContent=daily?dayLabel:"free play";
   document.getElementById("l-daily").hidden=daily;
   document.getElementById("l-par").textContent=L.par;
   setMsg("l-msg",""); renderLink();
@@ -1017,7 +1084,7 @@ function startGrid(daily){
   const seed=daily?hash("grid"+dayKey):Math.floor(Math.random()*1e9);
   Object.assign(G,makeGrid(seed),{daily,filled:Array(9).fill(null),tries:12,revealed:false,over:false});
   if(daily){const s=store.get("grid-"+dayKey,null);if(s)Object.assign(G,s)}
-  document.getElementById("g-label").textContent=daily?dayLabel:"libre";
+  document.getElementById("g-label").textContent=daily?dayLabel:"free play";
   document.getElementById("g-daily").hidden=daily;
   setMsg("g-msg",""); renderGrid();
 }
@@ -1076,7 +1143,7 @@ function startTray(daily){
   const p=TP[Math.floor(r()*TP.length)];
   Object.assign(T,{daily,p,guesses:[],over:false,won:false});
   if(daily){const s=store.get("tray-"+dayKey,null);if(s&&s.pid===p.id)Object.assign(T,{guesses:s.guesses,over:s.over,won:s.won})}
-  document.getElementById("t-label").textContent=daily?dayLabel:"libre";
+  document.getElementById("t-label").textContent=daily?dayLabel:"free play";
   document.getElementById("t-daily").hidden=daily;
   setMsg("t-msg","");renderTray();
 }
@@ -1130,7 +1197,7 @@ function startOdd(daily){
   const seed=daily?hash("odd"+dayKey):Math.floor(Math.random()*1e9);
   Object.assign(O,{daily,rounds:makeOdd(seed),i:0,res:[],picked:null});
   if(daily){const s=store.get("odd-"+dayKey,null);if(s)Object.assign(O,s)}
-  document.getElementById("o-label").textContent=daily?dayLabel:"libre";
+  document.getElementById("o-label").textContent=daily?dayLabel:"free play";
   document.getElementById("o-daily").hidden=daily;
   setMsg("o-msg","");renderOdd();
 }
@@ -1444,7 +1511,7 @@ function startTimeline(daily){
   const items=makeTimeline(seed);
   Object.assign(TL,{daily,items,order:shuffle(items.map((_,i)=>i),rng(seed+7)),done:false});
   if(daily){const s=store.get("tl-"+dayKey,null);if(s&&s.order&&s.order.length===5)Object.assign(TL,{order:s.order,done:s.done})}
-  $("tl-label").textContent=daily?dayLabel:"libre";$("tl-daily").hidden=daily;setMsg("tl-msg","");renderTimeline();
+  $("tl-label").textContent=daily?dayLabel:"free play";$("tl-daily").hidden=daily;setMsg("tl-msg","");renderTimeline();
 }
 function tlCorrect(){const sorted=TL.items.map((_,i)=>i).sort((a,b)=>TL.items[a].y-TL.items[b].y);return TL.order.map((v,k)=>v===sorted[k])}
 function renderTimeline(){
@@ -1546,7 +1613,7 @@ function startLineup(daily){
   const idx=daily?seed%LINEUPS.length:(()=>{let i;do{i=Math.floor(Math.random()*LINEUPS.length)}while(LINEUPS.length>1&&i===LU.idx);return i})();
   Object.assign(LU,{daily,idx,m:LINEUPS[idx],got:[],miss:0,hints:{},over:false,gave:false});
   if(daily){const s=store.get("lu-"+dayKey,null);if(s&&s.idx===idx)Object.assign(LU,{got:s.got,miss:s.miss,hints:s.hints||{},over:s.over,gave:s.gave})}
-  $("lu-label").textContent=daily?dayLabel:"libre";$("lu-daily").hidden=daily;setMsg("lu-msg","");renderLineup();
+  $("lu-label").textContent=daily?dayLabel:"free play";$("lu-daily").hidden=daily;setMsg("lu-msg","");renderLineup();
 }
 function saveLineup(){if(LU.daily)store.set("lu-"+dayKey,{idx:LU.idx,got:LU.got,miss:LU.miss,hints:LU.hints,over:LU.over,gave:LU.gave});updateHome()}
 function renderLineup(){
@@ -1596,7 +1663,7 @@ function startFive(daily){
   const seed=daily?hash("five"+dayKey):Math.floor(Math.random()*1e9);
   Object.assign(F,{daily,levels:makeFive(seed),lv:0,picks:[[],[],[],[],[]],lives:3,over:false,won:false});
   if(daily){const s=store.get("five-"+dayKey,null);if(s)Object.assign(F,{lv:s.lv,picks:s.picks,lives:s.lives,over:s.over,won:s.won})}
-  $("f-label").textContent=daily?dayLabel:"libre";$("f-daily").hidden=daily;setMsg("f-msg","");renderFive();
+  $("f-label").textContent=daily?dayLabel:"free play";$("f-daily").hidden=daily;setMsg("f-msg","");renderFive();
 }
 function saveFive(){if(F.daily)store.set("five-"+dayKey,{lv:F.lv,picks:F.picks,lives:F.lives,over:F.over,won:F.won});updateHome()}
 function renderFive(){
@@ -1900,7 +1967,160 @@ $("vs-leave").onclick=()=>leaveRoom();$("vs-exit").onclick=()=>leaveRoom();
 TROPHIES.push({id:"rkwin",ic:"⚔️",n:"First ranked win",d:"Win a ranked match.",t:()=>rk().w>=1},{id:"rkgold",ic:"🥇",n:"Gold",d:"Reach 1100 ELO in ranked.",t:()=>rk().best>=1100},{id:"rkdia",ic:"💎",n:"Diamond",d:"Reach 1500 ELO in ranked.",t:()=>rk().best>=1500});
 setTimeout(renderRanked,1200);setTimeout(renderRanked,4000);
 
-const VIEWS=["home","link-up","grid","career","odd-one-out","lineup","54321","higher-lower","survival","timeline","versus","album"];
+// ---------- WHO SAID IT? ----------
+// Frases reales y conocidas, con su contexto. tr = traducida del original.
+const QUOTES=[
+ {q:"Please don’t call me arrogant, but I’m European champion and I think I’m a special one.",w:"José Mourinho",c:"First press conference as Chelsea manager",y:2004},
+ {q:"I’m the Happy One.",w:"José Mourinho",c:"Press conference on his return to Chelsea",y:2013},
+ {q:"As we say in Portugal, they brought the bus and they left the bus in front of the goal.",w:"José Mourinho",c:"After Chelsea 0–0 Tottenham",y:2004},
+ {q:"Respect, respect, respect.",w:"José Mourinho",c:"Leaving the press room after Man United lost 3–0 to Tottenham",y:2018},
+ {q:"He is a specialist in failure.",w:"José Mourinho",c:"On Arsène Wenger",y:2014},
+ {q:"I am the Normal One.",w:"Jürgen Klopp",c:"Unveiling as Liverpool manager",y:2015},
+ {q:"We have to change from doubters to believers.",w:"Jürgen Klopp",c:"Unveiling as Liverpool manager",y:2015},
+ {q:"Some people believe football is a matter of life and death. I can assure you it is much, much more important than that.",w:"Bill Shankly",c:"TV interview as former Liverpool manager",y:1981},
+ {q:"If you are first you are first. If you are second, you are nothing.",w:"Bill Shankly",c:"Liverpool manager",y:null},
+ {q:"There are two great teams on Merseyside: Liverpool and Liverpool reserves.",w:"Bill Shankly",c:"Liverpool manager",y:null},
+ {q:"Football, bloody hell!",w:"Alex Ferguson",c:"After Man United’s late comeback in the Champions League final",y:1999},
+ {q:"It’s getting tickly now – squeaky-bum time, I call it.",w:"Alex Ferguson",c:"On the Premier League title run-in",y:2003},
+ {q:"I will love it if we beat them. Love it!",w:"Kevin Keegan",c:"Live TV rant as Newcastle manager, aimed at Alex Ferguson",y:1996},
+ {q:"Football is a simple game: 22 men chase a ball for 90 minutes and at the end, the Germans always win.",w:"Gary Lineker",c:"After England lost the World Cup semi-final to West Germany",y:1990},
+ {q:"Playing football is very simple, but playing simple football is the hardest thing there is.",w:"Johan Cruyff",c:"",y:null,tr:1},
+ {q:"Every disadvantage has its advantage.",w:"Johan Cruyff",c:"One of his best-known sayings",y:null,tr:1},
+ {q:"I’ve never seen a bag of money score a goal.",w:"Johan Cruyff",c:"On rich clubs",y:null,tr:1},
+ {q:"When the seagulls follow the trawler, it is because they think sardines will be thrown into the sea.",w:"Eric Cantona",c:"His only words at a press conference after his kung-fu kick ban",y:1995},
+ {q:"A little with the head of Maradona and a little with the hand of God.",w:"Diego Maradona",c:"After Argentina 2–1 England at the World Cup",y:1986,tr:1},
+ {q:"One thing is for sure: a World Cup without me is nothing to watch.",w:"Zlatan Ibrahimović",c:"After Sweden lost the play-off to Portugal",y:2013},
+ {q:"I came like a king, left like a legend.",w:"Zlatan Ibrahimović",c:"Leaving Paris Saint-Germain",y:2016},
+ {q:"Dear Los Angeles, you’re welcome.",w:"Zlatan Ibrahimović",c:"Newspaper ad on joining LA Galaxy",y:2018},
+ {q:"Everybody thinks they have the prettiest wife at home.",w:"Arsène Wenger",c:"Arsenal manager, on rivals rating their own team",y:2002},
+ {q:"I did not see it.",w:"Arsène Wenger",c:"His famous answer about controversial incidents involving Arsenal",y:null},
+ {q:"I want to talk about facts.",w:"Rafa Benítez",c:"The ‘facts’ press conference about Alex Ferguson",y:2009},
+ {q:"I wouldn’t say I was the best manager in the business. But I was in the top one.",w:"Brian Clough",c:"Former Nottingham Forest manager",y:null},
+ {q:"If God had wanted us to play football in the clouds, he’d have put grass up there.",w:"Brian Clough",c:"On long-ball football",y:null},
+ {q:"Away from home our fans are fantastic… but at home they have a few drinks and probably the prawn sandwiches.",w:"Roy Keane",c:"Man United captain criticising the Old Trafford crowd",y:2000},
+ {q:"We go to Norwich, exact same. We go again.",w:"Steven Gerrard",c:"Liverpool huddle after beating Man City",y:2014},
+ {q:"In this room, he is the chief, the boss. I don’t want to compete with him here.",w:"Pep Guardiola",c:"Before the Champions League semi-final against Mourinho’s Real Madrid",y:2011,tr:1},
+ {q:"Why always me?",w:"Mario Balotelli",c:"T-shirt revealed after scoring for Man City at Old Trafford",y:2011},
+ {q:"Nice to see your home fans booing you.",w:"Wayne Rooney",c:"Into a TV camera after England 0–0 Algeria at the World Cup",y:2010},
+ {q:"Wales. Golf. Madrid. In that order.",w:"Gareth Bale",c:"Flag he celebrated with after Wales qualified for the Euros",y:2019},
+ {q:"Match by match.",w:"Diego Simeone",c:"His motto at Atlético Madrid (“partido a partido”)",y:null,tr:1},
+ {q:"They think it’s all over… it is now!",w:"Kenneth Wolstenholme",c:"BBC commentary on Geoff Hurst’s fourth goal in the World Cup final",y:1966},
+ {q:"Agüerooooo! I swear you’ll never see anything like this ever again!",w:"Martin Tyler",c:"Commentary on Man City’s last-minute title winner",y:2012},
+ {q:"We didn’t underestimate them. They were just a lot better than we thought.",w:"Bobby Robson",c:"England manager",y:null},
+ {q:"If I wanted an easy job I would have stayed at Porto – beautiful blue chair, the Champions League trophy, God, and after God, me.",w:"José Mourinho",c:"Early days at Chelsea",y:2004},
+];
+const SPEAKERS={
+ Manager:["José Mourinho","Jürgen Klopp","Bill Shankly","Alex Ferguson","Kevin Keegan","Arsène Wenger","Rafa Benítez","Brian Clough","Pep Guardiola","Diego Simeone","Bobby Robson","Carlo Ancelotti","Louis van Gaal","Antonio Conte","Fabio Capello","Marcelo Bielsa","Harry Redknapp","Arrigo Sacchi","Johan Cruyff","Zinedine Zidane"],
+ Player:["Zlatan Ibrahimović","Eric Cantona","Diego Maradona","Gary Lineker","Roy Keane","Steven Gerrard","Mario Balotelli","Wayne Rooney","Gareth Bale","Cristiano Ronaldo","Lionel Messi","Paul Gascoigne","Thierry Henry","Ronaldinho","Neymar","Sergio Ramos","Gerard Piqué","Johan Cruyff","Zinedine Zidane","Joey Barton"],
+ Commentator:["Kenneth Wolstenholme","Martin Tyler","Ray Hudson","Peter Drury","Andrés Cantor","Clive Tyldesley","John Motson","Gary Lineker"]};
+function qRole(n){return ["Commentator","Manager","Player"].find(r=>SPEAKERS[r].includes(n))}
+const WQ={},WQ_N=5;
+function makeWho(seed){
+  const r=rng(seed),qs=shuffle(QUOTES.map((_,i)=>i),r),out=[],used=new Set();
+  const nOpt=DIFF==="easy"?3:DIFF==="hard"?6:4;
+  for(const i of qs){const Q=QUOTES[i];if(used.has(Q.w)&&out.length<4&&qs.length>out.length+8)continue;used.add(Q.w);
+    const role=qRole(Q.w),pool=shuffle(SPEAKERS[role].filter(n=>n!==Q.w),r);
+    const extra=shuffle([...SPEAKERS.Manager,...SPEAKERS.Player].filter(n=>n!==Q.w&&!pool.includes(n)),r);
+    const opts=shuffle([Q.w,...[...pool,...extra].slice(0,nOpt-1)],r);
+    out.push({i,opts});if(out.length===WQ_N)break}
+  return out;
+}
+function startWho(daily){
+  const seed=daily?hash("who"+dayKey):Math.floor(Math.random()*1e9);
+  Object.assign(WQ,{daily,rounds:makeWho(seed),k:0,res:[],picked:null,hint:false,hints:0});
+  if(daily){const s=store.get("who-"+dayKey,null);if(s)Object.assign(WQ,s)}
+  $("w2-label").textContent=daily?dayLabel:"free play";$("w2-daily").hidden=daily;setMsg("w2-msg","");renderWho();
+}
+function saveWho(){if(WQ.daily)store.set("who-"+dayKey,{k:WQ.k,res:WQ.res,picked:WQ.picked,hint:WQ.hint,hints:WQ.hints});updateHome()}
+function whoCtx(Q){return [Q.c,Q.y].filter(Boolean).join(" · ")}
+function renderWho(){
+  const R=WQ.rounds[WQ.k],Q=QUOTES[R.i],done=WQ.picked!=null,last=WQ.k===WQ_N-1;
+  $("w2-round").textContent=`${WQ.k+1}/${WQ_N}`;
+  $("w2-dots").innerHTML=WQ.rounds.map((_,k)=>`<i class="${WQ.res[k]===true?"y":WQ.res[k]===false?"n":k===WQ.k?"cur":""}"></i>`).join("");
+  const showCtx=done||WQ.hint||DIFF==="easy";
+  $("w2-quote").innerHTML=`<blockquote>“${esc(Q.q)}”</blockquote><div class="ctx">${showCtx?esc(whoCtx(Q)||"No extra context")+(Q.tr?" · translated":""):(DIFF==="hard"?"No hints in Expert":"Context hidden")}</div>`;
+  $("w2-opts").innerHTML=R.opts.map(n=>{let cls="";if(done){if(n===Q.w)cls="right";else if(n===WQ.picked)cls="wrong"}
+    return `<button class="opt ${cls}" type="button" data-n="${esc(n)}" ${done?"disabled":""}><span class="nm">${esc(n)}</span><span class="why">${qRole(n)}</span></button>`}).join("");
+  $("w2-hint").hidden=done||WQ.hint||DIFF!=="mid";
+  $("w2-next").hidden=!done||last;
+  const fin=done&&last;
+  if(fin){const n=WQ.res.filter(Boolean).length;setMsg("w2-msg",`Game over: ${n} of ${WQ_N} correct.`,n>=3?"ok":"bad");
+    renderShare("w2",`Dugout · Who Said It? (${tag(WQ.daily)})\n${WQ.res.map(x=>x?"🟩":"🟥").join("")} ${n}/${WQ_N}`+(WQ.hints?` 💡×${WQ.hints}`:""))}
+  else renderShare("w2",null);
+}
+$("w2-opts").addEventListener("click",e=>{const b=e.target.closest(".opt");if(!b||WQ.picked!=null)return;
+  const Q=QUOTES[WQ.rounds[WQ.k].i];WQ.picked=b.dataset.n;WQ.res[WQ.k]=WQ.picked===Q.w;
+  setMsg("w2-msg",WQ.res[WQ.k]?`Correct! ${Q.w} said it.`:`No, it was ${Q.w}.`,WQ.res[WQ.k]?"ok":"bad");saveWho();renderWho()});
+$("w2-hint").onclick=()=>{WQ.hint=true;WQ.hints++;saveWho();renderWho()};
+$("w2-next").onclick=()=>{WQ.k++;WQ.picked=null;WQ.hint=false;setMsg("w2-msg","");saveWho();renderWho()};
+$("w2-new").onclick=()=>startWho(false);$("w2-daily").onclick=()=>startWho(true);
+const whoDone=k=>{const x=store.get("who-"+k,null);return !!(x&&x.res&&x.res.length===WQ_N)};
+
+// ---------- DEEP CUT ----------
+// Respuestas válidas puntúan según su rareza (popularidad en Wikipedia) dentro de las respuestas posibles.
+const DC={},DC_N=3,DC_SLOTS=3;
+function dcQuestion(r){
+  const clubs=CP(),stars=DIFF==="easy"?STARS:MIDP.filter(p=>p.pop>=70);
+  for(let t=0;t<400;t++){
+    const kind=r();let q;
+    if(kind<0.45){const a=clubs[Math.floor(r()*clubs.length)],b=clubs[Math.floor(r()*clubs.length)];if(a===b)continue;
+      q={t:`A player who played for <b>${esc(clubName(a))}</b> and <b>${esc(clubName(b))}</b>`,s:`${clubName(a)} + ${clubName(b)}`,ok:p=>p.set.has(a)&&p.set.has(b)}}
+    else if(kind<0.75){const c=clubs[Math.floor(r()*clubs.length)];const nats=[...new Set(PLAYERS.filter(p=>p.set.has(c)).map(p=>p.nat))];const n=nats[Math.floor(r()*nats.length)];if(!NATS[n])continue;
+      q={t:`A player from <b>${NATS[n][1]} ${esc(NATS[n][0])}</b> who played for <b>${esc(clubName(c))}</b>`,s:`${NATS[n][0]} @ ${clubName(c)}`,ok:p=>p.nat===n&&p.set.has(c)}}
+    else{const s=stars[Math.floor(r()*stars.length)];
+      q={t:`A player who was a teammate of <b>${esc(s.name)}</b>`,s:`Teammate of ${s.name}`,ok:p=>MATES[s.id].has(p.id)}}
+    const ans=PLAYERS.filter(q.ok).sort((x,y)=>y.pop-x.pop);
+    const famous=ans.filter(p=>MID_SET.has(p.id)).length;
+    if(ans.length<8||famous<4||ans.length>400)continue;
+    q.ans=ans.map(p=>p.id);return q;
+  }
+}
+function dcScore(q,id){const i=q.ans.indexOf(id);if(i<0)return 0;return Math.max(1,Math.round(100*i/(q.ans.length-1)))}
+function makeDeep(seed){const r=rng(seed),qs=[],seen=new Set();while(qs.length<DC_N){const q=dcQuestion(r);if(q&&!seen.has(q.s)){seen.add(q.s);qs.push(q)}}return qs}
+function startDeep(daily){
+  const seed=daily?hash("deep"+dayKey):Math.floor(Math.random()*1e9);
+  Object.assign(DC,{daily,qs:makeDeep(seed),k:0,picks:[[],[],[]]});
+  if(daily){const s=store.get("deep-"+dayKey,null);if(s)Object.assign(DC,s)}
+  $("dc-label").textContent=daily?dayLabel:"free play";$("dc-daily").hidden=daily;setMsg("dc-msg","");renderDeep();
+}
+function saveDeep(){if(DC.daily)store.set("deep-"+dayKey,{k:DC.k,picks:DC.picks});updateHome()}
+const dcTotal=()=>DC.picks.flat().reduce((a,x)=>a+x.pts,0);
+const dcEmoji=p=>p===0?"⬛":p>=80?"🟪":p>=50?"🟦":p>=20?"🟩":"🟨";
+const dcOver=()=>DC.k>=DC_N;
+function renderDeep(){
+  const over=dcOver(),k=Math.min(DC.k,DC_N-1),q=DC.qs[k],picks=DC.picks[k];
+  $("dc-round").textContent=`${k+1}/${DC_N}`;$("dc-total").textContent=dcTotal();
+  $("dc-q").innerHTML=over?"<b>Finished!</b> Here’s how deep you went:":q.t;
+  const slot=(p,i)=>p?`<li class="${p.pts?"y":"x"}"><span>${esc(PLAYERS[p.id].name)}</span><span class="pts">${p.pts?"+"+p.pts:"✗"}</span></li>`:`<li class="empty"><span>Answer ${i+1}</span><span class="pts">—</span></li>`;
+  const reveal=qq=>{const top=PLAYERS[qq.ans[qq.ans.length-1]],ob=PLAYERS[qq.ans[0]],mid=qq.ans.filter(id=>MID_SET.has(id));const deep=PLAYERS[mid[mid.length-1]];
+    return `<p class="dcr">Most obvious: <b>${esc(ob.name)}</b> (1 pt) · Deep cut: <b>${esc(deep.name)}</b> (${dcScore(qq,deep.id)} pts) · Deepest: <b>${esc(top.name)}</b> (100 pts) · ${qq.ans.length} valid answers</p>`};
+  if(over){$("dc-slots").innerHTML=DC.qs.map((qq,j)=>`<div class="dcblk"><div class="dcq">${qq.t}</div><ul class="dcs">${DC.picks[j].map(slot).join("")}</ul>${reveal(qq)}</div>`).join("")}
+  else{const qDone=picks.length>=DC_SLOTS;$("dc-slots").innerHTML=`<ul class="dcs">${Array.from({length:DC_SLOTS},(_,i)=>slot(picks[i],i)).join("")}</ul>`+(qDone?reveal(q):"")}
+  const qDone=!over&&picks.length>=DC_SLOTS;
+  $("dc-search").hidden=over||qDone;$("dc-next").hidden=!qDone;$("dc-next").textContent=k===DC_N-1?"See results":"Next question";
+  if(over){const t=dcTotal();setMsg("dc-msg",`Total: ${t} points out of ${DC_N*DC_SLOTS*100}.`,t>=300?"ok":"");
+    renderShare("dc",`Dugout · Deep Cut (${tag(DC.daily)})\n`+DC.picks.map(ps=>ps.map(p=>dcEmoji(p.pts)).join("")).join("\n")+`\n${t} pts`)}
+  else renderShare("dc",null);
+}
+inlineSearch("dc-input","dc-results",()=>new Set((DC.picks[DC.k]||[]).map(p=>p.id)),id=>{
+  if(dcOver())return;const q=DC.qs[DC.k],picks=DC.picks[DC.k];if(picks.length>=DC_SLOTS)return;
+  if(picks.some(p=>p.id===id)){setMsg("dc-msg","You already used that player.","bad");return}
+  const pts=dcScore(q,id);picks.push({id,pts});
+  setMsg("dc-msg",pts?(pts>=80?`Deep cut! +${pts}`:pts>=50?`Nice one. +${pts}`:pts>=20?`+${pts}`:`Too obvious… +${pts}`):`${PLAYERS[id].name} doesn’t fit. Slot lost.`,pts?"ok":"bad");
+  saveDeep();renderDeep();if(picks.length<DC_SLOTS)$("dc-input").focus()});
+$("dc-next").onclick=()=>{DC.k++;setMsg("dc-msg","");saveDeep();renderDeep()};
+$("dc-new").onclick=()=>startDeep(false);$("dc-daily").onclick=()=>startDeep(true);
+const deepDone=k=>{const x=store.get("deep-"+k,null);return !!(x&&x.k>=DC_N)};
+
+// Enganches: portada, racha y sobres
+DAILY_GAMES.push(["who","Who Said It?",whoDone],["deep","Deep Cut",deepDone]);
+const _uhW=updateHome;updateHome=function(){_uhW();
+  const w=store.get("who-"+dayKey,null),wd=whoDone(dayKey);$("st-who").textContent=wd?`Done · ${w.res.filter(Boolean).length}/${WQ_N}`:"Today’s puzzle waiting";$("st-who").className="st"+(wd?" done":"");
+  const d=store.get("deep-"+dayKey,null),dd=deepDone(dayKey);$("st-deep").textContent=dd?`Done · ${d.picks.flat().reduce((a,x)=>a+x.pts,0)} pts`:"Today’s puzzle waiting";$("st-deep").className="st"+(dd?" done":"");
+};
+const _ptW=playedToday;playedToday=function(){return _ptW()||whoDone(dayKey)||deepDone(dayKey)};
+
+const VIEWS=["home","link-up","grid","career","odd-one-out","lineup","54321","higher-lower","survival","timeline","who-said-it","deep-cut","versus","album"];
 function route(){
   let h=location.hash.slice(1);
   if(/^vs-[a-z0-9]{4,6}$/.test(h)){const c=h.slice(3);if(!V.r)$("vs-code").value=c.toUpperCase();h="versus"}
@@ -1910,7 +2130,7 @@ function route(){
   window.scrollTo(0,0);
 }
 window.addEventListener("hashchange",route);
-startLink(true);startGrid(true);startTray(true);startOdd(true);hlStart();startTimeline(true);startLineup(true);startFive(true);route();updateHome();
+startLink(true);startGrid(true);startTray(true);startOdd(true);hlStart();startTimeline(true);startLineup(true);startFive(true);startWho(true);startDeep(true);route();updateHome();
 </script>
 
 </body>
