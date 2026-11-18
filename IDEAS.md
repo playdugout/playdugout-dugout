@@ -38,4 +38,9 @@ Cada jugador crea su propio futbolista (avatar ilustrado, diseño propio, sin ju
   - Modo diario con pistas progresivas (año, club de entonces, nacionalidad) y modo Survival de frases.
   - Frases cortas, comprobadas y con contexto (fecha y ocasión); nada de frases inventadas o atribuidas en falso.
   - Si se usan de Wikiquote (CC BY-SA), citar la fuente.
-- **Juego tipo «la luna»** (inspirado en footbillion.org). Pendiente de definir mecánica propia, sin copiar su diseño.
+- **Deep Cut** (puntos por rareza; mecánica genérica tipo «cuanto más raro, más puntos», versión propia).
+  - Pregunta diaria con 3 huecos: «Nombra un jugador que haya jugado en el Barça y el Inter», «Un club donde jugó Zlatan»…
+  - Cada respuesta válida puntúa según lo rara que sea: Messi 1 punto, Javier Saviola muchos (escala 1–100 con la popularidad de Wikidata).
+  - Fase 2: rareza real según lo que respondan los demás jugadores ese día (Supabase): «solo el 2 % dijo Saviola».
+  - Respuesta inválida = 0 y pierdes el hueco. Al final, la mejor respuesta posible de cada hueco.
+  - Compartir con cuadritos de colores según la rareza.
