@@ -1,0 +1,2375 @@
+<title>Dugout</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;800&family=Barlow:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: una pizarra táctica (fieltro verde, tiza, tarjeta amarilla de acento); portada con tarjetas de juego y un tablero por juego */
+:root{
+  --felt:#163a2c; --felt-2:#1d4837; --felt-3:#24563f;
+  --chalk:#eef3ea; --chalk-dim:#a9c0b2; --line:rgba(238,243,234,.18);
+  --card:#f6c945; --card-ink:#1b1a12; --ok:#7fd69a; --bad:#ff7a6b;
+  --display:"Barlow Condensed","Arial Narrow",Impact,sans-serif;
+  --body:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  color-scheme:dark;
+}
+[hidden]{display:none!important}
+html,body{background:var(--felt);color:var(--chalk)}
+body{font-family:var(--body);font-size:16px;line-height:1.5;
+  background-image:radial-gradient(ellipse at 50% -10%,var(--felt-3),transparent 60%),repeating-linear-gradient(90deg,transparent 0 79px,rgba(255,255,255,.018) 79px 160px);
+  min-height:100vh}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--felt)}
+.wrap{max-width:780px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 48px}
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 20px;border-bottom:2px dashed var(--line);padding-bottom:14px}
+.brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit}
+.brand h1{font-family:var(--display);font-weight:800;font-size:2.4rem;line-height:1;margin:0;letter-spacing:.01em;text-transform:uppercase}
+.brand h1 span{color:var(--card)}
+.brand p{margin:2px 0 0;color:var(--chalk-dim);font-size:.85rem}
+nav{display:flex;flex-wrap:wrap;gap:4px}
+@media (max-width:620px){header{flex-direction:column;align-items:stretch;min-width:0}header>*{min-width:0;max-width:100%}nav{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding-bottom:2px;width:100%}nav a{white-space:nowrap}}
+/* Higher / Lower */
+.hl{display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:stretch;margin-top:10px}
+.hlc{border:2px solid var(--line);border-radius:14px;padding:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center;min-width:0;background:rgba(0,0,0,.14)}
+.hlc .flag{font-size:2rem;line-height:1}
+.hlc .nm{font-family:var(--display);font-weight:800;font-size:1.5rem;line-height:1.05;text-transform:uppercase;overflow-wrap:anywhere}
+.hlc .val{font-family:var(--display);font-weight:800;font-size:3rem;line-height:1;color:var(--card);font-variant-numeric:tabular-nums}
+.hlc .unit{font-family:var(--mono);font-size:.7rem;color:var(--chalk-dim);text-transform:uppercase;letter-spacing:.06em}
+.hlc.right{border-color:var(--ok)} .hlc.wrong{border-color:var(--bad)}
+.hlvs{align-self:center;font-family:var(--display);font-weight:800;font-size:1.4rem;color:var(--chalk-dim)}
+.hlbtns{display:flex;flex-direction:column;gap:8px;width:100%;max-width:200px}
+.cats{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.cats .btn[aria-pressed="true"]{background:var(--card);color:var(--card-ink);border-color:var(--card)}
+.beta{font-size:.82rem;color:var(--chalk-dim);margin-top:10px}
+@media (max-width:560px){.hl{grid-template-columns:1fr}.hlvs{justify-self:center}}
+/* Timeline */
+.tl{list-style:none;padding:0;margin:10px 0 0;display:flex;flex-direction:column;gap:8px}
+.tl li{display:grid;grid-template-columns:34px 1fr auto;gap:10px;align-items:center;padding:10px 12px;border:2px solid var(--line);border-radius:12px;background:rgba(0,0,0,.14);min-width:0}
+.tl li .n{font-family:var(--display);font-weight:800;font-size:1.3rem;color:var(--chalk-dim);text-align:center}
+.tl li .tx{display:flex;align-items:center;gap:10px;min-width:0}
+.tl li .tx b{font-family:var(--display);font-weight:800;font-size:1.15rem;text-transform:uppercase;overflow-wrap:anywhere;line-height:1.1}
+.tl li .tx span{color:var(--chalk-dim);font-size:.85rem}
+.tl li .mv{display:flex;gap:4px}
+.tl li .mv button{width:36px;height:36px;border-radius:8px;border:1.5px solid var(--chalk-dim);background:transparent;color:var(--chalk);font-size:1rem;cursor:pointer}
+.tl li .mv button:disabled{opacity:.3;cursor:default}
+.tl li.ok{border-color:var(--ok)} .tl li.ko{border-color:var(--bad)}
+.tl li .yr{font-family:var(--display);font-weight:800;font-size:1.3rem;color:var(--card)}
+.big{font-family:var(--display);font-weight:800;font-size:3rem;line-height:1;color:var(--card)}
+nav a{font-family:var(--display);font-weight:600;font-size:1.02rem;letter-spacing:.05em;text-transform:uppercase;text-decoration:none;color:var(--chalk-dim);padding:5px 10px;border-radius:6px}
+nav a:hover{color:var(--chalk)}
+nav a[aria-current="page"]{color:var(--card-ink);background:var(--card)}
+a:focus-visible,button:focus-visible,input:focus-visible,.cell:focus-visible{outline:3px solid var(--card);outline-offset:2px}
+
+.intro{margin:22px 0 14px}
+.intro h2{font-family:var(--display);font-weight:800;font-size:1.9rem;margin:0;text-transform:uppercase;text-wrap:balance}
+.intro p{margin:2px 0 0;color:var(--chalk-dim);max-width:62ch}
+.meta{display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-family:var(--mono);font-size:.8rem;color:var(--chalk-dim);text-transform:uppercase;letter-spacing:.05em}
+.meta b{color:var(--chalk);font-weight:500}
+
+/* Portada */
+.hero{margin:28px 0 20px}
+.hero h2{font-family:var(--display);font-weight:800;font-size:clamp(2rem,6vw,3rem);line-height:1;margin:0;text-transform:uppercase;text-wrap:balance}
+.hero h2 em{font-style:normal;color:var(--card)}
+.hero p{color:var(--chalk-dim);max-width:56ch;margin:8px 0 0}
+.games{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,330px),1fr));gap:12px}
+.game{display:grid;grid-template-columns:72px 1fr;gap:14px;align-items:center;padding:16px;border:2px solid var(--line);border-radius:14px;text-decoration:none;color:inherit;background:rgba(0,0,0,.12);transition:border-color .15s,transform .15s}
+.game:hover{border-color:var(--card);transform:translateY(-2px)}
+.game svg{width:72px;height:72px}
+.game h3{font-family:var(--display);font-weight:800;font-size:1.45rem;margin:0;text-transform:uppercase;letter-spacing:.02em}
+.game p{margin:2px 0 6px;color:var(--chalk-dim);font-size:.92rem}
+.game .st{font-family:var(--mono);font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--card)}
+.game .st.done{color:var(--ok)}
+.game .tag{font-family:var(--mono);font-size:.62rem;background:var(--card);color:var(--card-ink);padding:1px 6px;border-radius:4px;vertical-align:middle;margin-left:6px;letter-spacing:.05em}
+
+/* Rejilla */
+.grid{display:grid;grid-template-columns:minmax(64px,.8fr) repeat(3,1fr);gap:8px;margin-top:8px}
+.hd{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center;font-family:var(--display);font-weight:600;font-size:.95rem;line-height:1.1;text-transform:uppercase;letter-spacing:.03em;padding:6px 2px;min-width:0}
+.badge{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:.95rem;letter-spacing:.02em;box-shadow:0 0 0 2px var(--chalk),0 3px 0 rgba(0,0,0,.3);flex:none}
+.badge.flag{font-size:1.6rem;background:var(--felt-3)}
+.badge.sm{width:28px;height:28px;font-size:.66rem;box-shadow:0 0 0 1.5px var(--chalk)}
+.cell{aspect-ratio:1;max-width:100%;border:2px solid var(--line);border-radius:10px;background:rgba(0,0,0,.14);color:var(--chalk);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:6px;cursor:pointer;font:inherit;text-align:center;min-width:0;transition:border-color .15s,background .15s}
+.cell:hover:not(:disabled){border-color:var(--chalk-dim);background:rgba(0,0,0,.22)}
+.cell .plus{font-family:var(--display);font-size:2rem;color:var(--line);line-height:1}
+.cell.filled{background:var(--chalk);color:var(--felt);border-color:var(--chalk);cursor:default}
+.cell.filled .nm{font-family:var(--display);font-weight:800;font-size:1.05rem;line-height:1.05;text-transform:uppercase;overflow-wrap:anywhere}
+.cell .sub{font-family:var(--mono);font-size:.68rem;opacity:.7}
+.cell.reveal{border-style:dashed;cursor:default}
+.cell.reveal .nm{font-family:var(--display);font-size:.95rem;line-height:1.05;color:var(--chalk-dim);overflow-wrap:anywhere}
+.shake{animation:shake .35s;border-color:var(--bad)!important}
+@keyframes shake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.corner{display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:var(--mono);font-size:.7rem;color:var(--chalk-dim);text-align:center;text-transform:uppercase}
+.corner b{font-family:var(--display);font-size:2.2rem;color:var(--card);line-height:1}
+
+.bar{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px;align-items:center}
+.btn{font-family:var(--display);font-weight:600;font-size:1.05rem;letter-spacing:.05em;text-transform:uppercase;border-radius:8px;padding:8px 16px;border:2px solid var(--chalk);background:transparent;color:var(--chalk);cursor:pointer}
+.btn:hover:not(:disabled){background:rgba(255,255,255,.07)}
+.btn:disabled{opacity:.4;cursor:default}
+.btn.primary{background:var(--card);color:var(--card-ink);border-color:var(--card)}
+.btn.primary:hover{filter:brightness(1.06)}
+.msg{min-height:1.5em;font-weight:500;flex-basis:100%}
+.msg.ok{color:var(--ok)} .msg.bad{color:var(--bad)}
+
+/* Buscador */
+.picker{position:fixed;inset:0;background:rgba(5,15,10,.7);display:flex;align-items:flex-start;justify-content:center;padding:calc(10vh + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) 16px max(16px,env(safe-area-inset-left,0px));z-index:20}
+.sheet{width:100%;max-width:460px;background:var(--felt-2);border:2px solid var(--line);border-radius:14px;padding:16px;box-shadow:0 20px 50px rgba(0,0,0,.5)}
+.sheet .q{font-family:var(--display);font-size:1.05rem;text-transform:uppercase;letter-spacing:.04em;color:var(--chalk-dim);margin:0 0 10px}
+.sheet .q b{color:var(--chalk)}
+.search{width:100%;box-sizing:border-box;font:inherit;font-size:1.05rem;padding:10px 12px;border-radius:8px;border:2px solid var(--chalk-dim);background:var(--felt);color:var(--chalk)}
+.search::placeholder{color:var(--chalk-dim)}
+.search:disabled{opacity:.5}
+.results{list-style:none;margin:8px 0 0;padding:0;max-height:300px;overflow:auto}
+.results li button{width:100%;text-align:left;font:inherit;background:transparent;border:0;color:var(--chalk);padding:9px 10px;border-radius:6px;cursor:pointer;display:flex;justify-content:space-between;gap:10px}
+.results li button:hover,.results li button.act{background:rgba(255,255,255,.08)}
+.results li button span{color:var(--chalk-dim);font-size:.9rem}
+.results li.none{padding:10px;color:var(--chalk-dim)}
+.used{opacity:.45}
+.inline-search{position:relative;margin-top:16px}
+.inline-search label{display:block;margin-bottom:6px}
+.inline-search .results{position:absolute;left:0;right:0;top:100%;background:var(--felt-2);border:2px solid var(--line);border-radius:10px;z-index:5;margin-top:4px}
+
+/* Trayectoria */
+.path{display:flex;flex-wrap:wrap;align-items:flex-start;gap:10px 6px;padding:20px;border:2px dashed var(--line);border-radius:14px;margin-top:8px;justify-content:center}
+.stop{display:flex;flex-direction:column;align-items:center;gap:4px;width:84px;text-align:center}
+.stop .lbl{font-family:var(--display);font-weight:600;font-size:.88rem;line-height:1.1;text-transform:uppercase}
+.stop .yr{font-family:var(--mono);font-size:.66rem;color:var(--chalk-dim)}
+.arrow{font-family:var(--display);font-size:1.4rem;color:var(--card);padding-top:8px}
+.hints{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:14px}
+.hint{border:1px solid var(--line);border-radius:10px;padding:10px 12px;min-width:0}
+.hint .k{font-family:var(--mono);font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;color:var(--chalk-dim)}
+.hint .v{font-family:var(--display);font-weight:600;font-size:1.25rem;letter-spacing:.04em;overflow-wrap:anywhere}
+.hint.locked .v{color:var(--chalk-dim);opacity:.5}
+.guesses{list-style:none;padding:0;margin:14px 0 0;display:flex;flex-direction:column;gap:6px}
+.guesses li{display:flex;justify-content:space-between;gap:10px;padding:8px 12px;border-radius:8px;background:rgba(0,0,0,.18);font-weight:500}
+.guesses li.x{color:var(--bad)} .guesses li.y{color:var(--felt);background:var(--ok)}
+.tries{display:flex;gap:6px;align-items:center}
+.tries i{width:14px;height:20px;border-radius:2px;background:var(--card);display:block}
+.tries i.spent{background:var(--line)}
+
+/* Conexión */
+.chain{display:flex;flex-direction:column;align-items:stretch;margin-top:10px}
+.pl{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;border:2px solid var(--line);background:rgba(0,0,0,.14);min-width:0}
+.pl .flag{font-size:1.5rem;line-height:1}
+.pl .nm{font-family:var(--display);font-weight:800;font-size:1.35rem;text-transform:uppercase;letter-spacing:.02em;line-height:1.05;overflow-wrap:anywhere}
+.pl .rl{font-family:var(--mono);font-size:.68rem;text-transform:uppercase;letter-spacing:.06em;color:var(--chalk-dim)}
+.pl.start{border-color:var(--chalk);background:var(--chalk);color:var(--felt)}
+.pl.start .rl{color:var(--felt-3)}
+.pl.goal{border-color:var(--card);border-style:dashed}
+.pl.goal.reached{background:var(--card);color:var(--card-ink);border-style:solid}
+.pl.goal.reached .rl{color:var(--card-ink)}
+.pl.mid{border-color:var(--chalk-dim)}
+.pl.ghost{border-style:dashed;color:var(--chalk-dim);justify-content:center;font-family:var(--display);text-transform:uppercase;letter-spacing:.06em}
+.link{display:flex;align-items:center;gap:10px;padding:6px 0 6px 26px;min-height:30px;position:relative;font-size:.88rem;color:var(--chalk-dim)}
+.link::before{content:"";position:absolute;left:26px;top:0;bottom:0;border-left:3px dotted var(--card)}
+.link > *{margin-left:18px}
+.link.gap::before{border-left-color:var(--line)}
+.link b{color:var(--chalk);font-weight:600}
+.pill{font-family:var(--mono);font-size:.72rem;padding:2px 8px;border-radius:99px;border:1px solid var(--line);text-transform:uppercase;letter-spacing:.05em}
+
+/* Intruso */
+.odd-q{font-family:var(--display);font-size:1.15rem;text-transform:uppercase;letter-spacing:.04em;color:var(--chalk-dim);margin:14px 0 8px}
+.odd{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.opt{font:inherit;text-align:left;padding:16px;border-radius:12px;border:2px solid var(--line);background:rgba(0,0,0,.14);color:var(--chalk);cursor:pointer;display:flex;flex-direction:column;gap:4px;min-width:0}
+.opt:hover:not(:disabled){border-color:var(--chalk-dim)}
+.opt .nm{font-family:var(--display);font-weight:800;font-size:1.3rem;text-transform:uppercase;line-height:1.05;overflow-wrap:anywhere}
+.opt .why{font-size:.8rem;color:var(--chalk-dim)}
+.opt.right{border-color:var(--ok);background:rgba(127,214,154,.14)}
+.opt.wrong{border-color:var(--bad);background:rgba(255,122,107,.12)}
+.opt:disabled{cursor:default}
+.dots{display:flex;gap:6px}
+.dots i{width:12px;height:12px;border-radius:50%;border:2px solid var(--chalk-dim);display:block}
+.dots i.y{background:var(--ok);border-color:var(--ok)} .dots i.n{background:var(--bad);border-color:var(--bad)} .dots i.cur{border-color:var(--card)}
+
+/* Versus */
+.vs-panel{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:12px;margin-top:10px}
+.box{border:2px solid var(--line);border-radius:14px;padding:16px;background:rgba(0,0,0,.12);display:flex;flex-direction:column;gap:10px;min-width:0}
+.box h3{font-family:var(--display);font-weight:800;font-size:1.3rem;margin:0;text-transform:uppercase}
+.box p{margin:0;color:var(--chalk-dim);font-size:.92rem}
+.code{font-family:var(--mono);font-size:clamp(2rem,9vw,3rem);letter-spacing:.25em;color:var(--card);line-height:1.1;text-transform:uppercase}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.row .search{flex:1;min-width:0}
+.players{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.players li{display:grid;grid-template-columns:28px 1fr auto;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;background:rgba(0,0,0,.18);min-width:0}
+.players li .pos{font-family:var(--display);font-weight:800;font-size:1.2rem;color:var(--chalk-dim);text-align:center}
+.players li .who{font-weight:600;overflow-wrap:anywhere;min-width:0}
+.players li .who small{display:block;font-family:var(--mono);font-size:.68rem;color:var(--chalk-dim);font-weight:500;text-transform:uppercase;letter-spacing:.05em}
+.players li .pts{font-family:var(--display);font-weight:800;font-size:1.3rem;font-variant-numeric:tabular-nums}
+.players li.me{outline:2px solid var(--card)}
+.players li:first-child .pos{color:var(--card)}
+.timer{height:8px;border-radius:99px;background:var(--line);overflow:hidden;margin:10px 0 4px}
+.timer i{display:block;height:100%;background:var(--card);width:100%;transform-origin:left}
+.qcard{border:2px solid var(--line);border-radius:14px;padding:18px;margin-top:8px}
+.qcard .qt{font-family:var(--mono);font-size:.72rem;color:var(--card);text-transform:uppercase;letter-spacing:.08em}
+.qcard h3{font-family:var(--display);font-weight:800;font-size:1.6rem;line-height:1.1;margin:4px 0 12px;text-transform:uppercase;text-wrap:balance}
+.mini-path{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.mini-path span{font-family:var(--display);font-weight:600;font-size:.95rem;text-transform:uppercase;padding:3px 8px;border:1px solid var(--line);border-radius:6px}
+.mini-path span small{font-family:var(--mono);font-size:.62rem;color:var(--chalk-dim);margin-left:4px}
+.vs-layout{display:grid;grid-template-columns:minmax(0,1fr) 230px;gap:14px;align-items:start}
+@media (max-width:680px){.vs-layout{grid-template-columns:1fr}}
+.notice{border:1px dashed var(--card);border-radius:10px;padding:10px 12px;color:var(--chalk);font-size:.9rem}
+
+/* Lineup */
+.match{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:baseline;margin:12px 0 10px}
+.match .comp{font-family:var(--mono);font-size:.75rem;text-transform:uppercase;letter-spacing:.06em;color:var(--card)}
+.match .res{font-family:var(--display);font-weight:800;font-size:1.6rem;text-transform:uppercase;line-height:1.1;flex-basis:100%}
+.match .res em{font-style:normal;color:var(--card)}
+.match .fm{font-family:var(--mono);font-size:.75rem;color:var(--chalk-dim)}
+.pitch{position:relative;border:2px solid var(--chalk-dim);border-radius:10px;padding:18px 8px;display:flex;flex-direction:column;gap:18px;background:repeating-linear-gradient(180deg,rgba(255,255,255,.035) 0 48px,transparent 48px 96px);overflow:hidden}
+.pitch::before{content:"";position:absolute;left:0;right:0;top:50%;border-top:2px solid var(--line)}
+.pitch::after{content:"";position:absolute;left:50%;top:50%;width:80px;height:80px;margin:-40px 0 0 -40px;border:2px solid var(--line);border-radius:50%}
+.pline{display:flex;justify-content:space-around;gap:4px;position:relative;z-index:1}
+.slot{display:flex;flex-direction:column;align-items:center;gap:4px;width:84px;text-align:center;min-width:0}
+.slot .dot{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;border:2px dashed var(--chalk-dim);font-family:var(--display);font-weight:800;color:var(--chalk-dim);background:var(--felt)}
+.slot.got .dot{border:2px solid var(--chalk);background:var(--chalk);color:var(--felt)}
+.slot.lost .dot{border:2px solid var(--bad);color:var(--bad)}
+.slot .nm{font-family:var(--display);font-weight:600;font-size:.85rem;line-height:1.05;text-transform:uppercase;min-height:2.1em;overflow-wrap:anywhere}
+.slot .ps{font-family:var(--mono);font-size:.6rem;color:var(--chalk-dim)}
+.slot.lost .nm{color:var(--bad)}
+@media (max-width:420px){.slot{width:64px}.slot .dot{width:34px;height:34px}.slot .nm{font-size:.74rem}}
+/* 5-4-3-2-1 */
+.levels{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.lvl{border:2px solid var(--line);border-radius:12px;padding:12px 14px;display:grid;grid-template-columns:44px 1fr;gap:4px 12px;align-items:center;min-width:0}
+.lvl .num{grid-row:span 2;font-family:var(--display);font-weight:800;font-size:2.4rem;line-height:1;color:var(--chalk-dim);text-align:center}
+.lvl .cond{font-weight:600;min-width:0}
+.lvl .picks{display:flex;flex-wrap:wrap;gap:6px;min-width:0}
+.lvl .picks span{font-family:var(--display);font-weight:600;font-size:.9rem;text-transform:uppercase;padding:2px 8px;border-radius:6px;border:1.5px dashed var(--line);color:var(--chalk-dim)}
+.lvl .picks span.y{border:1.5px solid var(--ok);color:var(--ok)}
+.lvl .picks span.sol{border-style:solid;border-color:var(--chalk-dim)}
+.lvl.cur{border-color:var(--card)} .lvl.cur .num{color:var(--card)}
+.lvl.done{border-color:var(--ok)} .lvl.done .num{color:var(--ok)}
+.lvl.lock{opacity:.45}
+.lvl.fail{border-color:var(--bad)}
+/* Nivel */
+.diff{flex-basis:100%;display:flex;flex-wrap:wrap;align-items:center;gap:6px 6px}
+.diff .lbl{font-family:var(--mono);font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--chalk-dim);margin-right:4px}
+.diff button{font-family:var(--display);font-weight:600;font-size:.95rem;letter-spacing:.04em;text-transform:uppercase;padding:4px 12px;border-radius:99px;border:1.5px solid var(--line);background:transparent;color:var(--chalk-dim);cursor:pointer}
+.diff button:hover{color:var(--chalk);border-color:var(--chalk-dim)}
+.diff button[aria-pressed="true"]{background:var(--chalk);color:var(--felt);border-color:var(--chalk)}
+.diff .dtxt{font-size:.82rem;color:var(--chalk-dim);flex-basis:100%}
+/* Cromos */
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:14px 0 12px;border-bottom:2px dashed var(--line);padding-bottom:10px}
+.tabs button{font-family:var(--display);font-weight:600;font-size:1.05rem;letter-spacing:.05em;text-transform:uppercase;background:transparent;border:0;color:var(--chalk-dim);padding:6px 10px;border-radius:6px;cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--card);color:var(--card-ink)}
+.packbox{display:flex;flex-wrap:wrap;gap:18px;align-items:center}
+.packbox p{margin:0 0 10px;color:var(--chalk-dim);max-width:44ch}
+.pack{width:110px;height:150px;border-radius:12px;background:linear-gradient(160deg,var(--card),#e0a92a);color:var(--card-ink);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;box-shadow:0 8px 0 rgba(0,0,0,.25);border:3px solid var(--chalk);font-family:var(--display);text-transform:uppercase}
+.pack span{font-weight:800;font-size:1.3rem;letter-spacing:.06em} .pack b{font-size:1rem;letter-spacing:.2em} .pack small{font-family:var(--mono);font-size:.62rem}
+.reveal{display:flex;flex-wrap:wrap;gap:12px;margin-top:16px}
+.reveal .ccard{width:150px;animation:pop .5s both}
+.reveal .ccard:nth-child(2){animation-delay:.25s}.reveal .ccard:nth-child(3){animation-delay:.5s}
+@keyframes pop{from{transform:rotateY(90deg) scale(.8);opacity:0}to{transform:none;opacity:1}}
+.cgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:8px}
+@media (max-width:420px){.ccard .nm{font-size:.95rem}.ccard .fl{font-size:1.5rem}}
+.ccard{--r:var(--chalk-dim);position:relative;border-radius:12px;padding:10px;border:3px solid var(--r);background:linear-gradient(170deg,rgba(255,255,255,.08),rgba(0,0,0,.2));display:flex;flex-direction:column;gap:5px;min-width:0;aspect-ratio:3/4.2;max-width:100%}
+.ccard.rare{--r:#7fc4ff}.ccard.epic{--r:#d7a6ff}.ccard.legend{--r:var(--card);background:linear-gradient(170deg,rgba(246,201,69,.28),rgba(0,0,0,.2))}
+.ccard .top{display:flex;justify-content:space-between;align-items:center;font-family:var(--mono);font-size:.6rem;text-transform:uppercase;letter-spacing:.06em;color:var(--r)}
+.ccard .fl{font-size:1.9rem;line-height:1;margin-top:4px}
+.ccard .nm{font-family:var(--display);font-weight:800;font-size:1.1rem;line-height:1.02;text-transform:uppercase;overflow-wrap:anywhere}
+.ccard .cl{display:flex;flex-wrap:wrap;gap:3px;margin-top:auto}
+.ccard .cl .badge{width:22px;height:22px;font-size:.5rem;box-shadow:0 0 0 1px var(--chalk)}
+.ccard .ft{font-family:var(--mono);font-size:.6rem;color:var(--chalk-dim)}
+.ccard .tagn{position:absolute;top:-8px;right:-6px;font-family:var(--mono);font-size:.62rem;background:var(--ok);color:var(--felt);padding:1px 6px;border-radius:4px}
+.ccard .tagn.dup{background:var(--chalk-dim)}
+.ccard.locked{border-style:dashed;--r:var(--line);background:rgba(0,0,0,.12);align-items:center;justify-content:center;color:var(--chalk-dim)}
+.ccard.locked .q{font-family:var(--display);font-weight:800;font-size:2rem;opacity:.5}
+.trolist{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:8px}
+.trolist li{display:grid;grid-template-columns:40px 1fr;gap:10px;align-items:center;padding:10px 12px;border-radius:12px;border:2px solid var(--line);min-width:0}
+.trolist li .ic{font-size:1.6rem;text-align:center;filter:grayscale(1);opacity:.4}
+.trolist li.on{border-color:var(--card)} .trolist li.on .ic{filter:none;opacity:1}
+.trolist li b{font-family:var(--display);font-size:1.1rem;text-transform:uppercase;display:block}
+.trolist li span{font-size:.85rem;color:var(--chalk-dim)}
+.trade{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:12px;margin-top:10px}
+.trade .ccard{width:150px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;max-height:220px;overflow:auto}
+.chips button{font:inherit;font-size:.85rem;padding:4px 10px;border-radius:99px;border:1.5px solid var(--line);background:transparent;color:var(--chalk);cursor:pointer}
+.chips button[aria-pressed="true"]{background:var(--card);color:var(--card-ink);border-color:var(--card)}
+.toast{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--card);color:var(--card-ink);font-weight:600;padding:10px 18px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.4);z-index:30;max-width:calc(100% - 32px);text-align:center}
+/* Ruleta */
+.wheelwrap{display:flex;flex-wrap:wrap;gap:24px;align-items:center}
+.wheelbox{position:relative;width:min(280px,80vw);aspect-ratio:1;max-width:100%}
+.wheel{width:100%;height:100%;border-radius:50%;border:6px solid var(--chalk);box-shadow:0 10px 0 rgba(0,0,0,.25);transition:transform 4.2s cubic-bezier(.12,.7,.1,1);position:relative}
+.wheel span{position:absolute;left:50%;top:50%;font-size:1.25rem;line-height:1;transform-origin:0 0}
+.hub{position:absolute;left:50%;top:50%;width:52px;height:52px;margin:-26px 0 0 -26px;border-radius:50%;background:var(--felt);border:4px solid var(--chalk);display:grid;place-items:center;font-family:var(--display);font-weight:800;color:var(--card)}
+.pointer{position:absolute;left:50%;top:-14px;margin-left:-14px;width:0;height:0;border-left:14px solid transparent;border-right:14px solid transparent;border-top:26px solid var(--card);z-index:2;filter:drop-shadow(0 2px 0 rgba(0,0,0,.4))}
+.wheelside{flex:1;min-width:min(100%,240px)}
+.wheelside p{margin:0 0 10px;color:var(--chalk-dim)}
+.freezes b{color:var(--chalk)}
+.prizes{list-style:none;margin:10px 0 0;padding:0;display:grid;grid-template-columns:1fr auto;gap:4px 12px;font-size:.88rem}
+.prizes li{display:contents}
+.prizes li span:last-child{font-family:var(--mono);color:var(--chalk-dim);text-align:right}
+.prizes i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px}
+.streak .days i.fz{background:#7fc4ff}
+/* Ranked */
+.rankbox{border-color:var(--card)}
+.rk{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:baseline;font-family:var(--mono);font-size:.8rem;color:var(--chalk-dim);text-transform:uppercase}
+.rk .dv{font-family:var(--display);font-weight:800;font-size:1.5rem;color:var(--chalk);text-transform:uppercase}
+.rk b{color:var(--card);font-size:1rem}
+.rkres{font-family:var(--display);font-weight:800;font-size:1.4rem;text-transform:uppercase;margin:0}
+.rkres.up{color:var(--ok)} .rkres.down{color:var(--bad)}
+/* Compartir y racha */
+.share{flex-basis:100%;display:flex;flex-direction:column;gap:8px;border:2px dashed var(--line);border-radius:12px;padding:12px 14px;min-width:0}
+.share pre{margin:0;font-family:var(--mono);font-size:.82rem;line-height:1.45;white-space:pre-wrap;overflow-wrap:anywhere;color:var(--chalk)}
+.share .row a{text-decoration:none}
+.streak{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+.streak span{display:flex;align-items:center;gap:8px;border:2px solid var(--line);border-radius:99px;padding:5px 14px 5px 10px;font-family:var(--display);font-weight:600;font-size:1.05rem;text-transform:uppercase;letter-spacing:.04em}
+.streak span b{font-size:1.4rem;color:var(--card)}
+.streak .days{display:flex;gap:4px;border:0;padding:0}
+.streak .days i{width:14px;height:14px;border-radius:3px;background:var(--line);display:block}
+.streak .days i.on{background:var(--card)}
+footer{margin-top:40px;color:var(--chalk-dim);font-size:.82rem;border-top:2px dashed var(--line);padding-top:12px}
+
+@media (max-width:520px){
+  .brand h1{font-size:2rem}
+  .grid{gap:6px;grid-template-columns:52px repeat(3,1fr)}
+  .badge{width:36px;height:36px;font-size:.8rem}
+  .hd{font-size:.72rem}
+  .cell.filled .nm{font-size:.82rem}
+  .cell.reveal .nm{font-size:.76rem}
+  .stop{width:70px}
+  .odd{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header>
+    <a class="brand" href="#home">
+      <svg width="46" height="46" viewBox="0 0 46 46" aria-hidden="true"><path d="M4 30 V20 Q4 8 23 8 Q42 8 42 20 V30" fill="none" stroke="currentColor" stroke-width="2.5"/><line x1="2" y1="30" x2="44" y2="30" stroke="currentColor" stroke-width="2.5"/><line x1="9" y1="24" x2="37" y2="24" stroke="currentColor" stroke-width="2"/><circle cx="15" cy="19" r="3" fill="#f6c945"/><circle cx="23" cy="19" r="3" fill="currentColor"/><circle cx="31" cy="19" r="3" fill="currentColor"/><path d="M10 38 h26" stroke="#f6c945" stroke-width="2" stroke-dasharray="3 3"/></svg>
+      <div><h1>Dug<span>out</span></h1><p>Retos diarios para futboleros</p></div>
+    </a>
+    <nav aria-label="Juegos">
+      <a href="#home" id="nav-home">Inicio</a>
+      <a href="#link-up" id="nav-link-up">Link-Up</a>
+      <a href="#grid" id="nav-grid">Grid</a>
+      <a href="#career" id="nav-career">Career</a>
+      <a href="#odd-one-out" id="nav-odd-one-out">Odd One Out</a>
+      <a href="#lineup" id="nav-lineup">Lineup</a>
+      <a href="#54321" id="nav-54321">5-4-3-2-1</a>
+      <a href="#higher-lower" id="nav-higher-lower">Higher/Lower</a>
+      <a href="#survival" id="nav-survival">Survival</a>
+      <a href="#timeline" id="nav-timeline">Timeline</a>
+      <a href="#versus" id="nav-versus">Versus</a>
+      <a href="#album" id="nav-album">Cromos</a>
+    </nav>
+    <div class="diff" role="group" aria-label="Nivel de dificultad">
+      <span class="lbl">Nivel</span>
+      <button type="button" data-diff="easy">Principiante</button>
+      <button type="button" data-diff="mid">Intermedio</button>
+      <button type="button" data-diff="hard">Experto</button>
+      <span class="dtxt" id="diff-txt"></span>
+    </div>
+  </header>
+
+  <main>
+  <!-- PORTADA -->
+  <section id="v-home">
+    <div class="hero">
+      <h2>Diez juegos de fútbol, <em>sepas mucho o poco</em></h2>
+      <p>Pon a prueba lo que sabes de fichajes, vestuarios, goles y trayectorias. Los retos diarios cambian a medianoche y el resto se juega sin límite.</p>
+      <div class="streak" id="streak"></div>
+    </div>
+    <div class="games">
+      <a class="game" href="#album">
+        <svg viewBox="0 0 72 72" aria-hidden="true"><rect x="10" y="12" width="34" height="46" rx="4" fill="#a9c0b2" transform="rotate(-10 27 35)"/><rect x="26" y="10" width="34" height="46" rx="4" fill="#f6c945" stroke="#163a2c" stroke-width="2" transform="rotate(8 43 33)"/><text x="44" y="40" text-anchor="middle" font-family="Barlow Condensed,sans-serif" font-weight="800" font-size="16" fill="#163a2c" transform="rotate(8 43 33)">★</text></svg>
+        <div><h3>Cromos y trofeos <span class="tag">NUEVO</span></h3><p>Gana sobres jugando, completa el álbum e intercambia repetidos con tus amigos.</p><span class="st" id="st-album"></span></div>
+      </a>
+      <a class="game" href="#lineup">
+        <svg viewBox="0 0 72 72" aria-hidden="true"><rect x="8" y="4" width="56" height="64" rx="4" fill="none" stroke="#a9c0b2" stroke-width="2"/><line x1="8" y1="36" x2="64" y2="36" stroke="#a9c0b2" stroke-width="1.5"/><circle cx="36" cy="60" r="4" fill="#f6c945"/><circle cx="18" cy="48" r="4" fill="#eef3ea"/><circle cx="30" cy="48" r="4" fill="#eef3ea"/><circle cx="42" cy="48" r="4" fill="#eef3ea"/><circle cx="54" cy="48" r="4" fill="#eef3ea"/><circle cx="24" cy="30" r="4" fill="#eef3ea"/><circle cx="36" cy="30" r="4" fill="#eef3ea"/><circle cx="48" cy="30" r="4" fill="#eef3ea"/><circle cx="22" cy="14" r="4" fill="none" stroke="#f6c945" stroke-width="2"/><circle cx="36" cy="12" r="4" fill="none" stroke="#f6c945" stroke-width="2"/><circle cx="50" cy="14" r="4" fill="none" stroke="#f6c945" stroke-width="2"/></svg>
+        <div><h3>Lineup <span class="tag">NUEVO</span></h3><p>Te damos un partido histórico. ¿Te sabes el once titular?</p><span class="st" id="st-lu"></span></div>
+      </a>
+      <a class="game" href="#54321">
+        <svg viewBox="0 0 72 72" aria-hidden="true"><g font-family="Barlow Condensed,sans-serif" font-weight="800" text-anchor="middle"><text x="12" y="62" font-size="30" fill="#eef3ea">5</text><text x="26" y="56" font-size="25" fill="#cfdccf">4</text><text x="39" y="50" font-size="21" fill="#a9c0b2">3</text><text x="51" y="44" font-size="17" fill="#d8c060">2</text><text x="62" y="38" font-size="14" fill="#f6c945">1</text></g></svg>
+        <div><h3>5-4-3-2-1 <span class="tag">NUEVO</span></h3><p>Nombra 5 jugadores, luego 4, 3, 2 y 1… con condiciones cada vez más difíciles.</p><span class="st" id="st-54"></span></div>
+      </a>
+      <a class="game" href="#higher-lower">
+        <svg viewBox="0 0 72 72" aria-hidden="true"><rect x="6" y="14" width="26" height="44" rx="5" fill="#eef3ea"/><rect x="40" y="14" width="26" height="44" rx="5" fill="none" stroke="#f6c945" stroke-width="3"/><path d="M53 26l-6 8h12zM53 46l-6-8h12z" fill="#f6c945"/><text x="19" y="42" text-anchor="middle" font-family="Barlow Condensed,sans-serif" font-weight="800" font-size="14" fill="#163a2c">G</text></svg>
+        <div><h3>Higher or Lower <span class="tag">NUEVO</span></h3><p>¿Más o menos goles, asistencias o tarjetas? Encadena aciertos y bate tu récord.</p><span class="st" id="st-hl"></span></div>
+      </a>
+      <a class="game" href="#survival">
+        <svg viewBox="0 0 72 72" aria-hidden="true"><path d="M36 8c10 14 18 20 18 34a18 18 0 0 1-36 0c0-8 4-12 8-16 0 6 3 9 6 10-2-12 2-20 4-28z" fill="#f6c945"/><path d="M36 40c4 5 7 8 7 13a7 7 0 0 1-14 0c0-5 3-8 7-13z" fill="#163a2c"/></svg>
+        <div><h3>Survival <span class="tag">NUEVO</span></h3><p>Preguntas rápidas sin fin. Un fallo y se acabó. ¿Hasta dónde llega tu racha?</p><span class="st" id="st-sv"></span></div>
+      </a>
+      <a class="game" href="#timeline">
+        <svg viewBox="0 0 72 72" aria-hidden="true"><line x1="10" y1="36" x2="62" y2="36" stroke="#a9c0b2" stroke-width="3"/><circle cx="14" cy="36" r="6" fill="#eef3ea"/><circle cx="30" cy="36" r="6" fill="#eef3ea"/><circle cx="46" cy="36" r="6" fill="#eef3ea"/><circle cx="60" cy="36" r="6" fill="#f6c945"/><text x="36" y="60" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#a9c0b2">2004 → 2024</text></svg>
+        <div><h3>Timeline <span class="tag">NUEVO</span></h3><p>Ordena cinco fichajes del más antiguo al más reciente.</p><span class="st" id="st-tl"></span></div>
+      </a>
+      <a class="game" href="#link-up">
+        <svg viewBox="0 0 72 72" aria-hidden="true"><circle cx="14" cy="18" r="9" fill="#eef3ea"/><circle cx="58" cy="54" r="9" fill="none" stroke="#f6c945" stroke-width="3" stroke-dasharray="4 3"/><circle cx="40" cy="30" r="6" fill="#a9c0b2"/><path d="M20 22 L35 28 M43 35 L54 47" stroke="#f6c945" stroke-width="3" stroke-dasharray="3 4" stroke-linecap="round"/></svg>
+        <div><h3>Link-Up <span class="tag">NUEVO</span></h3><p>Une a dos jugadores que nunca coincidieron a través de compañeros de vestuario.</p><span class="st" id="st-link"></span></div>
+      </a>
+      <a class="game" href="#grid">
+        <svg viewBox="0 0 72 72" aria-hidden="true"><g fill="none" stroke="#a9c0b2" stroke-width="2"><rect x="8" y="8" width="56" height="56" rx="6"/><path d="M27 8v56M45 8v56M8 27h56M8 45h56"/></g><rect x="29" y="29" width="14" height="14" rx="2" fill="#f6c945"/><rect x="11" y="11" width="14" height="14" rx="2" fill="#eef3ea"/></svg>
+        <div><h3>Grid</h3><p>Rellena la rejilla 3×3 con jugadores que cumplan el club o país de su fila y su columna.</p><span class="st" id="st-grid"></span></div>
+      </a>
+      <a class="game" href="#career">
+        <svg viewBox="0 0 72 72" aria-hidden="true"><circle cx="12" cy="36" r="7" fill="#eef3ea"/><circle cx="36" cy="36" r="7" fill="#a9c0b2"/><circle cx="60" cy="36" r="7" fill="#f6c945"/><path d="M20 36h8M44 36h8" stroke="#f6c945" stroke-width="3"/><text x="36" y="62" text-anchor="middle" font-family="Barlow Condensed,sans-serif" font-weight="800" font-size="16" fill="#eef3ea">?</text></svg>
+        <div><h3>Career</h3><p>Adivina el jugador a partir de los clubes por los que pasó, con sus años.</p><span class="st" id="st-career"></span></div>
+      </a>
+      <a class="game" href="#odd-one-out">
+        <svg viewBox="0 0 72 72" aria-hidden="true"><circle cx="20" cy="20" r="10" fill="#eef3ea"/><circle cx="52" cy="20" r="10" fill="#eef3ea"/><circle cx="20" cy="52" r="10" fill="#eef3ea"/><circle cx="52" cy="52" r="10" fill="none" stroke="#ff7a6b" stroke-width="3"/><path d="M47 47l10 10M57 47l-10 10" stroke="#ff7a6b" stroke-width="3"/></svg>
+        <div><h3>Odd One Out</h3><p>Tres compartieron club y uno no. Encuentra al intruso en cinco rondas.</p><span class="st" id="st-odd"></span></div>
+      </a>
+      <a class="game" href="#versus">
+        <svg viewBox="0 0 72 72" aria-hidden="true"><circle cx="20" cy="26" r="10" fill="#eef3ea"/><path d="M6 56c2-10 8-14 14-14s12 4 14 14" fill="#eef3ea"/><circle cx="52" cy="26" r="10" fill="#f6c945"/><path d="M38 56c2-10 8-14 14-14s12 4 14 14" fill="#f6c945"/><text x="36" y="14" text-anchor="middle" font-family="Barlow Condensed,sans-serif" font-weight="800" font-size="12" fill="#a9c0b2">VS</text></svg>
+        <div><h3>Versus <span class="tag">ONLINE</span></h3><p>Crea una sala con tus amigos o juega ranked contra rivales de tu nivel y sube de división.</p><span class="st">Multijugador en directo</span></div>
+      </a>
+    </div>
+  </section>
+
+  <!-- LINK-UP -->
+  <section id="v-link-up" hidden>
+    <div class="intro">
+      <h2>Link-Up</h2>
+      <p>Estos dos jugadores nunca fueron compañeros. Conéctalos con una cadena de futbolistas que sí jugaron juntos en el mismo club y en la misma temporada. Cuantos menos eslabones, mejor.</p>
+    </div>
+    <div class="meta"><span>Reto <b id="l-label">—</b></span><span>Mejor cadena posible <b id="l-par">—</b> pasos</span><span>Fallos <b id="l-strikes">0</b></span></div>
+    <div class="chain" id="l-chain"></div>
+    <div class="inline-search">
+      <label for="l-input" class="meta" id="l-ask">¿Con quién jugó?</label>
+      <input class="search" id="l-input" autocomplete="off" placeholder="Escribe un compañero…">
+      <ul class="results" id="l-results" hidden></ul>
+    </div>
+    <div class="bar">
+      <button class="btn" id="l-undo" type="button">Deshacer</button>
+      <button class="btn" id="l-hint" type="button">Pista</button>
+      <button class="btn" id="l-give" type="button">Rendirse</button>
+      <button class="btn primary" id="l-new" type="button">Nuevo reto</button>
+      <button class="btn" id="l-daily" type="button" hidden>Reto del día</button>
+      <span class="msg" id="l-msg" role="status"></span>
+      <div class="share" id="sh-l" hidden></div>
+    </div>
+  </section>
+
+  <!-- GRID -->
+  <section id="v-grid" hidden>
+    <div class="intro">
+      <h2>Grid</h2>
+      <p>Rellena cada casilla con un jugador que haya pasado por los dos equipos (o equipo y país) que se cruzan. No puedes repetir jugador.</p>
+    </div>
+    <div class="meta"><span>Reto <b id="g-label">—</b></span><span>Aciertos <b id="g-score">0/9</b></span></div>
+    <div class="grid" id="gridboard" aria-label="Rejilla 3 por 3"></div>
+    <div class="bar">
+      <button class="btn" id="g-reveal" type="button">Ver soluciones</button>
+      <button class="btn primary" id="g-new" type="button">Nueva rejilla</button>
+      <button class="btn" id="g-daily" type="button" hidden>Reto del día</button>
+      <span class="msg" id="g-msg" role="status"></span>
+      <div class="share" id="sh-g" hidden></div>
+    </div>
+  </section>
+
+  <!-- CAREER -->
+  <section id="v-career" hidden>
+    <div class="intro">
+      <h2>Career</h2>
+      <p>Estos son los clubes por los que pasó un jugador, en orden y con sus temporadas. ¿Quién es? Cada fallo destapa una pista.</p>
+    </div>
+    <div class="meta"><span>Reto <b id="t-label">—</b></span><span class="tries" id="t-tries" aria-label="Intentos"></span></div>
+    <div class="path" id="t-path"></div>
+    <div class="hints" id="t-hints"></div>
+    <div class="inline-search">
+      <label for="t-input" class="meta">Tu respuesta</label>
+      <input class="search" id="t-input" autocomplete="off" placeholder="Escribe un nombre…">
+      <ul class="results" id="t-results" hidden></ul>
+    </div>
+    <ul class="guesses" id="t-guesses"></ul>
+    <div class="bar">
+      <button class="btn primary" id="t-new" type="button">Otro jugador</button>
+      <button class="btn" id="t-daily" type="button" hidden>Reto del día</button>
+      <span class="msg" id="t-msg" role="status"></span>
+      <div class="share" id="sh-t" hidden></div>
+    </div>
+  </section>
+
+  <!-- ODD ONE OUT -->
+  <section id="v-odd-one-out" hidden>
+    <div class="intro">
+      <h2>Odd One Out</h2>
+      <p>Tres de estos jugadores pasaron por el mismo club. Uno nunca jugó allí. Encuéntralo.</p>
+    </div>
+    <div class="meta"><span>Reto <b id="o-label">—</b></span><span>Ronda <b id="o-round">1/5</b></span><span class="dots" id="o-dots"></span></div>
+    <p class="odd-q">¿Quién es el intruso?</p>
+    <div class="odd" id="o-opts"></div>
+    <div class="bar">
+      <button class="btn primary" id="o-next" type="button" hidden>Siguiente ronda</button>
+      <button class="btn" id="o-new" type="button">Nueva partida</button>
+      <button class="btn" id="o-daily" type="button" hidden>Reto del día</button>
+      <span class="msg" id="o-msg" role="status"></span>
+      <div class="share" id="sh-o" hidden></div>
+    </div>
+  </section>
+
+  <!-- LINEUP -->
+  <section id="v-lineup" hidden>
+    <div class="intro">
+      <h2>Lineup</h2>
+      <p>Adivina el once titular de este partido. Escribe nombres o apellidos de uno en uno; cada acierto aparece en su posición.</p>
+    </div>
+    <div class="meta"><span>Reto <b id="lu-label">—</b></span><span>Acertados <b id="lu-score">0/11</b></span><span>Fallos <b id="lu-miss">0</b></span></div>
+    <div class="match" id="lu-match"></div>
+    <div class="pitch" id="lu-pitch"></div>
+    <div class="inline-search">
+      <label for="lu-input" class="meta">Escribe un jugador y pulsa Enter</label>
+      <div class="row"><input class="search" id="lu-input" autocomplete="off" placeholder="Ej.: Iniesta"><button class="btn" id="lu-try" type="button">Probar</button></div>
+    </div>
+    <div class="bar">
+      <button class="btn" id="lu-hint" type="button">Pista</button>
+      <button class="btn" id="lu-give" type="button">Rendirse</button>
+      <button class="btn primary" id="lu-new" type="button">Otro partido</button>
+      <button class="btn" id="lu-daily" type="button" hidden>Reto del día</button>
+      <span class="msg" id="lu-msg" role="status"></span>
+      <div class="share" id="sh-lu" hidden></div>
+    </div>
+  </section>
+
+  <!-- 5-4-3-2-1 -->
+  <section id="v-54321" hidden>
+    <div class="intro">
+      <h2>5-4-3-2-1</h2>
+      <p>Cinco niveles. En el primero nombra 5 jugadores que cumplan la condición, en el segundo 4, y así hasta 1. Cada nivel es más difícil. Tienes 3 vidas para toda la partida.</p>
+    </div>
+    <div class="meta"><span>Reto <b id="f-label">—</b></span><span>Vidas <b id="f-lives">❤️❤️❤️</b></span></div>
+    <div class="levels" id="f-levels"></div>
+    <div class="inline-search" id="f-search">
+      <label for="f-input" class="meta" id="f-ask">Tu respuesta</label>
+      <input class="search" id="f-input" autocomplete="off" placeholder="Escribe un jugador…">
+      <ul class="results" id="f-results" hidden></ul>
+    </div>
+    <div class="bar">
+      <button class="btn" id="f-give" type="button">Rendirse</button>
+      <button class="btn primary" id="f-new" type="button">Otra partida</button>
+      <button class="btn" id="f-daily" type="button" hidden>Reto del día</button>
+      <span class="msg" id="f-msg" role="status"></span>
+      <div class="share" id="sh-f" hidden></div>
+    </div>
+  </section>
+
+  <!-- HIGHER OR LOWER -->
+  <section id="v-higher-lower" hidden>
+    <div class="intro">
+      <h2>Higher or Lower</h2>
+      <p>¿El segundo jugador tiene más o menos que el primero? Acierta y sigue; un fallo y vuelta a empezar. Cifras de toda su carrera en clubes.</p>
+    </div>
+    <div class="meta"><span>Racha <b id="h-streak">0</b></span><span>Récord <b id="h-best">0</b></span></div>
+    <div class="cats" id="h-cats" role="group" aria-label="Estadística"></div>
+    <div class="hl" id="h-board"></div>
+    <div class="bar">
+      <button class="btn primary" id="h-restart" type="button" hidden>Jugar otra vez</button>
+      <span class="msg" id="h-msg" role="status"></span>
+      <div class="share" id="sh-h" hidden></div>
+    </div>
+    <p class="beta">Versión beta: cifras aproximadas (≈) de toda la carrera en clubes, en todas las competiciones. Solo se comparan jugadores con diferencias claras.</p>
+  </section>
+
+  <!-- SURVIVAL -->
+  <section id="v-survival" hidden>
+    <div class="intro">
+      <h2>Survival</h2>
+      <p>Preguntas sin fin con 10 segundos cada una. Aguanta todo lo que puedas: el primer fallo termina la partida.</p>
+    </div>
+    <div class="meta"><span>Racha <b id="s-streak">0</b></span><span>Récord <b id="s-best">0</b></span></div>
+    <div id="s-start" class="box" style="margin-top:12px">
+      <h3>¿Preparado?</h3>
+      <p>Compañeros de vestuario, clubes, trayectorias. Sin pistas y sin segundas oportunidades.</p>
+      <button class="btn primary" id="s-go" type="button">Empezar</button>
+    </div>
+    <div id="s-play" hidden>
+      <div class="timer"><i id="s-bar"></i></div>
+      <div class="qcard" id="s-q"></div>
+      <span class="msg" id="s-fb" role="status"></span>
+    </div>
+    <div id="s-over" class="box" style="margin-top:12px" hidden>
+      <h3>Fin de la racha</h3>
+      <div class="big" id="s-final">0</div>
+      <p id="s-overtxt"></p>
+      <div class="share" id="sh-s" hidden></div>
+      <button class="btn primary" id="s-again" type="button">Otra vez</button>
+    </div>
+  </section>
+
+  <!-- TIMELINE -->
+  <section id="v-timeline" hidden>
+    <div class="intro">
+      <h2>Timeline</h2>
+      <p>Ordena estos fichajes del más antiguo (arriba) al más reciente (abajo). Usa las flechas para moverlos.</p>
+    </div>
+    <div class="meta"><span>Reto <b id="tl-label">—</b></span><span>Resultado <b id="tl-score">—</b></span></div>
+    <ol class="tl" id="tl-list"></ol>
+    <div class="bar">
+      <button class="btn primary" id="tl-check" type="button">Comprobar</button>
+      <button class="btn" id="tl-new" type="button">Otro reto</button>
+      <button class="btn" id="tl-daily" type="button" hidden>Reto del día</button>
+      <span class="msg" id="tl-msg" role="status"></span>
+      <div class="share" id="sh-tl" hidden></div>
+    </div>
+  </section>
+
+  <!-- CROMOS -->
+  <section id="v-album" hidden>
+    <div class="intro">
+      <h2>Cromos y trofeos</h2>
+      <p>Cada reto diario que completas te da un sobre con 3 cromos (uno por juego y día). Los trofeos dan sobres extra. Completa el álbum e intercambia repetidos con tus amigos.</p>
+    </div>
+    <div class="meta"><span>Sobres <b id="c-npacks">0</b></span><span>Colección <b id="c-count">0</b></span><span>Trofeos <b id="c-ntro">0</b></span></div>
+    <div class="tabs" role="tablist">
+      <button type="button" data-tab="packs" aria-selected="true">Sobres</button>
+      <button type="button" data-tab="album" aria-selected="false">Álbum</button>
+      <button type="button" data-tab="wheel" aria-selected="false">Ruleta</button>
+      <button type="button" data-tab="trophies" aria-selected="false">Trofeos</button>
+      <button type="button" data-tab="trade" aria-selected="false">Intercambiar</button>
+    </div>
+    <div id="c-tab-packs">
+      <div class="packbox">
+        <div class="pack" aria-hidden="true"><span>DUGOUT</span><b>SOBRE</b><small>3 cromos</small></div>
+        <div>
+          <p id="c-packtxt"></p>
+          <button class="btn primary" id="c-open" type="button">Abrir sobre</button>
+        </div>
+      </div>
+      <div class="reveal" id="c-reveal"></div>
+      <p class="beta">Probabilidad por cromo: Común 50 % · Rara 30 % · Épica 16 % · Leyenda 4 %.</p>
+    </div>
+    <div id="c-tab-album" hidden>
+      <div class="cats" id="c-filters"></div>
+      <div class="cgrid" id="c-grid"></div>
+    </div>
+    <div id="c-tab-wheel" hidden>
+      <div class="wheelwrap">
+        <div class="wheelbox">
+          <span class="pointer" aria-hidden="true"></span>
+          <div class="wheel" id="w-wheel" aria-hidden="true"></div>
+          <span class="hub" aria-hidden="true">GO</span>
+        </div>
+        <div class="wheelside">
+          <p id="w-txt"></p>
+          <button class="btn primary" id="w-spin" type="button">Girar</button>
+          <p class="freezes">Congeladores de racha: <b id="w-fz">0</b>/2</p>
+          <ul class="prizes" id="w-prizes"></ul>
+        </div>
+      </div>
+      <span class="msg" id="w-msg" role="status"></span>
+      <div class="reveal" id="w-reveal"></div>
+    </div>
+    <div id="c-tab-trophies" hidden>
+      <ul class="trolist" id="c-trolist"></ul>
+    </div>
+    <div id="c-tab-trade" hidden>
+      <div class="notice" id="tr-offline" hidden>El intercambio en directo necesita abrir la página con tu sesión de Claude iniciada, y tu amigo necesita acceso a la página. El intercambio con cualquier jugador llegará con la versión pública de la web.</div>
+      <div id="tr-setup" class="vs-panel">
+        <div class="box"><h3>Crear intercambio</h3><p>Te damos un código para que tu amigo se una.</p><button class="btn primary" id="tr-create" type="button">Crear</button></div>
+        <div class="box"><h3>Unirse con código</h3><div class="row"><input class="search" id="tr-code" maxlength="5" autocomplete="off" placeholder="CÓDIGO" style="text-transform:uppercase;letter-spacing:.2em"><button class="btn" id="tr-join" type="button">Entrar</button></div></div>
+      </div>
+      <div id="tr-live" hidden>
+        <div class="meta" style="margin-top:12px"><span>Código <b id="tr-codeshow">—</b></span><span id="tr-partner">Esperando a tu amigo…</span></div>
+        <div class="trade">
+          <div class="box"><h3>Tú ofreces</h3><div id="tr-mine"></div><p>Elige un cromo de tu colección (los repetidos aparecen primero):</p><div class="chips" id="tr-pick"></div></div>
+          <div class="box"><h3>Tu amigo ofrece</h3><div id="tr-theirs"><p>Aún no ha elegido.</p></div></div>
+        </div>
+        <div class="bar">
+          <button class="btn primary" id="tr-accept" type="button" disabled>Aceptar intercambio</button>
+          <button class="btn" id="tr-leave" type="button">Salir</button>
+          <span class="msg" id="tr-msg" role="status"></span>
+        </div>
+      </div>
+      <span class="msg" id="tr-msg0" role="status"></span>
+    </div>
+  </section>
+
+  <!-- VERSUS -->
+  <section id="v-versus" hidden>
+    <div class="intro">
+      <h2>Versus</h2>
+      <p>Duelo online: 10 preguntas mezcladas de trayectorias, compañeros de vestuario, clubes e intrusos. 15 segundos por pregunta; cuanto antes aciertes, más puntos.</p>
+    </div>
+
+    <div id="vs-setup">
+      <div class="notice" id="vs-offline" hidden>El modo online no está disponible en esta vista. Abre la página con tu sesión de Claude iniciada; tus amigos necesitan acceso a la página (compártela con ellos desde el menú Compartir). Mientras tanto puedes jugar el duelo en solitario.</div>
+      <div class="vs-panel">
+        <div class="box">
+          <h3>Tu apodo</h3>
+          <input class="search" id="vs-nick" maxlength="20" autocomplete="off" placeholder="Ej.: ElNueveDeArea">
+          <p>Es lo que verán los demás en el marcador.</p>
+        </div>
+        <div class="box">
+          <h3>Crear sala</h3>
+          <p>Te damos un código y un enlace para invitar a tus amigos.</p>
+          <button class="btn primary" id="vs-create" type="button">Crear partida</button>
+        </div>
+        <div class="box">
+          <h3>Unirse con código</h3>
+          <div class="row"><input class="search" id="vs-code" maxlength="5" autocomplete="off" placeholder="CÓDIGO" style="text-transform:uppercase;letter-spacing:.2em"><button class="btn" id="vs-join" type="button">Entrar</button></div>
+        </div>
+        <div class="box rankbox">
+          <h3>Ranked</h3>
+          <div class="rk"><span class="dv" id="rk-div">🥈 Plata</span><span>ELO <b id="rk-elo">1000</b></span><span id="rk-rec">0V · 0E · 0D</span></div>
+          <p>Duelos 1 contra 1 con rivales de tu nivel. Ganar sube tu ELO y perder lo baja. Abandonar cuenta como derrota.</p>
+          <button class="btn primary" id="rk-find" type="button">Buscar partida</button>
+          <span class="msg" id="rk-msg" role="status"></span>
+          <p class="beta">🥉 Bronce · 🥈 Plata 900 · 🥇 Oro 1100 · 💠 Platino 1300 · 💎 Diamante 1500 · 👑 Leyenda 1700</p>
+        </div>
+        <div class="box">
+          <h3>Practicar solo</h3>
+          <p>El mismo duelo, sin rivales.</p>
+          <button class="btn" id="vs-solo" type="button">Jugar en solitario</button>
+        </div>
+      </div>
+      <span class="msg" id="vs-msg" role="status"></span>
+    </div>
+
+    <div id="vs-lobby" hidden>
+      <div class="vs-panel">
+        <div class="box">
+          <h3>Código de la sala</h3>
+          <div class="code" id="vs-codeshow">—</div>
+          <div class="row">
+            <button class="btn" id="vs-copycode" type="button">Copiar código</button>
+            <button class="btn" id="vs-copylink" type="button">Copiar enlace</button>
+          </div>
+          <p id="vs-linktext" style="overflow-wrap:anywhere;font-family:var(--mono);font-size:.75rem"></p>
+        </div>
+        <div class="box">
+          <h3>Jugadores</h3>
+          <ul class="players" id="vs-lobbylist"></ul>
+          <button class="btn primary" id="vs-start" type="button">Empezar duelo</button>
+          <p id="vs-wait">Esperando a que el anfitrión empiece…</p>
+          <button class="btn" id="vs-leave" type="button">Salir de la sala</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="vs-play" hidden>
+      <div class="vs-layout">
+        <div>
+          <div class="meta"><span>Pregunta <b id="vs-qn">1/10</b></span><span>Tus puntos <b id="vs-score">0</b></span></div>
+          <div class="timer"><i id="vs-bar"></i></div>
+          <div class="qcard" id="vs-q"></div>
+          <span class="msg" id="vs-fb" role="status"></span>
+        </div>
+        <div class="box" id="vs-boardbox">
+          <h3>Marcador</h3>
+          <ul class="players" id="vs-board"></ul>
+        </div>
+      </div>
+    </div>
+
+    <div id="vs-results" hidden>
+      <div class="box">
+        <h3 id="vs-restitle">Resultado</h3>
+        <ul class="players" id="vs-final"></ul>
+        <p id="vs-reswait"></p>
+        <p class="rkres" id="vs-elo" hidden></p>
+        <div class="row">
+          <button class="btn primary" id="vs-again" type="button">Revancha</button>
+          <button class="btn primary" id="rk-again" type="button" hidden>Buscar otra ranked</button>
+          <button class="btn" id="vs-exit" type="button">Salir</button>
+        </div>
+      </div>
+    </div>
+  </section>
+  </main>
+  <div class="toast" id="toast" role="status" hidden></div>
+
+  <footer>Juego de aficionados sin relación con ningún club ni liga. Los escudos son insignias genéricas con las siglas de cada equipo. Base de datos: <span id="count"></span> jugadores; las temporadas se indican por año de inicio (2013–2018 = de la 13/14 a la 17/18).</footer>
+</div>
+
+<div class="picker" id="picker" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="p-q">
+    <p class="q" id="p-q"></p>
+    <input class="search" id="p-input" autocomplete="off" placeholder="Busca un jugador…">
+    <ul class="results" id="p-results"></ul>
+  </div>
+</div>
+
+<script>
+// ---------- Datos ----------
+const CLUBS = {
+  RMA:["Real Madrid","#f4f4f4","#1d3f8f"], FCB:["Barcelona","#004d98","#edbb00"], ATM:["Atlético","#cb3524","#fff"],
+  SEV:["Sevilla","#fff","#d71920"], VAL:["Valencia","#1a1a1a","#f18e00"], VIL:["Villarreal","#ffe667","#005187"],
+  BET:["Betis","#0bb363","#fff"], ATH:["Athletic","#ee2523","#fff"], RSO:["Real Sociedad","#0067b1","#fff"],
+  MUN:["Man. United","#da291c","#fbe122"], MCI:["Man. City","#6cabdd","#1c2c5b"], LIV:["Liverpool","#c8102e","#fff"],
+  CHE:["Chelsea","#034694","#fff"], ARS:["Arsenal","#ef0107","#fff"], TOT:["Tottenham","#fff","#132257"],
+  JUV:["Juventus","#111","#fff"], MIL:["Milan","#fb090b","#111"], INT:["Inter","#010e80","#fff"],
+  NAP:["Napoli","#12a0d7","#fff"], ROM:["Roma","#8e1f2f","#f0bc42"], BAY:["Bayern","#dc052d","#fff"],
+  BVB:["Dortmund","#fde100","#111"], PSG:["PSG","#004170","#fff"], MON:["Mónaco","#e7182e","#fff"],
+  LYO:["Lyon","#fff","#1d4a9f"], MAR:["Marsella","#2faee0","#fff"], BEN:["Benfica","#e83030","#fff"],
+  POR:["Oporto","#00428c","#fff"], SPO:["Sporting CP","#008057","#fff"], AJA:["Ajax","#fff","#d2122e"],
+  PSV:["PSV","#ed1c24","#fff"], BOC:["Boca Juniors","#103f79","#f3b229"], RIV:["River Plate","#fff","#e30613"],
+  INM:["Inter Miami","#f7b5cd","#231f20"], ALN:["Al-Nassr","#fcd116","#1c3c94"], LEV:["Leverkusen","#e32221","#111"],
+  CEL:["Celtic","#018749","#fff"], GAL:["Galatasaray","#a90432","#fdb912"], HIL:["Al-Hilal","#1d4ed8","#fff"],
+  SCH:["Schalke","#004d9d","#fff"], GEN:["Genk","#0c3ea1","#fff"], WOL:["Wolfsburg","#65b32e","#fff"]
+};
+const NATS = {ESP:["España","🇪🇸"],ARG:["Argentina","🇦🇷"],BRA:["Brasil","🇧🇷"],FRA:["Francia","🇫🇷"],GER:["Alemania","🇩🇪"],POR:["Portugal","🇵🇹"],ENG:["Inglaterra","🏴󠁧󠁢󠁥󠁮󠁧󠁿"],NED:["Países Bajos","🇳🇱"],CRO:["Croacia","🇭🇷"],URU:["Uruguay","🇺🇾"],BEL:["Bélgica","🇧🇪"],ITA:["Italia","🇮🇹"],COL:["Colombia","🇨🇴"],POL:["Polonia","🇵🇱"],NOR:["Noruega","🇳🇴"],EGY:["Egipto","🇪🇬"],SEN:["Senegal","🇸🇳"],SWE:["Suecia","🇸🇪"],WAL:["Gales","🏴󠁧󠁢󠁷󠁬󠁳󠁿"],CIV:["Costa de Marfil","🇨🇮"],CMR:["Camerún","🇨🇲"],MAR:["Marruecos","🇲🇦"],SVN:["Eslovenia","🇸🇮"],CHI:["Chile","🇨🇱"],CRC:["Costa Rica","🇨🇷"],TUR:["Turquía","🇹🇷"],KOR:["Corea del Sur","🇰🇷"],JPN:["Japón","🇯🇵"],GHA:["Ghana","🇬🇭"],MNE:["Montenegro","🇲🇪"],BIH:["Bosnia","🇧🇦"],MLI:["Malí","🇲🇱"],ISL:["Islandia","🇮🇸"],MEX:["México","🇲🇽"],DEN:["Dinamarca","🇩🇰"],BUL:["Bulgaria","🇧🇬"],UKR:["Ucrania","🇺🇦"],SRB:["Serbia","🇷🇸"],NGA:["Nigeria","🇳🇬"],GEO:["Georgia","🇬🇪"],SVK:["Eslovaquia","🇸🇰"],GRE:["Grecia","🇬🇷"],CZE:["Chequia","🇨🇿"],ECU:["Ecuador","🇪🇨"],USA:["Estados Unidos","🇺🇸"],GAB:["Gabón","🇬🇦"],ALG:["Argelia","🇩🇿"],FIN:["Finlandia","🇫🇮"],SCO:["Escocia","🏴󠁧󠁢󠁳󠁣󠁴󠁿"],HUN:["Hungría","🇭🇺"],AUT:["Austria","🇦🇹"],CAN:["Canadá","🇨🇦"],ARM:["Armenia","🇦🇲"],SUI:["Suiza","🇨🇭"]};
+
+// Nombre | país | CLUB:temporadaInicio-temporadaFin;...  (fin exclusivo: 2013-2018 = 13/14 a 17/18; préstamos incluidos)
+const RAW = `Cristiano Ronaldo|POR|SPO:2002-2003;MUN:2003-2009;RMA:2009-2018;JUV:2018-2021;MUN:2021-2022;ALN:2022-2026
+Lionel Messi|ARG|FCB:2004-2021;PSG:2021-2023;INM:2023-2026
+Luis Suárez|URU|Nacional:2005-2006;Groningen:2006-2007;AJA:2007-2011;LIV:2010-2014;FCB:2014-2020;ATM:2020-2022;Nacional:2022-2023;Grêmio:2023-2024;INM:2024-2026
+Neymar|BRA|Santos:2009-2013;FCB:2013-2017;PSG:2017-2023;HIL:2023-2025;Santos:2024-2026
+Zlatan Ibrahimović|SWE|Malmö:1999-2001;AJA:2001-2004;JUV:2004-2006;INT:2006-2009;FCB:2009-2010;MIL:2010-2012;PSG:2012-2016;MUN:2016-2018;LA Galaxy:2018-2020;MIL:2019-2023
+Ángel Di María|ARG|Rosario Central:2005-2007;BEN:2007-2010;RMA:2010-2014;MUN:2014-2015;PSG:2015-2022;JUV:2022-2023;BEN:2023-2025;Rosario Central:2025-2026
+Gonzalo Higuaín|ARG|RIV:2005-2007;RMA:2006-2013;NAP:2013-2016;JUV:2016-2018;MIL:2018-2019;CHE:2018-2019;JUV:2019-2020;INM:2020-2023
+Sergio Agüero|ARG|Independiente:2003-2006;ATM:2006-2011;MCI:2011-2021;FCB:2021-2022
+Fernando Torres|ESP|ATM:2001-2007;LIV:2007-2011;CHE:2010-2014;MIL:2014-2015;ATM:2014-2018;Sagan Tosu:2018-2019
+Xabi Alonso|ESP|RSO:1999-2000;Eibar:2000-2001;RSO:2001-2004;LIV:2004-2009;RMA:2009-2014;BAY:2014-2017
+David Villa|ESP|Sporting de Gijón:2000-2003;Zaragoza:2003-2005;VAL:2005-2010;FCB:2010-2013;ATM:2013-2014;New York City:2014-2018;Vissel Kobe:2019-2020
+David Silva|ESP|Eibar:2004-2005;Celta:2005-2006;VAL:2006-2010;MCI:2010-2020;RSO:2020-2023
+Juan Mata|ESP|VAL:2007-2011;CHE:2011-2014;MUN:2013-2022;GAL:2022-2023;Vissel Kobe:2023-2024
+Cesc Fàbregas|ESP|ARS:2003-2011;FCB:2011-2014;CHE:2014-2019;MON:2018-2022;Como:2022-2023
+Gerard Piqué|ESP|MUN:2004-2006;Zaragoza:2006-2007;MUN:2007-2008;FCB:2008-2023
+Sergio Ramos|ESP|SEV:2003-2005;RMA:2005-2021;PSG:2021-2023;SEV:2023-2024;Monterrey:2025-2026
+Iker Casillas|ESP|RMA:1999-2015;POR:2015-2020
+Andrés Iniesta|ESP|FCB:2002-2018;Vissel Kobe:2018-2023;Emirates Club:2023-2024
+Xavi Hernández|ESP|FCB:1998-2015;Al-Sadd:2015-2019
+Pepe Reina|ESP|FCB:2000-2002;VIL:2002-2005;LIV:2005-2013;NAP:2013-2014;BAY:2014-2015;NAP:2015-2018;MIL:2018-2020;Aston Villa:2019-2020;Lazio:2020-2022;VIL:2022-2024;Como:2024-2025
+Álvaro Morata|ESP|RMA:2010-2014;JUV:2014-2016;RMA:2016-2017;CHE:2017-2019;ATM:2018-2020;JUV:2020-2022;ATM:2022-2024;MIL:2024-2025;GAL:2024-2025;Como:2025-2026
+Diego Costa|ESP|Braga:2006-2007;ATM:2007-2009;Valladolid:2009-2010;ATM:2010-2011;Rayo Vallecano:2011-2012;ATM:2012-2014;CHE:2014-2017;ATM:2017-2020;Wolves:2022-2023;Botafogo:2023-2024
+Raúl González|ESP|RMA:1994-2010;SCH:2010-2012;Al-Sadd:2012-2014;NY Cosmos:2014-2015
+Isco|ESP|VAL:2010-2011;Málaga:2011-2013;RMA:2013-2022;SEV:2022-2023;BET:2023-2026
+Dani Carvajal|ESP|LEV:2012-2013;RMA:2013-2026
+Dani Alves|BRA|Bahia:2001-2003;SEV:2002-2008;FCB:2008-2016;JUV:2016-2017;PSG:2017-2019;São Paulo:2019-2021;FCB:2021-2022;Pumas:2022-2023
+Ronaldinho|BRA|Grêmio:1998-2001;PSG:2001-2003;FCB:2003-2008;MIL:2008-2011;Flamengo:2010-2012;Atlético Mineiro:2012-2014;Querétaro:2014-2015;Fluminense:2015-2016
+Ronaldo Nazário|BRA|Cruzeiro:1993-1994;PSV:1994-1996;FCB:1996-1997;INT:1997-2002;RMA:2002-2007;MIL:2006-2008;Corinthians:2009-2011
+Kaká|BRA|São Paulo:2001-2003;MIL:2003-2009;RMA:2009-2013;MIL:2013-2014;Orlando City:2015-2018
+Casemiro|BRA|São Paulo:2010-2013;RMA:2012-2014;POR:2014-2015;RMA:2015-2022;MUN:2022-2026
+Vinícius Júnior|BRA|Flamengo:2017-2018;RMA:2018-2026
+Rodrygo|BRA|Santos:2017-2019;RMA:2019-2026
+Philippe Coutinho|BRA|Vasco da Gama:2009-2010;INT:2010-2013;Espanyol:2011-2012;LIV:2012-2018;FCB:2017-2019;BAY:2019-2020;FCB:2020-2022;Aston Villa:2021-2023;Al-Duhail:2023-2024;Vasco da Gama:2024-2026
+Roberto Carlos|BRA|Palmeiras:1993-1995;INT:1995-1996;RMA:1996-2007;Fenerbahçe:2007-2010;Corinthians:2010-2012
+Thiago Silva|BRA|Fluminense:2006-2009;MIL:2009-2012;PSG:2012-2020;CHE:2020-2024;Fluminense:2024-2026
+Marcelo|BRA|Fluminense:2005-2007;RMA:2006-2022;Olympiacos:2022-2023;Fluminense:2023-2025
+Alisson Becker|BRA|Internacional:2013-2016;ROM:2016-2018;LIV:2018-2026
+Ederson|BRA|Rio Ave:2012-2015;BEN:2015-2017;MCI:2017-2025;Fenerbahçe:2025-2026
+Fabinho|BRA|Rio Ave:2012-2013;MON:2013-2018;LIV:2018-2023;Al-Ittihad:2023-2026
+Marquinhos|BRA|Corinthians:2011-2012;ROM:2012-2013;PSG:2013-2026
+Gabriel Jesus|BRA|Palmeiras:2015-2017;MCI:2016-2022;ARS:2022-2026
+Roberto Firmino|BRA|Hoffenheim:2010-2015;LIV:2015-2023;Al-Ahli:2023-2025
+Raphinha|BRA|Vitória Guimarães:2016-2018;SPO:2018-2019;Rennes:2019-2020;Leeds:2020-2022;FCB:2022-2026
+Kylian Mbappé|FRA|MON:2015-2017;PSG:2017-2024;RMA:2024-2026
+Karim Benzema|FRA|LYO:2004-2009;RMA:2009-2023;Al-Ittihad:2023-2026
+Antoine Griezmann|FRA|RSO:2009-2014;ATM:2014-2019;FCB:2019-2021;ATM:2021-2026
+Thierry Henry|FRA|MON:1994-1999;JUV:1998-1999;ARS:1999-2007;FCB:2007-2010;NY Red Bulls:2010-2011;ARS:2011-2012;NY Red Bulls:2012-2014
+Zinedine Zidane|FRA|Cannes:1988-1992;Burdeos:1992-1996;JUV:1996-2001;RMA:2001-2006
+Paul Pogba|FRA|MUN:2011-2012;JUV:2012-2016;MUN:2016-2022;JUV:2022-2024;MON:2025-2026
+N'Golo Kanté|FRA|Caen:2013-2015;Leicester:2015-2016;CHE:2016-2023;Al-Ittihad:2023-2026
+Hugo Lloris|FRA|Niza:2006-2008;LYO:2008-2012;TOT:2012-2023;LAFC:2023-2026
+Ousmane Dembélé|FRA|Rennes:2015-2016;BVB:2016-2017;FCB:2017-2023;PSG:2023-2026
+Kingsley Coman|FRA|PSG:2013-2014;JUV:2014-2015;BAY:2015-2025;ALN:2025-2026
+Theo Hernández|FRA|Alavés:2016-2017;RMA:2017-2018;RSO:2018-2019;MIL:2019-2025;HIL:2025-2026
+Lucas Hernández|FRA|ATM:2014-2019;BAY:2019-2023;PSG:2023-2026
+Patrick Vieira|FRA|Cannes:1993-1995;MIL:1995-1996;ARS:1996-2005;JUV:2005-2006;INT:2006-2010;MCI:2009-2011
+Thibaut Courtois|BEL|GEN:2009-2011;ATM:2011-2014;CHE:2014-2018;RMA:2018-2026
+Eden Hazard|BEL|Lille:2007-2012;CHE:2012-2019;RMA:2019-2023
+Kevin De Bruyne|BEL|GEN:2008-2012;Werder Bremen:2012-2013;CHE:2013-2014;WOL:2013-2015;MCI:2015-2025;NAP:2025-2026
+Romelu Lukaku|BEL|Anderlecht:2009-2011;CHE:2011-2012;West Brom:2012-2013;Everton:2013-2017;MUN:2017-2019;INT:2019-2021;CHE:2021-2022;INT:2022-2023;ROM:2023-2024;NAP:2024-2026
+Yannick Carrasco|BEL|MON:2010-2015;ATM:2015-2018;Dalian Yifang:2018-2020;ATM:2019-2024;Al-Shabab:2023-2026
+Toby Alderweireld|BEL|AJA:2007-2013;ATM:2013-2014;Southampton:2014-2015;TOT:2015-2021;Al-Duhail:2021-2022;Royal Antwerp:2022-2024
+Robert Lewandowski|POL|Znicz Pruszków:2006-2008;Lech Poznań:2008-2010;BVB:2010-2014;BAY:2014-2022;FCB:2022-2026
+Thomas Müller|GER|BAY:2008-2025;Vancouver Whitecaps:2025-2026
+Toni Kroos|GER|BAY:2007-2009;LEV:2008-2010;BAY:2010-2014;RMA:2014-2024
+Manuel Neuer|GER|SCH:2005-2011;BAY:2011-2026
+Mario Götze|GER|BVB:2009-2013;BAY:2013-2016;BVB:2016-2020;PSV:2020-2022;Eintracht Frankfurt:2022-2026
+Mats Hummels|GER|BAY:2006-2007;BVB:2007-2016;BAY:2016-2019;BVB:2019-2024;ROM:2024-2025
+İlkay Gündoğan|GER|Núremberg:2009-2011;BVB:2011-2016;MCI:2016-2023;FCB:2023-2024;MCI:2024-2025;GAL:2025-2026
+Mesut Özil|GER|SCH:2006-2008;Werder Bremen:2007-2010;RMA:2010-2013;ARS:2013-2021;Fenerbahçe:2020-2022;Başakşehir:2022-2023
+Sami Khedira|GER|Stuttgart:2006-2010;RMA:2010-2015;JUV:2015-2021;Hertha:2020-2021
+Leroy Sané|GER|SCH:2014-2016;MCI:2016-2020;BAY:2020-2025;GAL:2025-2026
+Kai Havertz|GER|LEV:2016-2020;CHE:2020-2023;ARS:2023-2026
+Bastian Schweinsteiger|GER|BAY:2002-2015;MUN:2015-2017;Chicago Fire:2016-2019
+Michael Ballack|GER|Kaiserslautern:1997-1999;LEV:1999-2002;BAY:2002-2006;CHE:2006-2010;LEV:2010-2012
+Erling Haaland|NOR|Bryne:2016-2017;Molde:2017-2019;Salzburgo:2019-2020;BVB:2019-2022;MCI:2022-2026
+Harry Kane|ENG|Leyton Orient:2011-2012;Millwall:2011-2012;Leicester:2012-2013;TOT:2012-2023;BAY:2023-2026
+Wayne Rooney|ENG|Everton:2002-2004;MUN:2004-2017;Everton:2017-2018;DC United:2018-2020;Derby County:2019-2021
+David Beckham|ENG|MUN:1992-2003;RMA:2003-2007;LA Galaxy:2007-2012;MIL:2008-2010;PSG:2012-2013
+Steven Gerrard|ENG|LIV:1998-2015;LA Galaxy:2015-2016
+Frank Lampard|ENG|West Ham:1995-2001;CHE:2001-2014;MCI:2014-2015;New York City:2015-2016
+Jude Bellingham|ENG|Birmingham:2019-2020;BVB:2020-2023;RMA:2023-2026
+Jadon Sancho|ENG|BVB:2017-2021;MUN:2021-2024;BVB:2023-2024;CHE:2024-2025;Aston Villa:2025-2026
+Raheem Sterling|ENG|LIV:2012-2015;MCI:2015-2022;CHE:2022-2024;ARS:2024-2025
+Michael Owen|ENG|LIV:1996-2004;RMA:2004-2005;Newcastle:2005-2009;MUN:2009-2012;Stoke:2012-2013
+Kieran Trippier|ENG|Burnley:2011-2015;TOT:2015-2019;ATM:2019-2022;Newcastle:2021-2026
+Mohamed Salah|EGY|Al-Mokawloon:2010-2012;Basilea:2012-2014;CHE:2013-2015;Fiorentina:2014-2015;ROM:2015-2017;LIV:2017-2026
+Sadio Mané|SEN|Metz:2011-2012;Salzburgo:2012-2014;Southampton:2014-2016;LIV:2016-2022;BAY:2022-2023;ALN:2023-2026
+Luka Modrić|CRO|Dinamo Zagreb:2003-2008;TOT:2008-2012;RMA:2012-2025;MIL:2025-2026
+Ivan Rakitić|CRO|Basilea:2005-2007;SCH:2007-2011;SEV:2010-2014;FCB:2014-2020;SEV:2020-2024;Al-Shabab:2023-2024;Hajduk Split:2024-2025
+Mateo Kovačić|CRO|Dinamo Zagreb:2010-2013;INT:2012-2015;RMA:2015-2018;CHE:2018-2023;MCI:2023-2026
+Mario Mandžukić|CRO|Dinamo Zagreb:2007-2010;WOL:2010-2012;BAY:2012-2014;ATM:2014-2015;JUV:2015-2020;Al-Duhail:2019-2020;MIL:2020-2021
+Ivan Perišić|CRO|Club Brujas:2009-2011;BVB:2011-2013;WOL:2012-2015;INT:2015-2019;BAY:2019-2020;INT:2020-2022;TOT:2022-2024;Hajduk Split:2023-2024;PSV:2024-2026
+Luís Figo|POR|SPO:1989-1995;FCB:1995-2000;RMA:2000-2005;INT:2005-2009
+Bernardo Silva|POR|BEN:2013-2014;MON:2014-2017;MCI:2017-2026
+João Félix|POR|BEN:2018-2019;ATM:2019-2023;CHE:2022-2023;FCB:2023-2024;CHE:2024-2025;MIL:2024-2025;ALN:2025-2026
+Rúben Dias|POR|BEN:2017-2020;MCI:2020-2026
+Bruno Fernandes|POR|Novara:2012-2013;Udinese:2013-2016;Sampdoria:2016-2017;SPO:2017-2020;MUN:2019-2026
+Pepe|POR|Marítimo:2001-2004;POR:2004-2007;RMA:2007-2017;Beşiktaş:2017-2019;POR:2018-2024
+Vitinha|POR|POR:2019-2020;Wolves:2020-2021;POR:2021-2022;PSG:2022-2026
+Nuno Mendes|POR|SPO:2019-2021;PSG:2021-2026
+Julián Álvarez|ARG|RIV:2018-2022;MCI:2022-2024;ATM:2024-2026
+Lautaro Martínez|ARG|Racing Club:2015-2018;INT:2018-2026
+Enzo Fernández|ARG|RIV:2019-2020;Defensa y Justicia:2020-2021;RIV:2021-2022;BEN:2022-2023;CHE:2022-2026
+Rodrigo De Paul|ARG|Racing Club:2013-2014;VAL:2014-2016;Racing Club:2015-2016;Udinese:2016-2021;ATM:2021-2025;INM:2025-2026
+Ángel Correa|ARG|San Lorenzo:2012-2015;ATM:2015-2025;Tigres:2025-2026
+Javier Mascherano|ARG|RIV:2003-2005;Corinthians:2005-2006;West Ham:2006-2007;LIV:2006-2010;FCB:2010-2018;Hebei:2017-2019;Estudiantes:2019-2020
+Carlos Tevez|ARG|BOC:2001-2005;Corinthians:2004-2006;West Ham:2006-2007;MUN:2007-2009;MCI:2009-2013;JUV:2013-2015;BOC:2015-2016;Shanghai Shenhua:2016-2017;BOC:2017-2021
+Paulo Dybala|ARG|Instituto:2011-2012;Palermo:2012-2015;JUV:2015-2022;ROM:2022-2026
+Juan Román Riquelme|ARG|BOC:1996-2002;FCB:2002-2003;VIL:2003-2007;BOC:2006-2014;Argentinos Juniors:2014-2015
+Edinson Cavani|URU|Danubio:2005-2007;Palermo:2006-2010;NAP:2010-2013;PSG:2013-2020;MUN:2020-2022;VAL:2022-2023;BOC:2023-2026
+Diego Forlán|URU|Independiente:1997-2002;MUN:2001-2004;VIL:2004-2007;ATM:2007-2011;INT:2011-2012;Internacional:2012-2014;Cerezo Osaka:2014-2015;Peñarol:2015-2016
+Federico Valverde|URU|Peñarol:2015-2016;Deportivo:2017-2018;RMA:2018-2026
+Darwin Núñez|URU|Peñarol:2017-2019;Almería:2019-2020;BEN:2020-2022;LIV:2022-2025;HIL:2025-2026
+Diego Godín|URU|Cerro:2003-2006;Nacional:2006-2007;VIL:2007-2010;ATM:2010-2019;INT:2019-2020;Cagliari:2020-2021;Atlético Mineiro:2021-2022;Vélez:2022-2023
+Radamel Falcao|COL|RIV:2005-2009;POR:2009-2011;ATM:2011-2013;MON:2013-2014;MUN:2014-2015;CHE:2015-2016;MON:2016-2019;GAL:2019-2021;Rayo Vallecano:2021-2024;Millonarios:2024-2025
+James Rodríguez|COL|Banfield:2008-2010;POR:2010-2013;MON:2013-2014;RMA:2014-2017;BAY:2017-2019;RMA:2019-2020;Everton:2020-2021;Al-Rayyan:2021-2022;Olympiacos:2022-2023;São Paulo:2023-2024;Rayo Vallecano:2024-2025;León:2025-2026
+Luis Díaz|COL|Barranquilla:2015-2016;Junior:2016-2019;POR:2019-2022;LIV:2021-2025;BAY:2025-2026
+Gianluigi Buffon|ITA|Parma:1995-2001;JUV:2001-2018;PSG:2018-2019;JUV:2019-2021;Parma:2021-2023
+Andrea Pirlo|ITA|Brescia:1995-1998;INT:1998-1999;Reggina:1999-2000;INT:2000-2001;MIL:2001-2011;JUV:2011-2015;New York City:2015-2017
+Francesco Totti|ITA|ROM:1992-2017
+Alessandro Del Piero|ITA|Padova:1991-1993;JUV:1993-2012;Sydney FC:2012-2014;Delhi Dynamos:2014-2015
+Gianluigi Donnarumma|ITA|MIL:2015-2021;PSG:2021-2025;MCI:2025-2026
+Jorginho|ITA|Hellas Verona:2010-2014;NAP:2013-2018;CHE:2018-2023;ARS:2022-2025;Flamengo:2025-2026
+Mario Balotelli|ITA|INT:2007-2010;MCI:2010-2013;MIL:2012-2014;LIV:2014-2015;MIL:2015-2016;Niza:2016-2019;MAR:2018-2019;Brescia:2019-2020;Monza:2020-2021
+Didier Drogba|CIV|Le Mans:1998-2002;Guingamp:2001-2003;MAR:2003-2004;CHE:2004-2012;Shanghai Shenhua:2012-2013;GAL:2012-2014;CHE:2014-2015;Montreal Impact:2015-2016
+Samuel Eto'o|CMR|Leganés:1997-1998;RMA:1998-1999;Espanyol:1998-1999;Mallorca:1999-2004;FCB:2004-2009;INT:2009-2011;Anzhi:2011-2013;CHE:2013-2014;Everton:2014-2015;Sampdoria:2014-2015;Antalyaspor:2015-2018
+Gareth Bale|WAL|Southampton:2006-2007;TOT:2007-2013;RMA:2013-2020;TOT:2020-2021;RMA:2021-2022;LAFC:2022-2023
+Achraf Hakimi|MAR|RMA:2016-2018;BVB:2018-2020;INT:2020-2021;PSG:2021-2026
+Jan Oblak|SVN|Olimpija:2009-2010;Beira-Mar:2010-2011;União Leiria:2011-2012;Rio Ave:2012-2013;BEN:2013-2014;ATM:2014-2026
+Virgil van Dijk|NED|Groningen:2011-2013;CEL:2013-2015;Southampton:2015-2018;LIV:2017-2026
+Frenkie de Jong|NED|Willem II:2015-2016;AJA:2016-2019;FCB:2019-2026
+Arjen Robben|NED|Groningen:2000-2002;PSV:2002-2004;CHE:2004-2007;RMA:2007-2009;BAY:2009-2019;Groningen:2020-2021
+Ruud van Nistelrooy|NED|Den Bosch:1993-1997;Heerenveen:1997-1998;PSV:1998-2001;MUN:2001-2006;RMA:2006-2010;Hamburgo:2009-2011;Málaga:2011-2012
+Wesley Sneijder|NED|AJA:2002-2007;RMA:2007-2009;INT:2009-2013;GAL:2012-2017;Niza:2017-2018;Al-Gharafa:2017-2019
+Clarence Seedorf|NED|AJA:1992-1995;Sampdoria:1995-1996;RMA:1996-2000;INT:1999-2002;MIL:2002-2012;Botafogo:2012-2014
+Memphis Depay|NED|PSV:2011-2015;MUN:2015-2017;LYO:2016-2021;FCB:2021-2023;ATM:2022-2024;Corinthians:2024-2026
+Lamine Yamal|ESP|FCB:2023-2026
+Pedri|ESP|Las Palmas:2019-2020;FCB:2020-2026
+Rodri|ESP|VIL:2015-2018;ATM:2018-2019;MCI:2019-2026
+Saúl Ñíguez|ESP|ATM:2012-2013;Rayo Vallecano:2013-2014;ATM:2014-2021;CHE:2021-2022;ATM:2022-2024;SEV:2024-2025;Flamengo:2025-2026
+Koke|ESP|ATM:2009-2026
+Jesús Navas|ESP|SEV:2003-2013;MCI:2013-2017;SEV:2017-2025
+Sergio Busquets|ESP|FCB:2008-2023;INM:2023-2026
+Jordi Alba|ESP|Gimnàstic:2008-2009;VAL:2009-2012;FCB:2012-2023;INM:2023-2026
+Dani Olmo|ESP|Dinamo Zagreb:2014-2020;RB Leipzig:2019-2024;FCB:2024-2026
+Mikel Oyarzabal|ESP|RSO:2015-2026
+Nico Williams|ESP|ATH:2021-2026
+Aymeric Laporte|ESP|ATH:2012-2018;MCI:2017-2023;ALN:2023-2025;ATH:2025-2026
+Ander Herrera|ESP|Zaragoza:2008-2011;ATH:2011-2014;MUN:2014-2019;PSG:2019-2022;ATH:2022-2024;BOC:2024-2026
+Javi Martínez|ESP|Osasuna:2005-2006;ATH:2006-2012;BAY:2012-2022;Qatar SC:2022-2024
+Kepa Arrizabalaga|ESP|Valladolid:2015-2016;ATH:2016-2018;CHE:2018-2023;RMA:2023-2024;Bournemouth:2024-2025;ARS:2025-2026
+Fernando Llorente|ESP|ATH:2004-2013;JUV:2013-2015;SEV:2015-2016;Swansea:2016-2017;TOT:2017-2019;NAP:2019-2021;Udinese:2020-2021;Eibar:2021-2022
+Joaquín Sánchez|ESP|BET:2000-2006;VAL:2006-2011;Málaga:2011-2013;Fiorentina:2013-2015;BET:2015-2023
+Santi Cazorla|ESP|VIL:2003-2006;Recreativo:2006-2007;VIL:2007-2011;Málaga:2011-2012;ARS:2012-2018;VIL:2018-2020;Al-Sadd:2020-2023;Real Oviedo:2023-2026
+Dani Parejo|ESP|QPR:2008-2009;RMA:2008-2009;Getafe:2009-2011;VAL:2011-2020;VIL:2020-2026
+Gerard Moreno|ESP|Mallorca:2014-2015;Espanyol:2015-2018;VIL:2018-2026
+Fernando Hierro|ESP|Valladolid:1987-1989;RMA:1989-2003;Al-Rayyan:2003-2004;Bolton:2004-2005
+Unai Simón|ESP|ATH:2018-2026
+Álex Grimaldo|ESP|BEN:2015-2023;LEV:2023-2026
+Marcos Llorente|ESP|RMA:2015-2016;Alavés:2016-2017;RMA:2017-2019;ATM:2019-2026
+Nacho Fernández|ESP|RMA:2011-2024;Al-Qadsiah:2024-2026
+Mikel Merino|ESP|Osasuna:2014-2016;BVB:2016-2017;Newcastle:2017-2018;RSO:2018-2024;ARS:2024-2026
+Martin Ødegaard|NOR|Strømsgodset:2014-2015;RMA:2014-2016;Heerenveen:2016-2018;Vitesse:2018-2019;RSO:2019-2020;RMA:2020-2021;ARS:2020-2026
+Alexander Isak|SWE|AIK:2016-2017;BVB:2016-2019;Willem II:2018-2019;RSO:2019-2022;Newcastle:2022-2025;LIV:2025-2026
+Takefusa Kubo|JPN|FC Tokyo:2017-2019;Mallorca:2019-2020;VIL:2020-2021;Getafe:2020-2021;Mallorca:2021-2022;RSO:2022-2026
+Eric Bailly|CIV|Espanyol:2014-2015;VIL:2014-2016;MUN:2016-2022;MAR:2022-2023;VIL:2023-2024
+Samuel Umtiti|FRA|LYO:2012-2016;FCB:2016-2022;Lecce:2022-2023;Lille:2023-2024
+Clément Lenglet|FRA|Nancy:2013-2017;SEV:2016-2018;FCB:2018-2022;TOT:2022-2023;Aston Villa:2023-2024;ATM:2024-2026
+Jules Koundé|FRA|Burdeos:2017-2019;SEV:2019-2022;FCB:2022-2026
+Arturo Vidal|CHI|Colo-Colo:2006-2007;LEV:2007-2011;JUV:2011-2015;BAY:2015-2018;FCB:2018-2020;INT:2020-2022;Flamengo:2022-2023;Athletico Paranaense:2023-2024;Colo-Colo:2024-2026
+Alexis Sánchez|CHI|Cobreloa:2005-2006;Colo-Colo:2006-2007;RIV:2007-2008;Udinese:2008-2011;FCB:2011-2014;ARS:2014-2018;MUN:2017-2019;INT:2019-2022;MAR:2022-2023;INT:2023-2024;Udinese:2024-2025;SEV:2025-2026
+Claudio Bravo|CHI|Colo-Colo:2002-2006;RSO:2006-2014;FCB:2014-2016;MCI:2016-2020;BET:2020-2024
+Keylor Navas|CRC|Saprissa:2005-2010;Albacete:2010-2011;Levante:2011-2014;RMA:2014-2019;PSG:2019-2024;Nottingham Forest:2022-2023;Newell's:2025-2026
+Hakan Çalhanoğlu|TUR|Karlsruhe:2011-2013;Hamburgo:2013-2014;LEV:2014-2017;MIL:2017-2021;INT:2021-2026
+Son Heung-min|KOR|Hamburgo:2010-2013;LEV:2013-2015;TOT:2015-2025;LAFC:2025-2026
+Iván Zamorano|CHI|Cobresal:1985-1988;St. Gallen:1988-1990;SEV:1990-1992;RMA:1992-1996;INT:1996-2000;América:2000-2001
+Carles Puyol|ESP|FCB:1999-2014
+Víctor Valdés|ESP|FCB:2002-2014;MUN:2014-2016;Standard Lieja:2015-2016;Middlesbrough:2016-2017
+Joan Capdevila|ESP|Espanyol:1998-1999;ATM:1999-2000;Deportivo:2000-2007;VIL:2007-2011;BEN:2011-2012;Espanyol:2012-2013
+Álvaro Arbeloa|ESP|Deportivo:2006-2007;LIV:2006-2009;RMA:2009-2016;West Ham:2016-2017
+Pedro Rodríguez|ESP|FCB:2008-2015;CHE:2015-2020;ROM:2020-2021;Lazio:2021-2026
+Iker Muniain|ESP|ATH:2009-2024;San Lorenzo:2024-2025
+Aritz Aduriz|ESP|Burgos:2002-2003;Valladolid:2003-2006;ATH:2006-2008;Mallorca:2008-2010;VAL:2010-2012;ATH:2012-2020
+Raúl García|ESP|Osasuna:2004-2007;ATM:2007-2010;Osasuna:2010-2011;ATM:2011-2015;ATH:2015-2024
+Iñaki Williams|GHA|ATH:2014-2026
+Martín Zubimendi|ESP|RSO:2019-2025;ARS:2025-2026
+Robin Le Normand|ESP|RSO:2016-2024;ATM:2024-2026
+Alexander Sørloth|NOR|Crystal Palace:2017-2020;Trabzonspor:2019-2020;RB Leipzig:2020-2021;RSO:2021-2023;VIL:2023-2024;ATM:2024-2026
+Stefan Savić|MNE|Partizan:2010-2011;MCI:2011-2012;Fiorentina:2012-2015;ATM:2015-2024;Trabzonspor:2024-2026
+José María Giménez|URU|Danubio:2012-2013;ATM:2013-2026
+Thomas Partey|GHA|Mallorca:2013-2014;Almería:2014-2015;ATM:2015-2020;ARS:2020-2025;VIL:2025-2026
+Gabi Fernández|ESP|ATM:2003-2004;Getafe:2004-2005;ATM:2005-2007;Zaragoza:2007-2011;ATM:2011-2018;Al-Sadd:2018-2020
+Juanfran Torres|ESP|RMA:2004-2005;Espanyol:2005-2006;Osasuna:2006-2011;ATM:2010-2019;São Paulo:2019-2021
+Filipe Luís|BRA|Deportivo:2006-2010;ATM:2010-2014;CHE:2014-2015;ATM:2015-2019;Flamengo:2019-2024
+Miranda|BRA|Sochaux:2005-2006;São Paulo:2006-2011;ATM:2011-2015;INT:2015-2019;Jiangsu Suning:2019-2021;São Paulo:2021-2023
+Arda Turan|TUR|GAL:2005-2011;ATM:2011-2015;FCB:2015-2018;Başakşehir:2018-2020;GAL:2020-2022
+Kevin Gameiro|FRA|Strasbourg:2004-2008;Lorient:2008-2011;PSG:2011-2013;SEV:2013-2016;ATM:2016-2018;VAL:2018-2021;Strasbourg:2021-2024
+Ever Banega|ARG|BOC:2006-2008;VAL:2007-2014;ATM:2008-2009;SEV:2014-2016;INT:2016-2017;SEV:2017-2020;Al-Shabab:2020-2023
+Carlos Bacca|COL|Junior:2009-2012;Club Brujas:2011-2013;SEV:2013-2015;MIL:2015-2017;VIL:2017-2021;Granada:2021-2022;Junior:2022-2024
+Gerard Deulofeu|ESP|FCB:2011-2013;Everton:2013-2014;SEV:2014-2015;Everton:2015-2017;MIL:2016-2017;FCB:2017-2018;Watford:2017-2020;Udinese:2020-2024
+Bojan Krkić|ESP|FCB:2007-2011;ROM:2011-2012;MIL:2012-2013;AJA:2013-2014;Stoke:2014-2019;Alavés:2017-2018;Montreal Impact:2019-2021;Vissel Kobe:2021-2023
+Thiago Alcântara|ESP|FCB:2009-2013;BAY:2013-2020;LIV:2020-2024
+Sergi Roberto|ESP|FCB:2010-2024;Como:2024-2026
+Marc-André ter Stegen|GER|Borussia Mönchengladbach:2010-2014;FCB:2014-2026
+Ronald Araújo|URU|Boston River:2016-2018;FCB:2019-2026
+Ansu Fati|ESP|FCB:2019-2025;Brighton:2023-2024;MON:2025-2026
+Ferran Torres|ESP|VAL:2017-2020;MCI:2020-2022;FCB:2021-2026
+Gavi|ESP|FCB:2021-2026
+Alejandro Balde|ESP|FCB:2021-2026
+Pau Cubarsí|ESP|FCB:2023-2026
+Fermín López|ESP|Linares:2022-2023;FCB:2023-2026
+Miralem Pjanić|BIH|Metz:2007-2008;LYO:2008-2011;ROM:2011-2016;JUV:2016-2020;FCB:2020-2022;Beşiktaş:2021-2022;Sharjah:2022-2023;CSKA Moscú:2023-2024
+Marc Bartra|ESP|FCB:2010-2016;BVB:2016-2018;BET:2017-2022;Trabzonspor:2022-2023;BET:2023-2026
+Rafinha Alcântara|BRA|FCB:2011-2013;Celta:2013-2014;FCB:2014-2017;INT:2017-2018;FCB:2018-2019;Celta:2019-2020;PSG:2020-2022;RSO:2021-2022;Al-Arabi:2022-2024
+Arthur Melo|BRA|Grêmio:2015-2018;FCB:2018-2020;JUV:2020-2022;LIV:2022-2023;Fiorentina:2023-2024;Girona:2024-2025
+Éric Abidal|FRA|MON:1999-2002;Lille:2002-2004;LYO:2004-2007;FCB:2007-2013;MON:2013-2014;Olympiacos:2014-2015
+Yaya Touré|CIV|Beveren:2001-2003;Metalurh Donetsk:2003-2005;Olympiacos:2005-2006;MON:2006-2007;FCB:2007-2010;MCI:2010-2018;Olympiacos:2018-2019
+Seydou Keita|MLI|MAR:1997-2000;Lorient:2000-2002;Lens:2002-2007;SEV:2007-2008;FCB:2008-2012;Dalian Aerbin:2012-2014;VAL:2013-2014;ROM:2014-2016
+Eidur Gudjohnsen|ISL|PSV:1994-1996;Bolton:1998-2000;CHE:2000-2006;FCB:2006-2009;MON:2009-2010;TOT:2009-2010;Stoke:2010-2011;Fulham:2010-2011
+Deco|POR|POR:1999-2004;FCB:2004-2008;CHE:2008-2010;Fluminense:2010-2013
+Rafael Márquez|MEX|Atlas:1996-1999;MON:1999-2003;FCB:2003-2010;NY Red Bulls:2010-2012;León:2012-2014;Hellas Verona:2014-2016;Atlas:2016-2018
+Ludovic Giuly|FRA|LYO:1994-1998;MON:1997-2004;FCB:2004-2007;ROM:2007-2008;PSG:2008-2011;Lorient:2011-2012
+Gianluca Zambrotta|ITA|Bari:1997-1999;JUV:1999-2006;FCB:2006-2008;MIL:2008-2012
+Lilian Thuram|FRA|MON:1991-1996;Parma:1996-2001;JUV:2001-2006;FCB:2006-2008
+Patrick Kluivert|NED|AJA:1994-1997;MIL:1997-1998;FCB:1998-2004;Newcastle:2004-2005;VAL:2005-2006;PSV:2006-2007;Lille:2007-2008
+Rivaldo|BRA|Palmeiras:1994-1996;Deportivo:1996-1997;FCB:1997-2002;MIL:2002-2004;Olympiacos:2004-2007;AEK:2007-2008;São Paulo:2010-2011
+Luis Enrique|ESP|Sporting de Gijón:1989-1991;RMA:1991-1996;FCB:1996-2004
+Michael Laudrup|DEN|Brøndby:1982-1983;Lazio:1983-1985;JUV:1985-1989;FCB:1989-1994;RMA:1994-1996;Vissel Kobe:1996-1997;AJA:1997-1998
+Hristo Stoichkov|BUL|CSKA Sofía:1985-1990;FCB:1990-1995;Parma:1995-1996;FCB:1996-1998;ALN:1998-1999;Chicago Fire:2000-2003
+Ronald Koeman|NED|Groningen:1980-1983;AJA:1983-1986;PSV:1986-1989;FCB:1989-1995;Feyenoord:1995-1997
+Pep Guardiola|ESP|FCB:1990-2001;Brescia:2001-2003;ROM:2002-2003;Al-Ahli:2003-2005;Dorados:2005-2006
+Fernando Redondo|ARG|Argentinos Juniors:1985-1990;Tenerife:1990-1994;RMA:1994-2000;MIL:2000-2004
+Fernando Morientes|ESP|Albacete:1993-1995;Zaragoza:1995-1997;RMA:1997-2003;MON:2003-2004;RMA:2004-2005;LIV:2004-2006;VAL:2006-2009;MAR:2009-2010
+Guti|ESP|RMA:1995-2010;Beşiktaş:2010-2011
+Míchel Salgado|ESP|Celta:1995-1999;RMA:1999-2009;Blackburn:2009-2012
+Steve McManaman|ENG|LIV:1990-1999;RMA:1999-2003;MCI:2003-2005
+Claude Makélélé|FRA|Nantes:1991-1997;MAR:1997-1998;Celta:1998-2000;RMA:2000-2003;CHE:2003-2008;PSG:2008-2011
+Esteban Cambiasso|ARG|Independiente:1998-2001;RIV:2001-2002;RMA:2002-2004;INT:2004-2014;Leicester:2014-2015;Olympiacos:2015-2017
+Walter Samuel|ARG|Newell's:1996-1997;BOC:1997-2000;ROM:2000-2004;RMA:2004-2005;INT:2005-2014;Basilea:2014-2016
+Javier Zanetti|ARG|Talleres:1992-1993;Banfield:1993-1995;INT:1995-2014
+Diego Milito|ARG|Racing Club:1999-2004;Genoa:2004-2005;Zaragoza:2005-2008;Genoa:2008-2009;INT:2009-2014;Racing Club:2014-2016
+Júlio César|BRA|Flamengo:1997-2004;Chievo:2004-2005;INT:2005-2012;QPR:2012-2014;BEN:2014-2017
+Maicon|BRA|Cruzeiro:2001-2004;MON:2004-2006;INT:2006-2012;MCI:2012-2013;ROM:2013-2016
+Lúcio|BRA|Internacional:1997-2001;LEV:2001-2004;BAY:2004-2009;INT:2009-2012;JUV:2012-2013
+Marco Materazzi|ITA|Everton:1998-1999;Perugia:1999-2001;INT:2001-2011
+Adriano|BRA|Flamengo:1999-2001;INT:2001-2002;Fiorentina:2001-2002;Parma:2002-2004;INT:2003-2009;São Paulo:2007-2008;Flamengo:2009-2010;ROM:2010-2011;Corinthians:2011-2012
+Hernán Crespo|ARG|RIV:1993-1996;Parma:1996-2000;Lazio:2000-2002;INT:2002-2003;CHE:2003-2004;MIL:2004-2005;CHE:2005-2006;INT:2006-2008;Genoa:2008-2009;Parma:2009-2012
+Christian Vieri|ITA|Atalanta:1995-1996;JUV:1996-1997;ATM:1997-1998;Lazio:1998-1999;INT:1999-2005;MIL:2005-2006;MON:2005-2006;Atalanta:2006-2007;Fiorentina:2007-2008
+Roberto Baggio|ITA|Vicenza:1982-1985;Fiorentina:1985-1990;JUV:1990-1995;MIL:1995-1997;Bologna:1997-1998;INT:1998-2000;Brescia:2000-2004
+Paolo Maldini|ITA|MIL:1984-2009
+Alessandro Nesta|ITA|Lazio:1993-2002;MIL:2002-2012;Montreal Impact:2012-2014
+Andriy Shevchenko|UKR|Dinamo Kiev:1994-1999;MIL:1999-2006;CHE:2006-2008;MIL:2008-2009;Dinamo Kiev:2009-2012
+Filippo Inzaghi|ITA|Parma:1995-1996;Atalanta:1996-1997;JUV:1997-2001;MIL:2001-2012
+Gennaro Gattuso|ITA|Perugia:1995-1997;Rangers:1997-1998;Salernitana:1998-1999;MIL:1999-2012;Sion:2012-2013
+Cafu|BRA|São Paulo:1989-1995;Zaragoza:1994-1995;Palmeiras:1995-1997;ROM:1997-2003;MIL:2003-2008
+Alexandre Pato|BRA|Internacional:2006-2007;MIL:2007-2013;Corinthians:2013-2015;CHE:2015-2016;VIL:2016-2017;São Paulo:2019-2020;Orlando City:2021-2022
+Robinho|BRA|Santos:2002-2005;RMA:2005-2008;MCI:2008-2010;Santos:2009-2010;MIL:2010-2014;Santos:2014-2015;Atlético Mineiro:2016-2017;Başakşehir:2018-2020
+Stephan El Shaarawy|ITA|Padova:2010-2011;MIL:2011-2015;MON:2015-2016;ROM:2016-2019;Shanghai Shenhua:2019-2021;ROM:2021-2026
+Leonardo Bonucci|ITA|Bari:2009-2010;JUV:2010-2017;MIL:2017-2018;JUV:2018-2023;Union Berlin:2023-2024;Fenerbahçe:2023-2024
+Giorgio Chiellini|ITA|Livorno:2000-2004;Fiorentina:2004-2005;JUV:2005-2022;LAFC:2022-2024
+Claudio Marchisio|ITA|JUV:2006-2007;Empoli:2007-2008;JUV:2008-2018;Zenit:2018-2019
+Blaise Matuidi|FRA|Troyes:2004-2007;Saint-Étienne:2007-2011;PSG:2011-2017;JUV:2017-2020;INM:2020-2022
+Federico Chiesa|ITA|Fiorentina:2016-2020;JUV:2020-2024;LIV:2024-2026
+Dušan Vlahović|SRB|Partizan:2016-2018;Fiorentina:2018-2022;JUV:2021-2026
+Wojciech Szczęsny|POL|Brentford:2009-2010;ARS:2010-2015;ROM:2015-2017;JUV:2017-2024;FCB:2024-2026
+Adrien Rabiot|FRA|Toulouse:2012-2013;PSG:2013-2019;JUV:2019-2024;MAR:2024-2025;MIL:2025-2026
+Victor Osimhen|NGA|WOL:2017-2018;Charleroi:2018-2019;Lille:2019-2020;NAP:2020-2024;GAL:2024-2026
+Khvicha Kvaratskhelia|GEO|Rubin Kazán:2019-2022;NAP:2022-2025;PSG:2024-2026
+Marek Hamšík|SVK|Brescia:2004-2007;NAP:2007-2019;Dalian Yifang:2018-2020;Trabzonspor:2021-2023
+Lorenzo Insigne|ITA|NAP:2010-2022;Toronto:2022-2024
+Kalidou Koulibaly|SEN|Metz:2010-2012;GEN:2012-2014;NAP:2014-2022;CHE:2022-2023;HIL:2023-2026
+Dries Mertens|BEL|Utrecht:2009-2011;PSV:2011-2013;NAP:2013-2022;GAL:2022-2025
+José Callejón|ESP|Espanyol:2008-2011;RMA:2011-2013;NAP:2013-2020;Fiorentina:2020-2021;Granada:2021-2023
+Raúl Albiol|ESP|VAL:2003-2004;Getafe:2004-2005;VAL:2005-2009;RMA:2009-2013;NAP:2013-2017;VIL:2017-2024
+Fabián Ruiz|ESP|BET:2014-2018;Elche:2016-2017;NAP:2018-2022;PSG:2022-2026
+Edin Džeko|BIH|Željezničar:2003-2005;Teplice:2005-2007;WOL:2007-2011;MCI:2010-2015;ROM:2015-2021;INT:2021-2023;Fenerbahçe:2023-2025;Fiorentina:2025-2026
+Radja Nainggolan|BEL|Piacenza:2005-2010;Cagliari:2010-2014;ROM:2013-2018;INT:2018-2019;Cagliari:2019-2020;INT:2020-2021;Royal Antwerp:2021-2023
+Daniele De Rossi|ITA|ROM:2001-2019;BOC:2019-2020
+Kostas Manolas|GRE|AEK:2009-2012;Olympiacos:2012-2014;ROM:2014-2019;NAP:2019-2022
+Ciro Immobile|ITA|Pescara:2011-2012;Genoa:2012-2013;Torino:2013-2014;BVB:2014-2015;SEV:2015-2016;Torino:2015-2016;Lazio:2016-2024;Beşiktaş:2024-2025;Bologna:2025-2026
+Sergej Milinković-Savić|SRB|GEN:2014-2015;Lazio:2015-2023;HIL:2023-2026
+Rafael Leão|POR|SPO:2017-2018;Lille:2018-2019;MIL:2019-2026
+Olivier Giroud|FRA|Grenoble:2005-2008;Tours:2008-2010;Montpellier:2010-2012;ARS:2012-2018;CHE:2017-2021;MIL:2021-2024;LAFC:2024-2025;Lille:2025-2026
+Sandro Tonali|ITA|Brescia:2017-2020;MIL:2020-2023;Newcastle:2023-2026
+Nicolò Barella|ITA|Cagliari:2015-2019;INT:2019-2026
+Alessandro Bastoni|ITA|Atalanta:2016-2017;Parma:2018-2019;INT:2019-2026
+Marcus Thuram|FRA|Sochaux:2015-2017;Guingamp:2017-2019;Borussia Mönchengladbach:2019-2023;INT:2023-2026
+Stefan de Vrij|NED|Feyenoord:2009-2014;Lazio:2014-2018;INT:2018-2026
+Samir Handanović|SVN|Udinese:2004-2012;INT:2012-2023
+Mauro Icardi|ARG|Sampdoria:2011-2013;INT:2013-2019;PSG:2019-2022;GAL:2022-2026
+Ryan Giggs|WAL|MUN:1990-2014
+Paul Scholes|ENG|MUN:1994-2013
+Gary Neville|ENG|MUN:1992-2011
+Rio Ferdinand|ENG|West Ham:1995-2000;Leeds:2000-2002;MUN:2002-2014;QPR:2014-2015
+Nemanja Vidić|SRB|Estrella Roja:2000-2004;Spartak Moscú:2004-2006;MUN:2005-2014;INT:2014-2016
+Patrice Evra|FRA|Niza:2000-2002;MON:2002-2006;MUN:2005-2014;JUV:2014-2017;MAR:2016-2017;West Ham:2017-2018
+Edwin van der Sar|NED|AJA:1990-1999;JUV:1999-2001;Fulham:2001-2005;MUN:2005-2011
+Michael Carrick|ENG|West Ham:1999-2004;TOT:2004-2006;MUN:2006-2018
+Dimitar Berbatov|BUL|CSKA Sofía:1998-2001;LEV:2000-2006;TOT:2006-2008;MUN:2008-2012;Fulham:2012-2014;MON:2013-2014;PAOK:2015-2016
+Robin van Persie|NED|Feyenoord:2001-2004;ARS:2004-2012;MUN:2012-2015;Fenerbahçe:2015-2018;Feyenoord:2017-2019
+David de Gea|ESP|ATM:2009-2011;MUN:2011-2023;Fiorentina:2024-2026
+Marcus Rashford|ENG|MUN:2015-2025;Aston Villa:2024-2025;FCB:2025-2026
+Anthony Martial|FRA|LYO:2012-2013;MON:2013-2015;MUN:2015-2024;SEV:2021-2022;AEK:2024-2026
+Harry Maguire|ENG|Sheffield United:2010-2014;Hull:2014-2017;Leicester:2017-2019;MUN:2019-2026
+Mason Mount|ENG|Vitesse:2017-2018;Derby County:2018-2019;CHE:2019-2023;MUN:2023-2026
+Antony|BRA|São Paulo:2018-2020;AJA:2020-2022;MUN:2022-2025;BET:2024-2026
+Lisandro Martínez|ARG|Defensa y Justicia:2017-2019;AJA:2019-2022;MUN:2022-2026
+Juan Sebastián Verón|ARG|Estudiantes:1993-1996;Sampdoria:1996-1998;Parma:1998-1999;Lazio:1999-2001;MUN:2001-2003;CHE:2003-2004;INT:2004-2006;Estudiantes:2006-2012
+Owen Hargreaves|ENG|BAY:1999-2007;MUN:2007-2011;MCI:2011-2012
+Javier Hernández|MEX|Chivas:2006-2010;MUN:2010-2014;RMA:2014-2015;LEV:2015-2017;West Ham:2017-2019;SEV:2019-2020;LA Galaxy:2020-2024
+John Terry|ENG|CHE:1998-2017;Aston Villa:2017-2018
+Petr Čech|CZE|Rennes:2002-2004;CHE:2004-2015;ARS:2015-2019
+Ashley Cole|ENG|ARS:1999-2006;CHE:2006-2014;ROM:2014-2016;LA Galaxy:2016-2018;Derby County:2018-2019
+Michael Essien|GHA|Bastia:2000-2003;LYO:2003-2005;CHE:2005-2012;RMA:2012-2013;CHE:2013-2014;MIL:2013-2015
+Ramires|BRA|Cruzeiro:2007-2009;BEN:2009-2010;CHE:2010-2016;Jiangsu Suning:2015-2019
+Willian|BRA|Shakhtar Donetsk:2007-2013;Anzhi:2012-2013;CHE:2013-2020;ARS:2020-2021;Corinthians:2021-2022;Fulham:2022-2024
+Oscar|BRA|São Paulo:2008-2010;Internacional:2010-2012;CHE:2012-2017;Shanghai SIPG:2016-2025
+César Azpilicueta|ESP|Osasuna:2007-2010;MAR:2010-2012;CHE:2012-2023;ATM:2023-2025
+Marcos Alonso|ESP|RMA:2009-2010;Bolton:2010-2013;Sunderland:2013-2014;Fiorentina:2013-2016;CHE:2016-2022;FCB:2022-2024;Celta:2024-2026
+Reece James|ENG|Wigan:2018-2019;CHE:2019-2026
+Cole Palmer|ENG|MCI:2020-2023;CHE:2023-2026
+Moisés Caicedo|ECU|Independiente del Valle:2019-2021;Brighton:2020-2023;CHE:2023-2026
+Christian Pulisic|USA|BVB:2016-2019;CHE:2019-2023;MIL:2023-2026
+Nicolas Anelka|FRA|PSG:1996-1997;ARS:1997-1999;RMA:1999-2000;PSG:2000-2002;LIV:2001-2002;MCI:2002-2005;Fenerbahçe:2004-2006;Bolton:2006-2008;CHE:2007-2012;Shanghai Shenhua:2012-2013;JUV:2012-2013;West Brom:2013-2014
+Dennis Bergkamp|NED|AJA:1986-1993;INT:1993-1995;ARS:1995-2006
+Robert Pirès|FRA|Metz:1993-1998;MAR:1998-2000;ARS:2000-2006;VIL:2006-2010;Aston Villa:2010-2011
+Freddie Ljungberg|SWE|Halmstad:1994-1998;ARS:1998-2007;West Ham:2007-2008;Seattle Sounders:2009-2010;CEL:2010-2011
+Sol Campbell|ENG|TOT:1992-2001;ARS:2001-2006;Portsmouth:2006-2009;ARS:2009-2010;Newcastle:2010-2011
+Aaron Ramsey|WAL|Cardiff:2006-2008;ARS:2008-2019;JUV:2019-2022;Rangers:2021-2022;Niza:2022-2023;Cardiff:2023-2025
+Pierre-Emerick Aubameyang|GAB|Dijon:2008-2009;Lille:2009-2010;MON:2010-2011;Saint-Étienne:2010-2013;BVB:2013-2018;ARS:2017-2022;FCB:2021-2022;CHE:2022-2023;MAR:2023-2024;Al-Qadsiah:2024-2025;MAR:2025-2026
+Bukayo Saka|ENG|ARS:2018-2026
+Gabriel Martinelli|BRA|Ituano:2017-2019;ARS:2019-2026
+Declan Rice|ENG|West Ham:2017-2023;ARS:2023-2026
+William Saliba|FRA|Saint-Étienne:2018-2020;Niza:2020-2021;MAR:2021-2022;ARS:2022-2026
+Gabriel Magalhães|BRA|Avaí:2016-2017;Lille:2017-2020;ARS:2020-2026
+Leandro Trossard|BEL|GEN:2012-2019;Brighton:2019-2023;ARS:2022-2026
+Emiliano Martínez|ARG|ARS:2012-2020;Getafe:2017-2018;Aston Villa:2020-2026
+Christian Eriksen|DEN|AJA:2010-2013;TOT:2013-2020;INT:2019-2021;Brentford:2021-2022;MUN:2022-2025;WOL:2025-2026
+Dele Alli|ENG|MK Dons:2012-2015;TOT:2015-2022;Everton:2021-2023;Beşiktaş:2022-2023;Como:2025-2026
+Jan Vertonghen|BEL|AJA:2006-2012;TOT:2012-2020;BEN:2020-2023;Anderlecht:2023-2025
+Kyle Walker|ENG|Sheffield United:2008-2009;TOT:2009-2017;MCI:2017-2025;MIL:2024-2025;Burnley:2025-2026
+Dejan Kulusevski|SWE|Parma:2019-2020;JUV:2020-2022;TOT:2021-2026
+Richarlison|BRA|Fluminense:2016-2017;Watford:2017-2018;Everton:2018-2022;TOT:2022-2026
+Vincent Kompany|BEL|Anderlecht:2003-2006;Hamburgo:2006-2008;MCI:2008-2019;Anderlecht:2019-2020
+Joe Hart|ENG|Shrewsbury:2004-2006;MCI:2006-2016;Torino:2016-2017;West Ham:2017-2018;Burnley:2018-2020;TOT:2020-2021;CEL:2021-2024
+Pablo Zabaleta|ARG|San Lorenzo:2002-2005;Espanyol:2005-2008;MCI:2008-2017;West Ham:2017-2020
+Fernandinho|BRA|Athletico Paranaense:2003-2005;Shakhtar Donetsk:2005-2013;MCI:2013-2022;Athletico Paranaense:2022-2024
+Riyad Mahrez|ALG|Le Havre:2010-2014;Leicester:2013-2018;MCI:2018-2023;Al-Ahli:2023-2026
+Jack Grealish|ENG|Aston Villa:2012-2021;MCI:2021-2025;Everton:2025-2026
+Phil Foden|ENG|MCI:2017-2026
+John Stones|ENG|Barnsley:2011-2013;Everton:2013-2016;MCI:2016-2026
+Joško Gvardiol|CRO|Dinamo Zagreb:2019-2021;RB Leipzig:2021-2023;MCI:2023-2026
+Jamie Carragher|ENG|LIV:1996-2013
+Sami Hyypiä|FIN|MyPa:1992-1995;Willem II:1995-1999;LIV:1999-2009;LEV:2009-2011
+Dirk Kuyt|NED|Utrecht:1998-2003;Feyenoord:2003-2006;LIV:2006-2012;Fenerbahçe:2012-2015;Feyenoord:2015-2017
+Jordan Henderson|ENG|Sunderland:2008-2011;LIV:2011-2023;Al-Ettifaq:2023-2024;AJA:2023-2025;Brentford:2025-2026
+Trent Alexander-Arnold|ENG|LIV:2016-2025;RMA:2025-2026
+Andrew Robertson|SCO|Queen's Park:2012-2013;Dundee United:2013-2014;Hull:2014-2017;LIV:2017-2026
+Georginio Wijnaldum|NED|Feyenoord:2007-2011;PSV:2011-2015;Newcastle:2015-2016;LIV:2016-2021;PSG:2021-2023;ROM:2022-2023;Al-Ettifaq:2023-2026
+Daniel Sturridge|ENG|MCI:2006-2009;CHE:2009-2013;Bolton:2010-2011;LIV:2012-2019;West Brom:2017-2018;Trabzonspor:2019-2020
+Alexis Mac Allister|ARG|Argentinos Juniors:2016-2019;BOC:2019-2020;Brighton:2019-2023;LIV:2023-2026
+Dominik Szoboszlai|HUN|Salzburgo:2017-2021;RB Leipzig:2020-2023;LIV:2023-2026
+Cody Gakpo|NED|PSV:2018-2023;LIV:2022-2026
+Diogo Jota|POR|Paços de Ferreira:2014-2016;POR:2016-2017;Wolves:2017-2020;LIV:2020-2025
+Ibrahima Konaté|FRA|Sochaux:2016-2017;RB Leipzig:2017-2021;LIV:2021-2026
+Philipp Lahm|GER|Stuttgart:2003-2005;BAY:2005-2017
+Jérôme Boateng|GER|Hertha:2006-2007;Hamburgo:2007-2010;MCI:2010-2011;BAY:2011-2021;LYO:2021-2023;LASK:2023-2024
+Franck Ribéry|FRA|Metz:2004-2005;GAL:2004-2005;MAR:2005-2007;BAY:2007-2019;Fiorentina:2019-2021;Salernitana:2021-2023
+David Alaba|AUT|BAY:2009-2010;Hoffenheim:2010-2011;BAY:2011-2021;RMA:2021-2026
+Joshua Kimmich|GER|RB Leipzig:2013-2015;BAY:2015-2026
+Leon Goretzka|GER|Bochum:2012-2013;SCH:2013-2018;BAY:2018-2026
+Serge Gnabry|GER|ARS:2012-2015;West Brom:2015-2016;Werder Bremen:2016-2017;Hoffenheim:2017-2018;BAY:2018-2026
+Jamal Musiala|GER|BAY:2019-2026
+Alphonso Davies|CAN|Vancouver Whitecaps:2016-2018;BAY:2018-2026
+Mario Gómez|GER|Stuttgart:2004-2009;BAY:2009-2013;Fiorentina:2013-2015;Beşiktaş:2015-2016;WOL:2016-2018;Stuttgart:2017-2020
+Miroslav Klose|GER|Kaiserslautern:1999-2004;Werder Bremen:2004-2007;BAY:2007-2011;Lazio:2011-2016
+Lukas Podolski|GER|Colonia:2003-2006;BAY:2006-2009;Colonia:2009-2012;ARS:2012-2015;INT:2014-2015;GAL:2015-2017;Vissel Kobe:2017-2020;Antalyaspor:2020-2021;Górnik Zabrze:2021-2026
+Marco Reus|GER|Rot Weiss Ahlen:2006-2009;Borussia Mönchengladbach:2009-2012;BVB:2012-2024;LA Galaxy:2024-2026
+Shinji Kagawa|JPN|Cerezo Osaka:2006-2010;BVB:2010-2012;MUN:2012-2014;BVB:2014-2019;Beşiktaş:2018-2019;Zaragoza:2019-2020;PAOK:2020-2021;Cerezo Osaka:2022-2026
+Nuri Şahin|TUR|BVB:2005-2007;Feyenoord:2007-2008;BVB:2008-2011;RMA:2011-2012;LIV:2012-2013;BVB:2012-2018;Werder Bremen:2018-2020;Antalyaspor:2020-2021
+Henrikh Mkhitaryan|ARM|Pyunik:2006-2009;Metalurh Donetsk:2009-2010;Shakhtar Donetsk:2010-2013;BVB:2013-2016;MUN:2016-2018;ARS:2017-2020;ROM:2019-2022;INT:2022-2026
+Florian Wirtz|GER|LEV:2019-2025;LIV:2025-2026
+Granit Xhaka|SUI|Basilea:2010-2012;Borussia Mönchengladbach:2012-2016;ARS:2016-2023;LEV:2023-2025;Sunderland:2025-2026
+Thiago Motta|ITA|FCB:2001-2007;ATM:2007-2008;Genoa:2008-2009;INT:2009-2012;PSG:2011-2018
+Javier Pastore|ARG|Huracán:2007-2009;Palermo:2009-2011;PSG:2011-2018;ROM:2018-2021;Elche:2021-2022
+Ezequiel Lavezzi|ARG|San Lorenzo:2004-2007;NAP:2007-2012;PSG:2012-2016;Hebei:2015-2019
+Marco Verratti|ITA|Pescara:2008-2012;PSG:2012-2023;Al-Arabi:2023-2026
+Presnel Kimpembe|FRA|PSG:2014-2025;Qatar SC:2025-2026
+Lucas Moura|BRA|São Paulo:2010-2013;PSG:2012-2018;TOT:2017-2023;São Paulo:2023-2026
+Leandro Paredes|ARG|BOC:2010-2014;Chievo:2014-2015;Empoli:2015-2016;ROM:2016-2017;Zenit:2017-2019;PSG:2018-2023;JUV:2022-2023;ROM:2023-2025;BOC:2025-2026
+Juninho Pernambucano|BRA|Vasco da Gama:1995-2001;LYO:2001-2009;Al-Gharafa:2009-2011;Vasco da Gama:2011-2013;NY Red Bulls:2013-2014
+Alexandre Lacazette|FRA|LYO:2010-2017;ARS:2017-2022;LYO:2022-2025
+Dimitri Payet|FRA|Nantes:2005-2007;Saint-Étienne:2007-2011;Lille:2011-2013;MAR:2013-2015;West Ham:2015-2017;MAR:2016-2023;Vasco da Gama:2023-2025
+Ricardo Quaresma|POR|SPO:2001-2003;FCB:2003-2004;POR:2004-2008;INT:2008-2010;CHE:2008-2009;Beşiktaş:2010-2012;POR:2013-2015;Beşiktaş:2015-2019
+Nani|POR|SPO:2005-2007;MUN:2007-2014;SPO:2014-2015;Fenerbahçe:2015-2016;VAL:2016-2017;Lazio:2017-2018;SPO:2018-2019;Orlando City:2019-2021
+Ricardo Carvalho|POR|POR:1997-2004;CHE:2004-2010;RMA:2010-2013;MON:2013-2016
+João Cancelo|POR|BEN:2012-2014;VAL:2014-2017;INT:2017-2018;JUV:2018-2019;MCI:2019-2023;BAY:2022-2023;FCB:2023-2024;HIL:2024-2026
+Nicolás Otamendi|ARG|Vélez:2008-2010;POR:2010-2014;Atlético Mineiro:2013-2014;VAL:2014-2015;MCI:2015-2020;BEN:2020-2026
+Hulk|BRA|Tokyo Verdy:2006-2008;POR:2008-2012;Zenit:2012-2016;Shanghai SIPG:2016-2020;Atlético Mineiro:2021-2026
+Jackson Martínez|COL|Independiente Medellín:2004-2010;Chiapas:2010-2012;POR:2012-2015;ATM:2015-2016;Guangzhou Evergrande:2015-2018;Portimonense:2018-2020
+Héctor Herrera|MEX|Pachuca:2011-2013;POR:2013-2019;ATM:2019-2022;Houston Dynamo:2022-2025
+Edgar Davids|NED|AJA:1991-1996;MIL:1996-1998;JUV:1997-2004;FCB:2003-2004;INT:2004-2005;TOT:2005-2007;AJA:2007-2008
+Marc Overmars|NED|Willem II:1991-1992;AJA:1992-1997;ARS:1997-2000;FCB:2000-2004
+Rafael van der Vaart|NED|AJA:2000-2005;Hamburgo:2005-2008;RMA:2008-2010;TOT:2010-2012;Hamburgo:2012-2015;BET:2015-2016;Midtjylland:2016-2018
+Klaas-Jan Huntelaar|NED|Heerenveen:2004-2006;AJA:2005-2008;RMA:2008-2009;MIL:2009-2010;SCH:2010-2017;AJA:2017-2021
+Matthijs de Ligt|NED|AJA:2016-2019;JUV:2019-2022;BAY:2022-2024;MUN:2024-2026
+Daley Blind|NED|AJA:2008-2014;MUN:2014-2018;AJA:2018-2023;BAY:2022-2023;Girona:2023-2026
+Hakim Ziyech|MAR|Heerenveen:2012-2014;Twente:2014-2016;AJA:2016-2020;CHE:2020-2024;GAL:2023-2024
+Dušan Tadić|SRB|Vojvodina:2006-2010;Groningen:2010-2012;Twente:2012-2014;Southampton:2014-2018;AJA:2018-2023;Fenerbahçe:2023-2026
+Axel Witsel|BEL|Standard Lieja:2006-2011;BEN:2011-2012;Zenit:2012-2017;Tianjin Quanjian:2016-2018;BVB:2018-2022;ATM:2022-2025;Girona:2025-2026
+Marouane Fellaini|BEL|Standard Lieja:2006-2008;Everton:2008-2013;MUN:2013-2019;Shandong Taishan:2018-2024
+Mousa Dembélé|BEL|AZ:2006-2010;Fulham:2010-2012;TOT:2012-2019;Guangzhou R&F:2018-2021
+Jérémy Doku|BEL|Anderlecht:2018-2020;Rennes:2020-2023;MCI:2023-2026
+Dejan Lovren|CRO|Dinamo Zagreb:2006-2010;LYO:2009-2013;Southampton:2013-2014;LIV:2014-2020;Zenit:2020-2023;LYO:2022-2023;PAOK:2023-2026
+Marcelo Brozović|CRO|Lokomotiva Zagreb:2011-2012;Dinamo Zagreb:2012-2015;INT:2014-2023;ALN:2023-2026
+Rodrigo Bentancur|URU|BOC:2015-2017;JUV:2017-2022;TOT:2021-2026
+Lucas Torreira|URU|Pescara:2014-2016;Sampdoria:2016-2018;ARS:2018-2022;ATM:2020-2021;Fiorentina:2021-2022;GAL:2022-2026
+Fernando Muslera|URU|Montevideo Wanderers:2004-2006;Lazio:2007-2011;GAL:2011-2025;Estudiantes:2025-2026
+Juan Cuadrado|COL|Independiente Medellín:2008-2009;Udinese:2009-2012;Lecce:2011-2012;Fiorentina:2012-2015;CHE:2014-2016;JUV:2015-2023;INT:2023-2024;Atalanta:2024-2025;Pisa:2025-2026
+David Ospina|COL|Atlético Nacional:2005-2008;Niza:2008-2014;ARS:2014-2019;NAP:2018-2022;ALN:2022-2024
+Guillermo Ochoa|MEX|América:2004-2011;Ajaccio:2011-2014;Málaga:2014-2017;Granada:2016-2017;Standard Lieja:2017-2019;América:2019-2022;Salernitana:2022-2024
+Raúl Jiménez|MEX|América:2011-2014;ATM:2014-2015;BEN:2015-2019;Wolves:2018-2023;Fulham:2023-2026
+Éder Militão|BRA|São Paulo:2016-2018;POR:2018-2019;RMA:2019-2026
+Lucas Paquetá|BRA|Flamengo:2016-2019;MIL:2018-2020;LYO:2020-2022;West Ham:2022-2025;Flamengo:2025-2026
+Bruno Guimarães|BRA|Athletico Paranaense:2017-2020;LYO:2019-2022;Newcastle:2021-2026
+Douglas Costa|BRA|Grêmio:2008-2010;Shakhtar Donetsk:2009-2015;BAY:2015-2017;JUV:2017-2022;Grêmio:2021-2022;LA Galaxy:2022-2023
+Alex Sandro|BRA|Santos:2010-2012;POR:2011-2015;JUV:2015-2024;Flamengo:2024-2026
+Danilo|BRA|Santos:2010-2012;POR:2011-2015;RMA:2015-2017;MCI:2017-2019;JUV:2019-2025;Flamengo:2024-2026
+Papu Gómez|ARG|Arsenal de Sarandí:2006-2009;San Lorenzo:2009-2010;Catania:2010-2013;Metalist:2013-2014;Atalanta:2014-2021;SEV:2020-2023;Monza:2023-2024
+Nahuel Molina|ARG|BOC:2016-2020;Udinese:2020-2022;ATM:2022-2026
+Cristian Romero|ARG|Belgrano:2016-2018;Genoa:2018-2020;Atalanta:2020-2021;TOT:2021-2026
+Giovani Lo Celso|ARG|Rosario Central:2015-2017;PSG:2016-2018;BET:2018-2020;TOT:2019-2024;VIL:2021-2023;BET:2024-2026
+Alejandro Garnacho|ARG|MUN:2021-2025;CHE:2025-2026
+Yassine Bounou|MAR|Zaragoza:2014-2016;Girona:2016-2020;SEV:2019-2023;HIL:2023-2026
+Noussair Mazraoui|MAR|AJA:2017-2022;BAY:2022-2024;MUN:2024-2026
+Takumi Minamino|JPN|Cerezo Osaka:2012-2015;Salzburgo:2014-2020;LIV:2019-2022;Southampton:2020-2021;MON:2022-2026
+Kim Min-jae|KOR|Jeonbuk:2017-2019;Beijing Guoan:2019-2021;Fenerbahçe:2021-2022;NAP:2022-2023;BAY:2023-2026
+Marcos Senna|ESP|São Caetano:1999-2002;VIL:2002-2013;NY Cosmos:2013-2015
+Juan Carlos Valerón|ESP|Las Palmas:1995-1997;Mallorca:1997-1998;ATM:1998-2000;Deportivo:2000-2013;Las Palmas:2013-2016
+Roy Makaay|NED|Vitesse:1993-1997;Tenerife:1997-1999;Deportivo:1999-2003;BAY:2003-2007;Feyenoord:2007-2010
+Frédéric Kanouté|MLI|LYO:1997-2000;West Ham:1999-2003;TOT:2003-2005;SEV:2005-2012;Beijing Guoan:2012-2013
+Luís Fabiano|BRA|São Paulo:2001-2004;POR:2004-2005;SEV:2005-2011;São Paulo:2011-2015
+Dani Ceballos|ESP|BET:2014-2017;RMA:2017-2019;ARS:2019-2021;RMA:2021-2026
+Marco Asensio|ESP|Mallorca:2013-2015;Espanyol:2015-2016;RMA:2016-2023;PSG:2023-2025;Aston Villa:2024-2025;Fenerbahçe:2025-2026
+Lucas Vázquez|ESP|Espanyol:2014-2015;RMA:2015-2025;LEV:2025-2026
+Brahim Díaz|MAR|MCI:2016-2019;RMA:2018-2020;MIL:2020-2023;RMA:2023-2026
+Arda Güler|TUR|Fenerbahçe:2021-2023;RMA:2023-2026
+Aurélien Tchouaméni|FRA|Burdeos:2017-2019;MON:2019-2022;RMA:2022-2026
+Eduardo Camavinga|FRA|Rennes:2018-2021;RMA:2021-2026
+Ferland Mendy|FRA|Le Havre:2014-2017;LYO:2017-2019;RMA:2019-2026
+Antonio Rüdiger|GER|Stuttgart:2011-2015;ROM:2015-2017;CHE:2017-2022;RMA:2022-2026
+Dean Huijsen|ESP|JUV:2023-2024;ROM:2023-2024;Bournemouth:2024-2025;RMA:2025-2026
+Joselu|ESP|Hoffenheim:2012-2013;Eintracht Frankfurt:2013-2014;Hannover 96:2014-2015;Stoke:2015-2017;Deportivo:2016-2017;Newcastle:2017-2019;Alavés:2019-2022;Espanyol:2022-2023;RMA:2023-2024;Al-Gharafa:2024-2026
+Raphaël Varane|FRA|Lens:2010-2011;RMA:2011-2021;MUN:2021-2024;Como:2024-2025
+Fábio Coentrão|POR|Rio Ave:2005-2007;BEN:2007-2011;RMA:2011-2015;MON:2015-2016;RMA:2016-2017;SPO:2017-2018;Rio Ave:2018-2019
+Júlio Baptista|BRA|São Paulo:2000-2003;SEV:2003-2005;RMA:2005-2008;ARS:2006-2007;ROM:2008-2011;Málaga:2010-2012;Cruzeiro:2013-2014
+Fabio Cannavaro|ITA|NAP:1992-1995;Parma:1995-2002;INT:2002-2004;JUV:2004-2006;RMA:2006-2009;JUV:2009-2010;Al-Ahli:2010-2011
+Mahamadou Diarra|MLI|Vitesse:1999-2002;LYO:2002-2006;RMA:2006-2011;MON:2010-2011;Fulham:2011-2014
+Ezequiel Garay|ARG|Newell's:2004-2005;Racing Santander:2005-2009;RMA:2009-2011;BEN:2011-2014;Zenit:2014-2016;VAL:2016-2020
+Lassana Diarra|FRA|CHE:2005-2007;ARS:2007-2008;Portsmouth:2007-2009;RMA:2008-2012;Anzhi:2012-2013;Lokomotiv Moscú:2013-2014;MAR:2015-2017;PSG:2017-2019`;
+
+function norm(s){return s.normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[ıİ]/g,"i").toLowerCase()}
+const PLAYERS = RAW.trim().split("\n").map((l,i)=>{
+  const [name,nat,c]=l.split("|");
+  const stints=c.split(";").map(s=>{const k=s.lastIndexOf(":");const [a,b]=s.slice(k+1).split("-").map(Number);return {club:s.slice(0,k),s:a,e:b}});
+  return {id:i,name,nat,stints,path:stints.map(x=>x.club),set:new Set(stints.map(x=>x.club)),key:norm(name)};
+});
+function clubName(k){return CLUBS[k]?CLUBS[k][0]:k}
+document.getElementById("count").textContent=PLAYERS.length;
+// Jugadores y clubes "de toda la vida" para el nivel Principiante
+const STAR_NAMES=["Cristiano Ronaldo","Lionel Messi","Neymar","Kylian Mbappé","Lamine Yamal","Vinícius Júnior","Erling Haaland","Jude Bellingham","Robert Lewandowski","Karim Benzema","Luka Modrić","Toni Kroos","Sergio Ramos","Iker Casillas","Andrés Iniesta","Xavi Hernández","Gerard Piqué","Sergio Busquets","Mohamed Salah","Harry Kane","Antoine Griezmann","Luis Suárez","Zlatan Ibrahimović","Ángel Di María","Sergio Agüero","Kevin De Bruyne","Thibaut Courtois","Eden Hazard","Gareth Bale","Marcelo","Dani Carvajal","Rodrygo","Pedri","Ronaldinho","Ronaldo Nazário","Kaká","Zinedine Zidane","David Beckham","Thierry Henry","Wayne Rooney","Paul Pogba","Manuel Neuer","Thomas Müller","Raúl González","Fernando Torres","David Villa","Gianluigi Buffon","Didier Drogba","Samuel Eto'o","Julián Álvarez","Lautaro Martínez","Achraf Hakimi","Dani Alves","Diego Costa","Álvaro Morata","Koke","Jan Oblak","Federico Valverde","Casemiro","Rodri"];
+const STARS=PLAYERS.filter(p=>STAR_NAMES.includes(p.name)); const STARS_SET=new Set(STARS.map(p=>p.id));
+const BIG=["RMA","FCB","ATM","MUN","MCI","LIV","CHE","ARS","JUV","MIL","INT","BAY","PSG","BVB"];
+function PP(){return DIFF==="easy"?STARS:PLAYERS}
+function CP(){return DIFF==="easy"?BIG:CLUB_POOL}
+function initialOf(n){const w=n.split(" ");return (w.length>1?w[w.length-1]:w[0])[0]}
+
+// Compañeros: mismo club con al menos una temporada en común
+const MATES=PLAYERS.map(()=>new Map());
+for(let i=0;i<PLAYERS.length;i++)for(let j=i+1;j<PLAYERS.length;j++){
+  let best=null;
+  for(const a of PLAYERS[i].stints)for(const b of PLAYERS[j].stints){
+    if(a.club!==b.club) continue; const s=Math.max(a.s,b.s),e=Math.min(a.e,b.e);
+    if(s<e&&(!best||e-s>best.e-best.s)) best={club:a.club,s,e};
+  }
+  if(best){MATES[i].set(j,best);MATES[j].set(i,best)}
+}
+function bfs(from){const d=new Array(PLAYERS.length).fill(-1),prev=new Array(PLAYERS.length).fill(-1);d[from]=0;const q=[from];
+  while(q.length){const u=q.shift();for(const v of MATES[u].keys())if(d[v]<0){d[v]=d[u]+1;prev[v]=u;q.push(v)}}return {d,prev}}
+function seasons(s,e){const f=y=>String(y%100).padStart(2,"0");return e-s===1?`${f(s)}/${f(e)}`:`${s}–${e}`}
+
+// ---------- Utilidades ----------
+function rng(seed){let s=seed>>>0||1;return()=>{s^=s<<13;s>>>=0;s^=s>>17;s^=s<<5;s>>>=0;return s/4294967296}}
+function hash(str){let h=2166136261;for(const c of str){h^=c.charCodeAt(0);h=Math.imul(h,16777619)}return h>>>0}
+const today=new Date(); const baseDay=today.getFullYear()+"-"+(today.getMonth()+1)+"-"+today.getDate();
+const DIFF_NAMES={easy:"Principiante",mid:"Intermedio",hard:"Experto"};
+let DIFF="mid";try{const d=localStorage.getItem("pq-diff");if(DIFF_NAMES[d])DIFF=d}catch(e){}
+let dayKey=baseDay+(DIFF==="mid"?"":"-"+DIFF);
+const dayLabel=today.toLocaleDateString("es-ES",{day:"numeric",month:"short"});
+const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+function shuffle(a,r){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function clubBadge(k,cls=""){
+  if(CLUBS[k]) return `<span class="badge ${cls}" style="background:${CLUBS[k][1]};color:${CLUBS[k][2]}" aria-hidden="true">${k}</span>`;
+  return `<span class="badge ${cls}" style="background:var(--felt-3);color:var(--chalk)" aria-hidden="true">${norm(k).replace(/[^a-z]/g,"").slice(0,3).toUpperCase()}</span>`;
+}
+function badge(cat){return cat.type==="nat"?`<span class="badge flag" aria-hidden="true">${NATS[cat.key][1]}</span>`:clubBadge(cat.key)}
+function catName(cat){return cat.type==="nat"?NATS[cat.key][0]:CLUBS[cat.key][0]}
+function fits(p,cat){return cat.type==="nat"?p.nat===cat.key:p.set.has(cat.key)}
+function flag(p){return NATS[p.nat]?.[1]||""}
+function setMsg(id,t,cls){const m=document.getElementById(id);m.textContent=t;m.className="msg "+(cls||"")}
+function search(q,limit=8){
+  q=norm(q.trim()); if(!q) return [];
+  const words=q.split(/\s+/);
+  return PLAYERS.filter(p=>p.key.includes(q)||words.every(w=>p.key.split(/[\s'-]+/).some(t=>t.startsWith(w))))
+    .sort((a,b)=>(b.key.startsWith(q)-a.key.startsWith(q))||a.name.localeCompare(b.name)).slice(0,limit);
+}
+let act=0;
+function listResults(ul,q,usedSet){
+  const r=search(q); act=0;
+  ul.innerHTML=r.length?r.map((p,n)=>`<li><button type="button" data-id="${p.id}" class="${n===0?"act":""} ${usedSet&&usedSet.has(p.id)?"used":""}">${p.name}<span>${flag(p)}</span></button></li>`).join(""):(q.trim()?`<li class="none">No está en nuestra base de datos. Prueba con el apellido.</li>`:"");
+}
+function keyNav(e,ul,onPick){
+  const items=[...ul.querySelectorAll("button")]; if(!items.length) return;
+  if(e.key==="ArrowDown"||e.key==="ArrowUp"){e.preventDefault();items[act].classList.remove("act");act=(act+(e.key==="ArrowDown"?1:-1)+items.length)%items.length;items[act].classList.add("act");items[act].scrollIntoView({block:"nearest"})}
+  if(e.key==="Enter"){e.preventDefault();onPick(+items[act].dataset.id)}
+}
+// Buscador en línea reutilizable
+function inlineSearch(inputId,resultsId,usedFn,onPick){
+  const inp=document.getElementById(inputId),ul=document.getElementById(resultsId);
+  inp.addEventListener("input",()=>{listResults(ul,inp.value,usedFn());ul.hidden=!inp.value.trim()});
+  inp.addEventListener("keydown",e=>{if(e.key==="Escape")ul.hidden=true;else keyNav(e,ul,id=>{inp.value="";ul.hidden=true;onPick(id)})});
+  ul.addEventListener("click",e=>{const b=e.target.closest("button[data-id]");if(b){inp.value="";ul.hidden=true;onPick(+b.dataset.id)}});
+  document.addEventListener("click",e=>{if(!e.target.closest(".inline-search"))ul.hidden=true});
+}
+
+// ---------- LINK-UP ----------
+const L={};
+function makeLink(seed){
+  const r=rng(seed);
+  for(let t=0;t<500;t++){
+    const pool=PP(); const a=pool[Math.floor(r()*pool.length)].id; const {d}=bfs(a);
+    const want=DIFF==="easy"?2:DIFF==="hard"?4:(r()<0.65?3:4);
+    const cands=pool.filter(p=>d[p.id]===want).map(p=>p.id);
+    if(cands.length) return {a,b:cands[Math.floor(r()*cands.length)],par:want};
+  }
+}
+function startLink(daily){
+  const seed=daily?hash("link"+dayKey):Math.floor(Math.random()*1e9);
+  Object.assign(L,makeLink(seed),{daily,chain:[],strikes:0,hints:0,over:false,won:false,gaveUp:false});
+  L.chain=[L.a]; L.distB=bfs(L.b).d;
+  if(daily){const s=store.get("link-"+dayKey,null);if(s&&s.a===L.a&&s.b===L.b)Object.assign(L,s)}
+  document.getElementById("l-label").textContent=daily?dayLabel:"libre";
+  document.getElementById("l-daily").hidden=daily;
+  document.getElementById("l-par").textContent=L.par;
+  setMsg("l-msg",""); renderLink();
+}
+function saveLink(){if(L.daily)store.set("link-"+dayKey,{a:L.a,b:L.b,chain:L.chain,strikes:L.strikes,hints:L.hints,over:L.over,won:L.won,gaveUp:L.gaveUp});updateHome()}
+function plCard(id,cls,role){const p=PLAYERS[id];return `<div class="pl ${cls}"><span class="flag" aria-hidden="true">${flag(p)}</span><div><div class="rl">${role}</div><div class="nm">${p.name}</div></div></div>`}
+function linkRow(x,y){const m=MATES[x].get(y);return `<div class="link">${clubBadge(m.club,"sm")}<span>Juntos en el <b>${clubName(m.club)}</b> <span class="pill">${seasons(m.s,m.e)}</span></span></div>`}
+function renderLink(){
+  let h="";
+  L.chain.forEach((id,i)=>{
+    if(i>0) h+=linkRow(L.chain[i-1],id);
+    const isGoal=id===L.b;
+    h+=plCard(id,i===0?"start":isGoal?"goal reached":"mid",i===0?"Salida":isGoal?"Meta":"Eslabón "+i);
+  });
+  if(!L.won){
+    if(L.gaveUp){
+      // mostrar la ruta más corta desde el último eslabón
+      const {prev}=bfs(L.b); let cur=L.chain[L.chain.length-1];
+      while(cur!==L.b){const nx=prev[cur];h+=linkRow(cur,nx).replace('class="link"','class="link gap"');h+=plCard(nx,nx===L.b?"goal":"mid",nx===L.b?"Meta":"Solución");cur=nx}
+    } else {
+      h+=`<div class="link gap"><span>Faltan eslabones…</span></div>`+plCard(L.b,"goal","Meta");
+    }
+  }
+  document.getElementById("l-chain").innerHTML=h;
+  const last=PLAYERS[L.chain[L.chain.length-1]];
+  document.getElementById("l-ask").textContent=`¿Con quién jugó ${last.name}?`;
+  document.getElementById("l-strikes").textContent=L.strikes;
+  document.getElementById("l-input").disabled=L.over;
+  document.getElementById("l-input").parentElement.hidden=L.over;
+  document.getElementById("l-undo").disabled=L.over||L.chain.length<2;
+  document.getElementById("l-hint").disabled=L.over;
+  document.getElementById("l-give").disabled=L.over;
+  if(L.won){const steps=L.chain.length-1;setMsg("l-msg",steps===L.par?`¡Cadena perfecta! ${steps} pasos, igual que la mejor posible.`:`¡Conectados en ${steps} pasos! La mejor cadena tenía ${L.par}.`,"ok")}
+  else if(L.gaveUp) setMsg("l-msg","Esta es una cadena posible desde tu último eslabón.","bad");
+}
+function pickLink(id){
+  if(L.over) return; const cur=L.chain[L.chain.length-1], p=PLAYERS[id];
+  if(L.chain.includes(id)){setMsg("l-msg",`${p.name} ya está en tu cadena.`,"bad");return}
+  if(!MATES[cur].has(id)){
+    L.strikes++; setMsg("l-msg",`${p.name} y ${PLAYERS[cur].name} nunca coincidieron en el mismo vestuario.`,"bad");
+    const c=document.getElementById("l-input");c.classList.add("shake");setTimeout(()=>c.classList.remove("shake"),400);
+    saveLink();renderLink();return;
+  }
+  L.chain.push(id);
+  if(id===L.b){L.over=true;L.won=true}
+  else{const m=MATES[cur].get(id);setMsg("l-msg",`Bien: coincidieron en el ${clubName(m.club)}. ${L.distB[id]===1?"¡Este jugó con la meta!":""}`,"ok")}
+  saveLink();renderLink(); if(!L.over)document.getElementById("l-input").focus();
+}
+inlineSearch("l-input","l-results",()=>new Set(L.chain),pickLink);
+document.getElementById("l-undo").onclick=()=>{if(L.chain.length>1){L.chain.pop();setMsg("l-msg","");saveLink();renderLink()}};
+document.getElementById("l-hint").onclick=()=>{
+  const cur=L.chain[L.chain.length-1]; const dc=L.distB[cur];
+  const opts=[...MATES[cur].keys()].filter(v=>L.distB[v]===dc-1);
+  const v=opts[0]; L.hints++;
+  if(v===L.b){setMsg("l-msg",`Pista: ¡${PLAYERS[cur].name} ya jugó con la meta! Escríbelo.`,"ok")}
+  else{const m=MATES[cur].get(v);setMsg("l-msg",`Pista: busca a alguien que jugara en el ${clubName(m.club)} durante ${seasons(m.s,m.e)}.`,"ok")}
+  saveLink();
+};
+document.getElementById("l-give").onclick=()=>{L.over=true;L.gaveUp=true;saveLink();renderLink()};
+document.getElementById("l-new").onclick=()=>startLink(false);
+document.getElementById("l-daily").onclick=()=>startLink(true);
+
+// ---------- GRID ----------
+const clubCounts={}; PLAYERS.forEach(p=>p.set.forEach(c=>{if(CLUBS[c])clubCounts[c]=(clubCounts[c]||0)+1}));
+const CLUB_POOL=Object.keys(clubCounts).filter(c=>clubCounts[c]>=6);
+const natCounts={}; PLAYERS.forEach(p=>natCounts[p.nat]=(natCounts[p.nat]||0)+1);
+const NAT_POOL=Object.keys(natCounts).filter(n=>natCounts[n]>=8);
+function makeGrid(seed){
+  const r=rng(seed); const pick=a=>a[Math.floor(r()*a.length)];
+  for(let t=0;t<20000;t++){
+    const used=new Set(); const rows=[],cols=[];
+    while(rows.length<3){const c=pick(CP());if(!used.has(c)){used.add(c);rows.push({type:"club",key:c})}}
+    const withNat=DIFF==="easy"?false:r()<(DIFF==="hard"?0.8:0.5);
+    while(cols.length<3){
+      if(withNat&&cols.length===2){cols.push({type:"nat",key:pick(NAT_POOL)});break}
+      const c=pick(CP());if(!used.has(c)){used.add(c);cols.push({type:"club",key:c})}
+    }
+    const answers=rows.map(ro=>cols.map(co=>PLAYERS.filter(p=>fits(p,ro)&&fits(p,co))));
+    const need=t<15000?(DIFF==="easy"?3:DIFF==="hard"?1:2):1;
+    if(answers.every(row=>row.every(a=>a.length>=need))) return {rows,cols,answers};
+  }
+}
+const G={};
+function startGrid(daily){
+  const seed=daily?hash("grid"+dayKey):Math.floor(Math.random()*1e9);
+  Object.assign(G,makeGrid(seed),{daily,filled:Array(9).fill(null),tries:12,revealed:false,over:false});
+  if(daily){const s=store.get("grid-"+dayKey,null);if(s)Object.assign(G,s)}
+  document.getElementById("g-label").textContent=daily?dayLabel:"libre";
+  document.getElementById("g-daily").hidden=daily;
+  setMsg("g-msg",""); renderGrid();
+}
+function saveGrid(){if(G.daily)store.set("grid-"+dayKey,{filled:G.filled,tries:G.tries,revealed:G.revealed,over:G.over});updateHome()}
+function renderGrid(){
+  let h=`<div class="corner"><b>${G.tries}</b>intentos</div>`;
+  G.cols.forEach(c=>h+=`<div class="hd">${badge(c)}<span>${catName(c)}</span></div>`);
+  G.rows.forEach((ro,i)=>{
+    h+=`<div class="hd">${badge(ro)}<span>${catName(ro)}</span></div>`;
+    G.cols.forEach((co,j)=>{
+      const k=i*3+j, f=G.filled[k], label=`${catName(ro)} y ${catName(co)}`;
+      if(f!=null){const p=PLAYERS[f];h+=`<button class="cell filled" disabled aria-label="${label}: ${p.name}"><span class="nm">${p.name}</span><span class="sub">${flag(p)} ${G.answers[i][j].length} posibles</span></button>`}
+      else if(G.revealed){const a=G.answers[i][j];h+=`<div class="cell reveal" aria-label="${label}"><span class="nm">${a.slice(0,2).map(p=>p.name).join(" · ")}</span><span class="sub">${a.length} posibles</span></div>`}
+      else h+=`<button class="cell" data-k="${k}" aria-label="Elegir jugador para ${label}" ${G.over?"disabled":""}><span class="plus">+</span></button>`;
+    });
+  });
+  document.getElementById("gridboard").innerHTML=h;
+  document.getElementById("g-score").textContent=G.filled.filter(x=>x!=null).length+"/9";
+  document.getElementById("g-reveal").hidden=G.revealed;
+}
+document.getElementById("gridboard").addEventListener("click",e=>{const b=e.target.closest(".cell[data-k]");if(b&&!G.over)openPicker(+b.dataset.k)});
+const picker=document.getElementById("picker"),pIn=document.getElementById("p-input"),pRes=document.getElementById("p-results");
+let pk=null,lastFocus=null;
+function openPicker(k){
+  pk=k;lastFocus=document.activeElement;const i=Math.floor(k/3),j=k%3;
+  document.getElementById("p-q").innerHTML=`<b>${catName(G.rows[i])}</b> × <b>${catName(G.cols[j])}</b>`;
+  pIn.value="";pRes.innerHTML="";picker.hidden=false;pIn.focus();
+}
+function closePicker(){picker.hidden=true;lastFocus&&lastFocus.focus&&lastFocus.focus()}
+pIn.addEventListener("input",()=>listResults(pRes,pIn.value,new Set(G.filled.filter(x=>x!=null))));
+pIn.addEventListener("keydown",e=>{if(e.key==="Escape")closePicker();else keyNav(e,pRes,choose)});
+pRes.addEventListener("click",e=>{const b=e.target.closest("button[data-id]");if(b)choose(+b.dataset.id)});
+picker.addEventListener("click",e=>{if(e.target===picker)closePicker()});
+function choose(id){
+  const k=pk;closePicker();const i=Math.floor(k/3),j=k%3,p=PLAYERS[id];
+  if(G.filled.includes(id)){setMsg("g-msg",`${p.name} ya está en la rejilla.`,"bad");return}
+  G.tries--; const ok=fits(p,G.rows[i])&&fits(p,G.cols[j]);
+  if(ok){G.filled[k]=id;setMsg("g-msg",`¡Bien! ${p.name} encaja.`,"ok")}
+  else setMsg("g-msg",`${p.name} no cumple ${catName(G.rows[i])} y ${catName(G.cols[j])}.`,"bad");
+  const n=G.filled.filter(x=>x!=null).length;
+  if(n===9){G.over=true;setMsg("g-msg",`¡Rejilla completa con ${12-G.tries} intentos!`,"ok")}
+  else if(G.tries<=0){G.over=true;G.revealed=true;setMsg("g-msg",`Sin intentos. Has acertado ${n} de 9.`,"bad")}
+  saveGrid();renderGrid();
+  if(!ok){const c=document.querySelector(`.cell[data-k="${k}"]`);if(c){c.classList.add("shake");setTimeout(()=>c.classList.remove("shake"),400)}}
+}
+document.getElementById("g-reveal").onclick=()=>{G.revealed=true;G.over=true;saveGrid();renderGrid()};
+document.getElementById("g-new").onclick=()=>startGrid(false);
+document.getElementById("g-daily").onclick=()=>startGrid(true);
+
+// ---------- CAREER ----------
+const T={},MAXT=5;
+const T_POOL=PLAYERS.filter(p=>p.stints.length>=4);
+function startTray(daily){
+  const r=rng(daily?hash("tray"+dayKey):Math.floor(Math.random()*1e9));
+  const TP=DIFF==="easy"?T_POOL.filter(p=>STARS_SET.has(p.id)):DIFF==="hard"?T_POOL.filter(p=>!STARS_SET.has(p.id)):T_POOL;
+  const p=TP[Math.floor(r()*TP.length)];
+  Object.assign(T,{daily,p,guesses:[],over:false,won:false});
+  if(daily){const s=store.get("tray-"+dayKey,null);if(s&&s.pid===p.id)Object.assign(T,{guesses:s.guesses,over:s.over,won:s.won})}
+  document.getElementById("t-label").textContent=daily?dayLabel:"libre";
+  document.getElementById("t-daily").hidden=daily;
+  setMsg("t-msg","");renderTray();
+}
+function masked(name){return name.split(" ").map(w=>w[0]+w.slice(1).replace(/[^\s'-]/g,"_")).join("  ")}
+function renderTray(){
+  const p=T.p;
+  document.getElementById("t-path").innerHTML=p.stints.map(st=>`<div class="stop">${clubBadge(st.club)}<span class="lbl">${clubName(st.club)}</span><span class="yr">${seasons(st.s,st.e)}</span></div>`).join('<span class="arrow" aria-hidden="true">→</span>');
+  const wrong=T.guesses.filter(g=>g!==p.id).length+(DIFF==="easy"?1:0),show=n=>T.over||wrong>=n;
+  const hints=[["Nacionalidad",1,()=>flag(p)+" "+NATS[p.nat][0]],["Clubes distintos",2,()=>p.set.size],["Iniciales",3,()=>p.name.split(" ").map(w=>w[0]).join(". ")+"."],["Nombre",4,()=>masked(p.name)]];
+  document.getElementById("t-hints").innerHTML=hints.map(([k,n,f])=>`<div class="hint ${show(n)?"":"locked"}"><div class="k">${k}</div><div class="v">${show(n)?f():"Tras "+n+" fallo"+(n>1?"s":"")}</div></div>`).join("");
+  document.getElementById("t-tries").innerHTML="Intentos "+Array.from({length:MAXT},(_,i)=>`<i class="${i<T.guesses.length?"spent":""}"></i>`).join("");
+  document.getElementById("t-guesses").innerHTML=T.guesses.map(id=>`<li class="${id===p.id?"y":"x"}">${PLAYERS[id].name}<span>${id===p.id?"Correcto":"No"}</span></li>`).join("");
+  document.getElementById("t-input").disabled=T.over;
+  if(T.over)setMsg("t-msg",T.won?`¡Correcto! Era ${p.name}.`:`Era ${p.name}.`,T.won?"ok":"bad");
+}
+function guessT(id){
+  if(T.over)return;
+  if(T.guesses.includes(id)){setMsg("t-msg","Ya has probado con ese jugador.","bad");return}
+  T.guesses.push(id);
+  if(id===T.p.id){T.over=true;T.won=true}
+  else if(T.guesses.length>=MAXT)T.over=true;
+  else setMsg("t-msg",`No es ${PLAYERS[id].name}. Nueva pista desbloqueada.`,"bad");
+  if(T.daily)store.set("tray-"+dayKey,{pid:T.p.id,guesses:T.guesses,over:T.over,won:T.won});
+  updateHome();renderTray();if(!T.over)document.getElementById("t-input").focus();
+}
+inlineSearch("t-input","t-results",()=>new Set(T.guesses),guessT);
+document.getElementById("t-new").onclick=()=>startTray(false);
+document.getElementById("t-daily").onclick=()=>startTray(true);
+
+// ---------- ODD ONE OUT ----------
+const O={},ROUNDS=5;
+function makeOdd(seed){
+  const r=rng(seed),rounds=[],usedClubs=new Set();
+  while(rounds.length<ROUNDS){
+    const club=CP()[Math.floor(r()*CP().length)]; if(usedClubs.has(club))continue;
+    const ins=shuffle(PP().filter(p=>p.set.has(club)),r).slice(0,3);
+    // intruso con algo en común con el grupo (país o un club compartido), para despistar
+    const outs=PP().filter(p=>!p.set.has(club)&&ins.some(q=>q.nat===p.nat||[...q.set].some(c=>CLUBS[c]&&p.set.has(c))));
+    if(ins.length<3||!outs.length)continue;
+    usedClubs.add(club);
+    const odd=outs[Math.floor(r()*outs.length)];
+    rounds.push({club,odd:odd.id,opts:shuffle([...ins.map(p=>p.id),odd.id],r)});
+  }
+  return rounds;
+}
+function startOdd(daily){
+  const seed=daily?hash("odd"+dayKey):Math.floor(Math.random()*1e9);
+  Object.assign(O,{daily,rounds:makeOdd(seed),i:0,res:[],picked:null});
+  if(daily){const s=store.get("odd-"+dayKey,null);if(s)Object.assign(O,s)}
+  document.getElementById("o-label").textContent=daily?dayLabel:"libre";
+  document.getElementById("o-daily").hidden=daily;
+  setMsg("o-msg","");renderOdd();
+}
+function saveOdd(){if(O.daily)store.set("odd-"+dayKey,{i:O.i,res:O.res,picked:O.picked});updateHome()}
+function renderOdd(){
+  const R=O.rounds[O.i],done=O.picked!=null;
+  document.getElementById("o-round").textContent=`${O.i+1}/${ROUNDS}`;
+  document.getElementById("o-dots").innerHTML=O.rounds.map((_,k)=>`<i class="${O.res[k]===true?"y":O.res[k]===false?"n":k===O.i?"cur":""}"></i>`).join("");
+  document.getElementById("o-opts").innerHTML=R.opts.map(id=>{
+    const p=PLAYERS[id];let cls="",why="";
+    if(done){
+      if(id===R.odd){cls="right";why="Nunca jugó en el "+clubName(R.club)}
+      else{const st=p.stints.filter(s=>s.club===R.club).map(s=>seasons(s.s,s.e)).join(", ");why=`${clubName(R.club)} · ${st}`}
+      if(id===O.picked&&id!==R.odd)cls="wrong";
+    }
+    return `<button class="opt ${cls}" type="button" data-id="${id}" ${done?"disabled":""}><span class="nm">${p.name}</span><span class="why">${done?why:flag(p)+" "+NATS[p.nat][0]}</span></button>`;
+  }).join("");
+  const last=O.i===ROUNDS-1;
+  document.getElementById("o-next").hidden=!done||last;
+  if(done&&last){const n=O.res.filter(Boolean).length;setMsg("o-msg",`Partida terminada: ${n} de ${ROUNDS} aciertos.`,n>=3?"ok":"bad")}
+}
+document.getElementById("o-opts").addEventListener("click",e=>{
+  const b=e.target.closest(".opt");if(!b||O.picked!=null)return;
+  const id=+b.dataset.id,R=O.rounds[O.i];O.picked=id;O.res[O.i]=id===R.odd;
+  setMsg("o-msg",O.res[O.i]?`¡Bien visto! Los otros tres jugaron en el ${clubName(R.club)}.`:`No. El intruso era ${PLAYERS[R.odd].name}.`,O.res[O.i]?"ok":"bad");
+  saveOdd();renderOdd();
+});
+document.getElementById("o-next").onclick=()=>{O.i++;O.picked=null;setMsg("o-msg","");saveOdd();renderOdd()};
+document.getElementById("o-new").onclick=()=>startOdd(false);
+document.getElementById("o-daily").onclick=()=>startOdd(true);
+
+// ---------- Portada y navegación ----------
+function updateHome(){
+  const set=(id,done,txt)=>{const e=document.getElementById(id);e.textContent=txt;e.className="st"+(done?" done":"")};
+  const l=store.get("link-"+dayKey,null),g=store.get("grid-"+dayKey,null),t=store.get("tray-"+dayKey,null),o=store.get("odd-"+dayKey,null);
+  set("st-link",l&&l.over,l&&l.over?(l.won?`Hecho · ${l.chain.length-1} pasos`:"Hecho · rendido"):"Reto de hoy pendiente");
+  set("st-grid",g&&g.over,g&&g.over?`Hecho · ${g.filled.filter(x=>x!=null).length}/9`:"Reto de hoy pendiente");
+  set("st-career",t&&t.over,t&&t.over?(t.won?`Hecho · ${t.guesses.length} intento${t.guesses.length>1?"s":""}`:"Hecho · fallado"):"Reto de hoy pendiente");
+  const od=o&&o.res&&o.res.length===ROUNDS;
+  set("st-odd",od,od?`Hecho · ${o.res.filter(Boolean).length}/${ROUNDS}`:"Reto de hoy pendiente");
+  const hb=Math.max(...HL_CATS.map(c=>store.get("hl-best-"+c.k,0)));
+  set("st-hl",false,hb?`Tu mejor racha: ${hb}`:"Sin límite de partidas");
+  const sb=store.get("sv-best",0); set("st-sv",false,sb?`Tu récord: ${sb}`:"Sin límite de partidas");
+  const tl=store.get("tl-"+dayKey,null); set("st-tl",tl&&tl.done,tl&&tl.done?"Hecho hoy":"Reto de hoy pendiente");
+  const lu=store.get("lu-"+dayKey,null); set("st-lu",lu&&lu.over,lu&&lu.over?`Hecho · ${lu.got.length}/11`:"Reto de hoy pendiente");
+  const fv=store.get("five-"+dayKey,null); set("st-54",fv&&fv.over,fv&&fv.over?(fv.won?"Hecho · 5/5 niveles":`Hecho · nivel ${fv.lv+1}`):"Reto de hoy pendiente");
+}
+// ---------- VERSUS ----------
+const ARTIFACT_URL="https://claude.ai/artifact/Ma2QJnAxqYsnH3WscoVPpn";
+const NQ=10, QTIME=15000;
+const $=id=>document.getElementById(id);
+function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+const V={api:null,r:null,code:null,host:false,seed:0,game:0,mode:"setup",solo:false,qs:[],qi:0,score:0,locked:false,t0:0,raf:0,unsub:null};
+
+// Preguntas
+function genQuestions(seed){
+  const r=rng(seed), pick=a=>a[Math.floor(r()*a.length)];
+  const kinds=shuffle(["career","mates","both","odd","career","mates","both","odd","mates","career"],r);
+  const used=new Set(), qs=[];
+  const others=(excl,pool,n,prefer)=>{const pref=shuffle(pool.filter(p=>!excl.has(p.id)&&prefer&&prefer(p)),r),rest=shuffle(pool.filter(p=>!excl.has(p.id)),r);const out=[];for(const p of [...pref,...rest]){if(out.length>=n)break;if(!out.includes(p)){out.push(p)}}return out};
+  for(const k of kinds){
+    for(let tries=0;tries<200;tries++){
+      let q=null;
+      if(k==="career"){
+        const p=pick(T_POOL); if(used.has(p.id))continue;
+        const ds=others(new Set([p.id]),T_POOL,3,x=>x.nat===p.nat);
+        q={kind:"Career",title:"¿De quién es esta trayectoria?",path:p.stints,opts:shuffle([{t:p.name,ok:true},...ds.map(d=>({t:d.name}))],r),reveal:`Era ${p.name}.`};used.add(p.id);
+      } else if(k==="mates"){
+        const a=pick(PLAYERS); let b,yes=r()<0.5&&MATES[a.id].size>0;
+        if(yes){b=PLAYERS[pick([...MATES[a.id].keys()])]}else{b=pick(PLAYERS);if(b.id===a.id||MATES[a.id].has(b.id))continue}
+        const m=yes?MATES[a.id].get(b.id):null;
+        q={kind:"Vestuario",title:`¿Fueron compañeros de equipo ${a.name} y ${b.name}?`,opts:[{t:"Sí",ok:yes},{t:"No",ok:!yes}],reveal:yes?`Sí: juntos en el ${clubName(m.club)} (${seasons(m.s,m.e)}).`:"No, nunca coincidieron en un club."};
+      } else if(k==="both"){
+        const a=pick(CLUB_POOL),b=pick(CLUB_POOL); if(a===b)continue;
+        const inter=PLAYERS.filter(p=>p.set.has(a)&&p.set.has(b)); if(!inter.length)continue;
+        const ans=pick(inter), ds=shuffle(PLAYERS.filter(p=>p.set.has(a)!==p.set.has(b)),r).slice(0,3); if(ds.length<3)continue;
+        q={kind:"Doble club",title:`¿Quién jugó en el ${clubName(a)} y en el ${clubName(b)}?`,opts:shuffle([{t:ans.name,ok:true},...ds.map(d=>({t:d.name}))],r),reveal:`${ans.name} pasó por los dos.`};
+      } else {
+        const club=pick(CLUB_POOL); const ins=shuffle(PLAYERS.filter(p=>p.set.has(club)),r).slice(0,3);
+        const outs=PLAYERS.filter(p=>!p.set.has(club)&&ins.some(x=>x.nat===p.nat)); if(ins.length<3||!outs.length)continue;
+        const odd=pick(outs);
+        q={kind:"Intruso",title:`¿Quién NUNCA jugó en el ${clubName(club)}?`,opts:shuffle([{t:odd.name,ok:true},...ins.map(d=>({t:d.name}))],r),reveal:`${odd.name} nunca jugó allí.`};
+      }
+      if(q){qs.push(q);break}
+    }
+  }
+  return qs;
+}
+
+// Vistas internas
+function vsShow(m){V.mode=m;["setup","lobby","play","results"].forEach(x=>$("vs-"+x).hidden=x!==m)}
+function nick(){return ($("vs-nick").value.trim()||"Jugador").slice(0,20)}
+try{$("vs-nick").value=localStorage.getItem("pq-nick")||""}catch(e){}
+$("vs-nick").addEventListener("change",()=>{try{localStorage.setItem("pq-nick",$("vs-nick").value.trim())}catch(e){}});
+const room=()=>V.r;
+function pres(patch){if(V.r)V.r.presence(patch).catch(()=>{})}
+function peers(){return V.r?V.r.peers().filter(p=>p.kind==="viewer"&&p.presence&&p.presence.nick):[]}
+function hostPeer(){
+  const ps=peers(); const h=ps.filter(p=>p.presence.host).sort((a,b)=>a.peer<b.peer?-1:1)[0];
+  if(h){V.sawHost=true;return h}
+  // si el anfitrión se fue, hereda el que tenga la etiqueta más baja (nunca nada más entrar)
+  const heir=ps.slice().sort((a,b)=>a.peer<b.peer?-1:1)[0];
+  if(!V.sawHost&&Date.now()-V.joinedAt<6000){setTimeout(sync,6500);return null}
+  if(heir&&heir.sameTab&&!V.host){V.host=true;pres({host:true,seed:V.seed,game:V.game,state:V.mode==="play"?"playing":"lobby"})}
+  return heir;
+}
+const COLORS=["#f6c945","#7fd69a","#7fc4ff","#ff9f80","#d7a6ff","#eef3ea"];
+function playerRows(list,withScore){
+  return list.map((p,i)=>{const pr=p.presence;const me=p.sameTab;
+    const sub=withScore?(pr.done?"Terminado":`Pregunta ${Math.min((pr.q||0)+1,NQ)}/${NQ}`):(pr.host?"Anfitrión":"Listo");
+    return `<li class="${me?"me":""}"><span class="pos">${i+1}</span><span class="who">${esc(pr.nick)}${me?" (tú)":""}${p.guest?" · invitado":""}<small>${sub}</small></span><span class="pts">${withScore?(pr.score|0):""}</span></li>`}).join("");
+}
+function renderBoards(){
+  if(V.solo){
+    const me=[{presence:{nick:nick(),score:V.score,q:V.qi,done:V.mode==="results"},sameTab:true}];
+    $("vs-board").innerHTML=playerRows(me,true);$("vs-final").innerHTML=playerRows(me,true);return;
+  }
+  const ps=peers();
+  if(V.mode==="lobby"){
+    $("vs-lobbylist").innerHTML=playerRows(ps,false)||`<li><span></span><span class="who">Conectando…</span><span></span></li>`;
+    $("vs-start").hidden=!V.host; $("vs-wait").hidden=V.host;
+  }
+  const inGame=ps.filter(p=>p.presence.game===V.game).sort((a,b)=>(b.presence.score|0)-(a.presence.score|0));
+  $("vs-board").innerHTML=playerRows(inGame,true);
+  $("vs-final").innerHTML=playerRows(inGame,true);
+  if(V.mode==="results"){
+    const pending=inGame.filter(p=>!p.presence.done).length;
+    $("vs-reswait").textContent=pending?`Esperando a ${pending} jugador${pending>1?"es":""}…`:(V.host?"Todos han terminado. ¿Revancha?":"Todos han terminado. El anfitrión puede lanzar la revancha.");
+    $("vs-again").hidden=!V.host;
+    const top=inGame[0]; $("vs-restitle").textContent=!pending&&top?`Gana ${top.presence.nick}`:"Resultado provisional";
+  }
+}
+function sync(){
+  if(V.solo||!V.r) return;
+  const h=hostPeer();
+  if(h&&!h.sameTab){
+    const hp=h.presence;
+    if(hp.state==="playing"&&hp.game!==V.game&&typeof hp.seed==="number"){V.seed=hp.seed;startDuel(hp.seed,hp.game)}
+  }
+  renderBoards();
+}
+
+async function enterRoom(code,asHost){
+  code=code.toLowerCase().replace(/[^a-z0-9]/g,"");
+  if(code.length<4){setMsg("vs-msg","El código tiene 5 caracteres.","bad");return}
+  if(!V.api){setMsg("vs-msg","No se puede conectar al modo online desde esta vista.","bad");return}
+  setMsg("vs-msg","Conectando…");
+  try{V.r=await V.api.join("pq-"+code)}catch(e){setMsg("vs-msg","No se pudo entrar en la sala. Inténtalo de nuevo en unos segundos.","bad");return}
+  V.code=code;V.host=asHost;V.solo=false;V.game=0;V.sawHost=asHost;V.joinedAt=Date.now();
+  if(asHost)V.seed=Math.floor(Math.random()*1e9);
+  pres({nick:nick(),host:asHost,seed:asHost?V.seed:null,game:0,state:"lobby",score:0,q:0,done:false});
+  V.unsub=V.r.onPeers(sync,()=>{setMsg("vs-msg","Se perdió la conexión con la sala.","bad")});
+  $("vs-codeshow").textContent=code.toUpperCase();
+  $("vs-linktext").textContent=`${ARTIFACT_URL}#vs-${code}`;
+  setMsg("vs-msg","");vsShow("lobby");renderBoards();
+  if(location.hash!=="#vs-"+code)history.replaceState(null,"","#vs-"+code);
+}
+async function leaveRoom(){
+  cancelAnimationFrame(V.raf);clearTimeout(V.next);
+  if(V.unsub)V.unsub();V.unsub=null;
+  if(V.r){try{await V.r.leave()}catch(e){}}
+  V.r=null;V.code=null;V.host=false;V.solo=false;vsShow("setup");
+  if(location.hash.startsWith("#vs-"))history.replaceState(null,"","#versus");
+}
+function startDuel(seed,game){
+  V.game=game;V.qs=genQuestions(seed);V.qi=0;V.score=0;
+  pres({game,score:0,q:0,done:false,...(V.host?{state:"playing",seed,game}:{})});
+  vsShow("play");showQ();
+}
+function showQ(){
+  const q=V.qs[V.qi];V.locked=false;
+  $("vs-qn").textContent=`${V.qi+1}/${NQ}`;$("vs-score").textContent=V.score;setMsg("vs-fb","");
+  $("vs-q").innerHTML=`<div class="qt">${q.kind}</div><h3>${esc(q.title)}</h3>`+
+    (q.path?`<div class="mini-path">${q.path.map(s=>`<span>${esc(clubName(s.club))}<small>${seasons(s.s,s.e)}</small></span>`).join("")}</div>`:"")+
+    `<div class="odd">${q.opts.map((o,i)=>`<button class="opt" type="button" data-i="${i}"><span class="nm">${esc(o.t)}</span></button>`).join("")}</div>`;
+  V.t0=performance.now();
+  const bar=$("vs-bar");
+  const tick=()=>{const left=Math.max(0,1-(performance.now()-V.t0)/QTIME);bar.style.transform=`scaleX(${left})`;if(left<=0){answer(-1)}else if(!V.locked)V.raf=requestAnimationFrame(tick)};
+  cancelAnimationFrame(V.raf);V.raf=requestAnimationFrame(tick);
+  renderBoards();
+}
+function answer(i){
+  if(V.locked)return;V.locked=true;cancelAnimationFrame(V.raf);
+  const q=V.qs[V.qi],ok=i>=0&&q.opts[i].ok;
+  const left=Math.max(0,QTIME-(performance.now()-V.t0));
+  const pts=ok?100+Math.round(left/QTIME*100):0;V.score+=pts;
+  [...$("vs-q").querySelectorAll(".opt")].forEach((b,k)=>{b.disabled=true;if(q.opts[k].ok)b.classList.add("right");else if(k===i)b.classList.add("wrong")});
+  setMsg("vs-fb",(i<0?"¡Tiempo! ":ok?`+${pts} puntos. `:"Fallo. ")+q.reveal,ok?"ok":"bad");
+  $("vs-score").textContent=V.score;
+  const last=V.qi===NQ-1;
+  pres({score:V.score,q:V.qi+1,done:last});
+  V.next=setTimeout(()=>{if(last){vsShow("results");renderBoards()}else{V.qi++;showQ()}},2200);
+}
+$("vs-q").addEventListener("click",e=>{const b=e.target.closest(".opt");if(b)answer(+b.dataset.i)});
+$("vs-create").onclick=()=>{const abc="abcdefghjkmnpqrstuvwxyz23456789";let c="";for(let i=0;i<5;i++)c+=abc[Math.floor(Math.random()*abc.length)];enterRoom(c,true)};
+$("vs-join").onclick=()=>enterRoom($("vs-code").value,false);
+$("vs-code").addEventListener("keydown",e=>{if(e.key==="Enter")enterRoom($("vs-code").value,false)});
+$("vs-solo").onclick=()=>{V.solo=true;V.host=true;V.r=null;startDuel(Math.floor(Math.random()*1e9),1)};
+$("vs-start").onclick=()=>{V.seed=Math.floor(Math.random()*1e9);startDuel(V.seed,V.game+1)};
+$("vs-again").onclick=()=>{if(V.solo){$("vs-solo").onclick();return}V.seed=Math.floor(Math.random()*1e9);startDuel(V.seed,V.game+1)};
+$("vs-leave").onclick=leaveRoom;$("vs-exit").onclick=leaveRoom;
+function copy(text,btn){const done=()=>{const o=btn.textContent;btn.textContent="Copiado";setTimeout(()=>btn.textContent=o,1500)};
+  try{navigator.clipboard.writeText(text).then(done,()=>{selectText()})}catch(e){selectText()}
+  function selectText(){const s=getSelection(),r=document.createRange();r.selectNodeContents($("vs-linktext"));s.removeAllRanges();s.addRange(r)}}
+$("vs-copycode").onclick=e=>copy(V.code.toUpperCase(),e.currentTarget);
+$("vs-copylink").onclick=e=>copy(`${ARTIFACT_URL}#vs-${V.code}`,e.currentTarget);
+(async()=>{
+  try{V.api=window.claude&&window.claude.use?await window.claude.use("room"):null}catch(e){V.api=null}
+  $("vs-offline").hidden=!!V.api; $("vs-create").disabled=!V.api; $("vs-join").disabled=!V.api;
+  const m=location.hash.match(/^#vs-([a-z0-9]{4,6})$/);
+  if(m&&V.api&&!V.r){$("vs-code").value=m[1].toUpperCase();if($("vs-nick").value.trim())enterRoom(m[1],false);else setMsg("vs-msg","Escribe tu apodo y pulsa Entrar para unirte a la sala.","ok")}
+})();
+
+// ---------- HIGHER OR LOWER ----------
+// Cifras APROXIMADAS de carrera en clubes (todas las competiciones). Sustituir por datos con licencia antes del lanzamiento.
+// Nombre|goles|asistencias|amarillas|rojas
+const STATS_RAW=`Cristiano Ronaldo|800|230|115|12
+Lionel Messi|760|360|90|3
+Robert Lewandowski|620|150|45|1
+Zlatan Ibrahimović|500|200|110|12
+Luis Suárez|520|260|110|7
+Karim Benzema|470|190|30|1
+Kylian Mbappé|380|140|35|2
+Erling Haaland|290|50|15|0
+Harry Kane|380|90|35|0
+Sergio Agüero|427|110|50|3
+Neymar|360|230|110|6
+Thomas Müller|250|270|30|0
+Mohamed Salah|330|140|15|0
+Antoine Griezmann|300|130|50|0
+Sergio Ramos|115|45|280|29
+Luka Modrić|110|160|80|2
+Toni Kroos|70|180|40|0
+Sergio Busquets|20|50|160|3
+Andrés Iniesta|80|150|30|0
+Xavi Hernández|85|200|50|0
+Gerard Piqué|50|15|130|7
+Marcelo|40|110|80|2
+Dani Alves|50|170|150|6
+Gianluigi Buffon|0|0|40|1
+Iker Casillas|0|0|20|1
+Francesco Totti|310|200|100|10
+Alessandro Del Piero|340|150|40|3
+Thierry Henry|360|180|40|2
+Wayne Rooney|360|200|110|6
+Steven Gerrard|200|150|90|7
+Frank Lampard|275|160|70|2
+Didier Drogba|320|120|60|4
+Samuel Eto'o|370|100|60|2
+Gonzalo Higuaín|330|100|30|3
+Edinson Cavani|410|70|50|3
+Kevin De Bruyne|150|250|30|0
+Ángel Di María|180|270|90|4
+Ronaldinho|250|180|50|2
+Ronaldo Nazário|350|80|30|1
+Zinedine Zidane|95|120|60|14
+Vinícius Júnior|110|90|40|2
+Jude Bellingham|80|60|30|1
+Lamine Yamal|30|45|5|0
+Diego Costa|200|60|110|8
+Pepe|35|15|200|15
+Mario Balotelli|200|40|70|8
+Arturo Vidal|130|100|180|10
+Javier Mascherano|5|20|170|7`;
+const HL_CATS=[{k:"g",n:"Goles",u:"goles"},{k:"a",n:"Asistencias",u:"asistencias"},{k:"ga",n:"Goles + asist.",u:"goles + asistencias"},{k:"y",n:"Amarillas",u:"tarjetas amarillas"},{k:"r",n:"Rojas",u:"tarjetas rojas"}];
+const STATS=STATS_RAW.trim().split("\n").map(l=>{const [n,g,a,y,r]=l.split("|");const p=PLAYERS.find(x=>x.name===n);return {name:n,nat:p?p.nat:"",g:+g,a:+a,ga:+g+ +a,y:+y,r:+r}});
+function clearlyDifferent(x,y){const hi=Math.max(x,y),lo=Math.min(x,y);return hi-lo>=Math.max(3,hi*0.15)}
+const H={cat:"g",a:null,b:null,streak:0,busy:false,over:false};
+function hlBest(){return store.get("hl-best-"+H.cat,0)}
+function hlPickNext(prev){
+  const cands=STATS.filter(s=>s!==prev&&clearlyDifferent(s[H.cat],prev[H.cat]));
+  return cands[Math.floor(Math.random()*cands.length)];
+}
+function hlStart(){
+  H.streak=0;H.over=false;H.busy=false;
+  let a;do{a=STATS[Math.floor(Math.random()*STATS.length)]}while(!STATS.some(s=>s!==a&&clearlyDifferent(s[H.cat],a[H.cat])));
+  H.a=a;H.b=hlPickNext(a);$("h-restart").hidden=true;setMsg("h-msg","");hlRender(false);
+}
+function hlCard(s,show,cls=""){const c=HL_CATS.find(c=>c.k===H.cat);
+  return `<div class="hlc ${cls}"><span class="flag" aria-hidden="true">${NATS[s.nat]?.[1]||""}</span><span class="nm">${esc(s.name)}</span>${show?`<span class="val">≈${s[H.cat]}</span><span class="unit">${c.u}</span>`:`<span class="unit">tiene…</span><div class="hlbtns"><button class="btn primary" type="button" data-hl="1">▲ Más</button><button class="btn" type="button" data-hl="-1">▼ Menos</button></div><span class="unit">${c.u} que ${esc(H.a.name.split(" ").slice(-1)[0])}</span>`}</div>`}
+function hlRender(revealB,cls){
+  $("h-cats").innerHTML=HL_CATS.map(c=>`<button class="btn" type="button" data-cat="${c.k}" aria-pressed="${c.k===H.cat}">${c.n}</button>`).join("");
+  $("h-board").innerHTML=hlCard(H.a,true)+`<span class="hlvs">VS</span>`+hlCard(H.b,revealB,cls||"");
+  $("h-streak").textContent=H.streak;$("h-best").textContent=hlBest();
+}
+$("h-cats").addEventListener("click",e=>{const b=e.target.closest("[data-cat]");if(!b)return;H.cat=b.dataset.cat;hlStart()});
+$("h-board").addEventListener("click",e=>{
+  const b=e.target.closest("[data-hl]");if(!b||H.busy||H.over)return;H.busy=true;
+  const guess=+b.dataset.hl, ok=(H.b[H.cat]>H.a[H.cat])===(guess>0);
+  hlRender(true,ok?"right":"wrong");
+  if(ok){H.streak++;if(H.streak>hlBest())store.set("hl-best-"+H.cat,H.streak);$("h-streak").textContent=H.streak;$("h-best").textContent=hlBest();
+    setMsg("h-msg","¡Correcto!","ok");
+    setTimeout(()=>{H.a=H.b;H.b=hlPickNext(H.a);H.busy=false;setMsg("h-msg","");hlRender(false);updateHome()},1100);}
+  else{H.over=true;setMsg("h-msg",`Fallo. Racha final: ${H.streak}.`,"bad");$("h-restart").hidden=false;updateHome()}
+});
+$("h-restart").onclick=hlStart;
+
+// ---------- SURVIVAL ----------
+const SV={streak:0,q:null,t0:0,raf:0,locked:false};
+const MAJOR=Object.keys(CLUBS);
+function svQuestion(){
+  const r=Math.random, pick=a=>a[Math.floor(r()*a.length)], kind=pick(["mates","mates","club","club","both"]);
+  for(let t=0;t<200;t++){
+    if(kind==="mates"){
+      const a=pick(PP());const yes=r()<0.5&&MATES[a.id].size>0;let b;
+      if(yes)b=PLAYERS[pick([...MATES[a.id].keys()])];else{b=pick(PP());if(b.id===a.id||MATES[a.id].has(b.id))continue}
+      const m=yes?MATES[a.id].get(b.id):null;
+      return {kind:"Vestuario",title:`¿${a.name} y ${b.name} fueron compañeros?`,opts:[{t:"Sí",ok:yes},{t:"No",ok:!yes}],reveal:yes?`Sí: ${clubName(m.club)}, ${seasons(m.s,m.e)}.`:"Nunca coincidieron."};
+    }
+    if(kind==="club"){
+      const p=pick(PP());const mine=[...p.set].filter(c=>CLUBS[c]);const yes=r()<0.5&&mine.length>0;
+      const club=yes?pick(mine):pick((DIFF==="easy"?BIG:MAJOR).filter(c=>!p.set.has(c)));
+      return {kind:"Club",title:`¿${p.name} jugó en el ${clubName(club)}?`,opts:[{t:"Sí",ok:yes},{t:"No",ok:!yes}],reveal:yes?`Sí: ${p.stints.filter(s=>s.club===club).map(s=>seasons(s.s,s.e)).join(", ")}.`:`No, nunca jugó allí.`};
+    }
+    const a=pick(CP()),b=pick(CP());if(a===b)continue;
+    const inter=PLAYERS.filter(p=>p.set.has(a)&&p.set.has(b));if(!inter.length)continue;
+    const ans=pick(inter),ds=shuffle(PP().filter(p=>p.set.has(a)!==p.set.has(b)),r).slice(0,3);if(ds.length<3)continue;
+    return {kind:"Doble club",title:`¿Quién jugó en el ${clubName(a)} y en el ${clubName(b)}?`,opts:shuffle([{t:ans.name,ok:true},...ds.map(d=>({t:d.name}))],r),reveal:`${ans.name} pasó por los dos.`};
+  }
+}
+function svShow(which){["start","play","over"].forEach(x=>$("s-"+x).hidden=x!==which)}
+function svNext(){
+  SV.q=svQuestion();SV.locked=false;const q=SV.q;setMsg("s-fb","");
+  $("s-q").innerHTML=`<div class="qt">${q.kind} · pregunta ${SV.streak+1}</div><h3>${esc(q.title)}</h3><div class="odd">${q.opts.map((o,i)=>`<button class="opt" type="button" data-i="${i}"><span class="nm">${esc(o.t)}</span></button>`).join("")}</div>`;
+  SV.t0=performance.now();const T=DIFF==="easy"?15000:DIFF==="hard"?7000:10000;
+  const tick=()=>{const left=Math.max(0,1-(performance.now()-SV.t0)/T);$("s-bar").style.transform=`scaleX(${left})`;if(left<=0)svAnswer(-1);else if(!SV.locked)SV.raf=requestAnimationFrame(tick)};
+  cancelAnimationFrame(SV.raf);SV.raf=requestAnimationFrame(tick);
+}
+function svAnswer(i){
+  if(SV.locked)return;SV.locked=true;cancelAnimationFrame(SV.raf);
+  const q=SV.q,ok=i>=0&&q.opts[i].ok;
+  [...$("s-q").querySelectorAll(".opt")].forEach((b,k)=>{b.disabled=true;if(q.opts[k].ok)b.classList.add("right");else if(k===i)b.classList.add("wrong")});
+  if(ok){SV.streak++;if(SV.streak>store.get("sv-best",0))store.set("sv-best",SV.streak);$("s-streak").textContent=SV.streak;$("s-best").textContent=store.get("sv-best",0);
+    setMsg("s-fb","¡Bien! "+q.reveal,"ok");setTimeout(svNext,900)}
+  else{setMsg("s-fb",(i<0?"¡Tiempo! ":"Fallo. ")+q.reveal,"bad");
+    setTimeout(()=>{svShow("over");$("s-final").textContent=SV.streak;const best=store.get("sv-best",0);
+      $("s-overtxt").textContent=SV.streak>=best&&SV.streak>0?"¡Nuevo récord personal!":`Tu récord está en ${best}.`;updateHome()},1600)}
+}
+$("s-q").addEventListener("click",e=>{const b=e.target.closest(".opt");if(b)svAnswer(+b.dataset.i)});
+function svGo(){SV.streak=0;$("s-streak").textContent=0;svShow("play");svNext()}
+$("s-go").onclick=svGo;$("s-again").onclick=svGo;
+$("s-best").textContent=store.get("sv-best",0);
+
+// ---------- TIMELINE ----------
+const TL={};
+const TL_POOL=[];PLAYERS.forEach(p=>p.stints.forEach((s,k)=>{if(CLUBS[s.club]&&!(k>0&&p.stints[k-1].club===s.club))TL_POOL.push({p,club:s.club,y:s.s})}));
+function makeTimeline(seed){
+  const r=rng(seed),items=[],years=new Set(),who=new Set();
+  const gap=DIFF==="easy"?3:DIFF==="hard"?1:2;
+  for(const it of shuffle(DIFF==="easy"?TL_POOL.filter(x=>STARS_SET.has(x.p.id)):TL_POOL,r)){if(years.has(it.y)||who.has(it.p.id))continue;if(items.length&&items.some(x=>Math.abs(x.y-it.y)<gap))continue;items.push(it);years.add(it.y);who.add(it.p.id);if(items.length===5)break}
+  return items;
+}
+function startTimeline(daily){
+  const seed=daily?hash("tl"+dayKey):Math.floor(Math.random()*1e9);
+  const items=makeTimeline(seed);
+  Object.assign(TL,{daily,items,order:shuffle(items.map((_,i)=>i),rng(seed+7)),done:false});
+  if(daily){const s=store.get("tl-"+dayKey,null);if(s&&s.order&&s.order.length===5)Object.assign(TL,{order:s.order,done:s.done})}
+  $("tl-label").textContent=daily?dayLabel:"libre";$("tl-daily").hidden=daily;setMsg("tl-msg","");renderTimeline();
+}
+function tlCorrect(){const sorted=TL.items.map((_,i)=>i).sort((a,b)=>TL.items[a].y-TL.items[b].y);return TL.order.map((v,k)=>v===sorted[k])}
+function renderTimeline(){
+  const okArr=TL.done?tlCorrect():[];
+  $("tl-list").innerHTML=TL.order.map((ix,k)=>{const it=TL.items[ix];
+    return `<li class="${TL.done?(okArr[k]?"ok":"ko"):""}"><span class="n">${k+1}</span><span class="tx">${clubBadge(it.club,"sm")}<span><b>${esc(it.p.name)}</b><br><span>ficha por el ${esc(clubName(it.club))}</span></span></span>${TL.done?`<span class="yr">${it.y}</span>`:`<span class="mv"><button type="button" data-k="${k}" data-d="-1" aria-label="Subir" ${k===0?"disabled":""}>▲</button><button type="button" data-k="${k}" data-d="1" aria-label="Bajar" ${k===4?"disabled":""}>▼</button></span>`}</li>`}).join("");
+  $("tl-check").hidden=TL.done;
+  const n=okArr.filter(Boolean).length;$("tl-score").textContent=TL.done?`${n}/5`:"—";
+  if(TL.done)setMsg("tl-msg",n===5?"¡Orden perfecto!":`${n} de 5 en su sitio. Las verdes estaban bien colocadas.`,n>=3?"ok":"bad");
+}
+$("tl-list").addEventListener("click",e=>{const b=e.target.closest("button[data-k]");if(!b||TL.done)return;const k=+b.dataset.k,j=k+ +b.dataset.d;[TL.order[k],TL.order[j]]=[TL.order[j],TL.order[k]];renderTimeline();const nb=$("tl-list").querySelector(`button[data-k="${j}"][data-d="${b.dataset.d}"]`)||$("tl-list").querySelector(`button[data-k="${j}"]`);nb&&nb.focus()});
+$("tl-check").onclick=()=>{TL.done=true;if(TL.daily)store.set("tl-"+dayKey,{order:TL.order,done:true});renderTimeline();updateHome()};
+$("tl-new").onclick=()=>startTimeline(false);$("tl-daily").onclick=()=>startTimeline(true);
+
+// ---------- Compartir y racha ----------
+const SITE_URL=ARTIFACT_URL;
+function renderShare(k,text){
+  const el=$("sh-"+k); if(!text){el.hidden=true;return}
+  const full=text+"\n"+SITE_URL, enc=encodeURIComponent(full);
+  el.innerHTML=`<pre>${esc(text)}</pre><div class="row"><button class="btn primary" type="button" data-copy>Copiar resultado</button><a class="btn" href="https://wa.me/?text=${enc}" target="_blank" rel="noopener">WhatsApp</a><a class="btn" href="https://twitter.com/intent/tweet?text=${enc}" target="_blank" rel="noopener">X</a></div>`;
+  el.hidden=false;
+  el.querySelector("[data-copy]").onclick=e=>{const b=e.currentTarget;
+    const ok=()=>{b.textContent="¡Copiado!";setTimeout(()=>b.textContent="Copiar resultado",1500)};
+    const sel=()=>{const r=document.createRange();r.selectNodeContents(el.querySelector("pre"));const s=getSelection();s.removeAllRanges();s.addRange(r);b.textContent="Selecciona y copia"};
+    try{navigator.clipboard.writeText(full).then(ok,sel)}catch(err){sel()}};
+}
+const tag=d=>(d?dayLabel:"partida libre")+" · "+DIFF_NAMES[DIFF];
+const _rl=renderLink;renderLink=function(){_rl();
+  if(!L.over){renderShare("l",null);return}
+  const steps=L.chain.length-1;
+  renderShare("l",`Dugout · Link-Up (${tag(L.daily)})\n${PLAYERS[L.a].name} → ${PLAYERS[L.b].name}\n`+(L.won?`${"🔗".repeat(steps)} ${steps} pasos (mejor posible: ${L.par})${steps===L.par?" ⭐":""}`:"🏳️ Me rendí")+(L.strikes?`\n${"❌".repeat(Math.min(L.strikes,10))}`:"")+(L.hints?` 💡×${L.hints}`:""));
+};
+const _rg=renderGrid;renderGrid=function(){_rg();
+  if(!G.over){renderShare("g",null);return}
+  const n=G.filled.filter(x=>x!=null).length;
+  renderShare("g",`Dugout · Grid (${tag(G.daily)}) ${n}/9\n`+[0,1,2].map(i=>[0,1,2].map(j=>G.filled[i*3+j]!=null?"🟩":"⬛").join("")).join("\n")+`\n${12-G.tries} intentos`);
+};
+const _rt=renderTray;renderTray=function(){_rt();
+  if(!T.over){renderShare("t",null);return}
+  const row=T.guesses.map(g=>g===T.p.id?"🟩":"🟥").join("")+"⬜".repeat(MAXT-T.guesses.length);
+  renderShare("t",`Dugout · Career (${tag(T.daily)})\n${row} ${T.won?T.guesses.length+"/"+MAXT:"X/"+MAXT}`);
+};
+const _ro=renderOdd;renderOdd=function(){_ro();
+  const finished=O.picked!=null&&O.i===ROUNDS-1;
+  if(!finished){renderShare("o",null);return}
+  renderShare("o",`Dugout · Odd One Out (${tag(O.daily)})\n${O.res.map(x=>x?"🟩":"🟥").join("")} ${O.res.filter(Boolean).length}/${ROUNDS}`);
+};
+const _rtl=renderTimeline;renderTimeline=function(){_rtl();
+  if(!TL.done){renderShare("tl",null);return}
+  const ok=tlCorrect();renderShare("tl",`Dugout · Timeline (${tag(TL.daily)})\n${ok.map(x=>x?"🟩":"🟥").join("")} ${ok.filter(Boolean).length}/5`);
+};
+const _hr=hlRender;hlRender=function(rb,cls){_hr(rb,cls);
+  if(!H.over){renderShare("h",null);return}
+  const c=HL_CATS.find(c=>c.k===H.cat);
+  renderShare("h",`Dugout · Higher or Lower (${c.n})\n📈 Racha de ${H.streak}${H.streak>=hlBest()&&H.streak>0?" · ¡récord!":""}`);
+};
+$("h-board").addEventListener("click",()=>{if(H.over)setTimeout(()=>{const c=HL_CATS.find(c=>c.k===H.cat);renderShare("h",`Dugout · Higher or Lower (${c.n})\n📈 Racha de ${H.streak}${H.streak>=hlBest()&&H.streak>0?" · ¡récord!":""}`)},0)});
+$("h-restart").addEventListener("click",()=>renderShare("h",null));
+new MutationObserver(()=>{if(!$("s-over").hidden)renderShare("s",`Dugout · Survival\n🔥 Aguanté ${SV.streak} pregunta${SV.streak===1?"":"s"} seguidas`);}).observe($("s-over"),{attributes:true,attributeFilter:["hidden"]});
+
+// Racha de días: cuenta los días en que completas al menos un reto diario
+function isoDay(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+function playedToday(){
+  const l=store.get("link-"+dayKey,null),g=store.get("grid-"+dayKey,null),t=store.get("tray-"+dayKey,null),o=store.get("odd-"+dayKey,null),tl=store.get("tl-"+dayKey,null);
+  const lu=store.get("lu-"+dayKey,null),fv=store.get("five-"+dayKey,null);
+  return !!((lu&&lu.over)||(fv&&fv.over)||(l&&l.over)||(g&&g.over)||(t&&t.over)||(o&&o.res&&o.res.length===ROUNDS)||(tl&&tl.done));
+}
+function renderStreak(){
+  let days=store.get("days",[]);const today=isoDay(new Date());
+  if(playedToday()&&!days.includes(today)){days.push(today);days=days.slice(-400);store.set("days",days)}
+  applyFreezes();const set=daySet();const frozen=new Set(store.get("frozen",[]));let n=0;const d=new Date();if(!set.has(isoDay(d)))d.setDate(d.getDate()-1);
+  while(set.has(isoDay(d))){n++;d.setDate(d.getDate()-1)}
+  const best=Math.max(n,store.get("days-best",0));store.set("days-best",best);
+  const week=[];const w=new Date();for(let i=6;i>=0;i--){const x=new Date(w);x.setDate(w.getDate()-i);week.push(frozen.has(isoDay(x))?"fz":set.has(isoDay(x))?"on":"")}
+  $("streak").innerHTML=`<span>🔥 Racha <b>${n}</b> día${n===1?"":"s"}</span><span>Mejor <b>${best}</b></span><span class="days" aria-label="Últimos 7 días">${week.map(x=>`<i class="${x}"></i>`).join("")}</span>`+(store.get("freezes",0)?`<span>❄️ <b>${store.get("freezes",0)}</b></span>`:"")+(spinAvailable()?`<span style="border-color:var(--card)"><a href="#album" data-go-wheel style="color:inherit;text-decoration:none">🎡 Tirada gratis</a></span>`:"")+(set.has(today)?"":`<span style="border-color:var(--card)">Completa un reto hoy para ${n?"mantenerla":"empezarla"}</span>`);
+}
+const _uh=updateHome;updateHome=function(){_uh();renderStreak()};
+
+// ---------- LINEUP ----------
+// Onces titulares de partidos históricos. Cada línea va de portería a ataque.
+const LINEUPS=[
+ {comp:"Final del Mundial 2010",res:"España 1–0 Países Bajos (prórroga)",team:"España",fm:"4-2-3-1",lines:[["Iker Casillas|casillas,iker"],["Sergio Ramos|ramos","Gerard Piqué|pique","Carles Puyol|puyol","Joan Capdevila|capdevila"],["Sergio Busquets|busquets","Xabi Alonso|alonso,xabi"],["Pedro|pedro,pedro rodriguez","Xavi|xavi,xavi hernandez","Andrés Iniesta|iniesta"],["David Villa|villa"]]},
+ {comp:"Final de la Eurocopa 2012",res:"España 4–0 Italia",team:"España",fm:"4-3-3",lines:[["Iker Casillas|casillas,iker"],["Álvaro Arbeloa|arbeloa","Gerard Piqué|pique","Sergio Ramos|ramos","Jordi Alba|alba"],["Xavi|xavi,xavi hernandez","Sergio Busquets|busquets","Xabi Alonso|alonso,xabi"],["David Silva|silva","Cesc Fàbregas|fabregas,cesc","Andrés Iniesta|iniesta"]]},
+ {comp:"Final del Mundial 2014",res:"Alemania 1–0 Argentina (prórroga)",team:"Alemania",fm:"4-3-3",lines:[["Manuel Neuer|neuer"],["Philipp Lahm|lahm","Jérôme Boateng|boateng","Mats Hummels|hummels","Benedikt Höwedes|howedes,hoewedes"],["Bastian Schweinsteiger|schweinsteiger","Christoph Kramer|kramer","Toni Kroos|kroos"],["Thomas Müller|muller,mueller","Miroslav Klose|klose","Mesut Özil|ozil,oezil"]]},
+ {comp:"Final del Mundial 2018",res:"Francia 4–2 Croacia",team:"Francia",fm:"4-2-3-1",lines:[["Hugo Lloris|lloris"],["Benjamin Pavard|pavard","Raphaël Varane|varane","Samuel Umtiti|umtiti","Lucas Hernández|hernandez,lucas"],["N'Golo Kanté|kante","Paul Pogba|pogba"],["Kylian Mbappé|mbappe","Antoine Griezmann|griezmann","Blaise Matuidi|matuidi"],["Olivier Giroud|giroud"]]},
+ {comp:"Final del Mundial 2022",res:"Argentina 3–3 Francia (penaltis)",team:"Argentina",fm:"4-3-3",lines:[["Emiliano Martínez|martinez,dibu,emiliano martinez"],["Nahuel Molina|molina","Cristian Romero|romero,cuti","Nicolás Otamendi|otamendi","Nicolás Tagliafico|tagliafico"],["Rodrigo De Paul|de paul,depaul","Enzo Fernández|enzo,fernandez","Alexis Mac Allister|mac allister,macallister"],["Lionel Messi|messi","Julián Álvarez|alvarez,julian","Ángel Di María|di maria,dimaria"]]},
+ {comp:"Final de la Champions 2005",res:"Liverpool 3–3 Milan (penaltis)",team:"Liverpool",fm:"4-4-1-1",lines:[["Jerzy Dudek|dudek"],["Steve Finnan|finnan","Jamie Carragher|carragher","Sami Hyypiä|hyypia","Djimi Traoré|traore"],["Luis García|garcia,luis garcia","Steven Gerrard|gerrard","Xabi Alonso|alonso,xabi","John Arne Riise|riise"],["Harry Kewell|kewell"],["Milan Baroš|baros"]]},
+ {comp:"Final de la Champions 2011",res:"Barcelona 3–1 Man. United",team:"Barcelona",fm:"4-3-3",lines:[["Víctor Valdés|valdes"],["Dani Alves|alves","Gerard Piqué|pique","Javier Mascherano|mascherano","Éric Abidal|abidal"],["Xavi|xavi,xavi hernandez","Sergio Busquets|busquets","Andrés Iniesta|iniesta"],["Pedro|pedro,pedro rodriguez","Lionel Messi|messi","David Villa|villa"]]},
+ {comp:"Final de la Champions 2014",res:"Real Madrid 4–1 Atlético (prórroga)",team:"Real Madrid",fm:"4-3-3",lines:[["Iker Casillas|casillas,iker"],["Dani Carvajal|carvajal","Raphaël Varane|varane","Sergio Ramos|ramos","Fábio Coentrão|coentrao"],["Sami Khedira|khedira","Luka Modrić|modric","Ángel Di María|di maria,dimaria"],["Gareth Bale|bale","Karim Benzema|benzema","Cristiano Ronaldo|cristiano,ronaldo,cr7"]]},
+ {comp:"Final de la Champions 2016",res:"Real Madrid 1–1 Atlético (penaltis)",team:"Real Madrid",fm:"4-3-3",lines:[["Keylor Navas|navas,keylor"],["Dani Carvajal|carvajal","Pepe|pepe","Sergio Ramos|ramos","Marcelo|marcelo"],["Toni Kroos|kroos","Casemiro|casemiro","Luka Modrić|modric"],["Gareth Bale|bale","Karim Benzema|benzema","Cristiano Ronaldo|cristiano,ronaldo,cr7"]]},
+ {comp:"Final de la Champions 2019",res:"Liverpool 2–0 Tottenham",team:"Liverpool",fm:"4-3-3",lines:[["Alisson Becker|alisson"],["Trent Alexander-Arnold|alexander-arnold,alexander arnold,trent,arnold","Joël Matip|matip","Virgil van Dijk|van dijk,vandijk,virgil","Andrew Robertson|robertson,robbo"],["Jordan Henderson|henderson","Fabinho|fabinho","Georginio Wijnaldum|wijnaldum"],["Mohamed Salah|salah","Roberto Firmino|firmino","Sadio Mané|mane"]]}
+];
+LINEUPS.forEach(m=>{m.players=[];m.lines=m.lines.map((ln,li)=>ln.map(str=>{const [n,al]=str.split("|");const pl={n,li,keys:new Set([norm(n),...al.split(",").map(a=>norm(a.trim()))].map(k=>k.replace(/-/g," ")))};m.players.push(pl);return pl}))});
+const POS=["POR","DEF","MED","MED","DEL"];
+function posLabel(m,li){const L=m.lines.length;if(li===0)return "POR";if(li===1)return "DEF";if(li===L-1)return "DEL";return "MED"}
+const LU={};
+function startLineup(daily){
+  const seed=daily?hash("lu"+dayKey):Math.floor(Math.random()*1e9);
+  const idx=daily?seed%LINEUPS.length:(()=>{let i;do{i=Math.floor(Math.random()*LINEUPS.length)}while(LINEUPS.length>1&&i===LU.idx);return i})();
+  Object.assign(LU,{daily,idx,m:LINEUPS[idx],got:[],miss:0,hints:{},over:false,gave:false});
+  if(daily){const s=store.get("lu-"+dayKey,null);if(s&&s.idx===idx)Object.assign(LU,{got:s.got,miss:s.miss,hints:s.hints||{},over:s.over,gave:s.gave})}
+  $("lu-label").textContent=daily?dayLabel:"libre";$("lu-daily").hidden=daily;setMsg("lu-msg","");renderLineup();
+}
+function saveLineup(){if(LU.daily)store.set("lu-"+dayKey,{idx:LU.idx,got:LU.got,miss:LU.miss,hints:LU.hints,over:LU.over,gave:LU.gave});updateHome()}
+function renderLineup(){
+  const m=LU.m;
+  $("lu-match").innerHTML=`<span class="comp">${esc(m.comp)}</span><span class="fm">Sistema ${m.fm}</span><span class="res">${esc(m.res.replace(m.team,"§"))}</span>`.replace("§",`<em>${esc(m.team)}</em>`);
+  $("lu-pitch").innerHTML=m.lines.slice().reverse().map(ln=>`<div class="pline">${ln.map(pl=>{const i=m.players.indexOf(pl),got=LU.got.includes(i),show=got||LU.over;
+    const h=LU.hints[i]||(DIFF==="easy"?initialOf(pl.n):null);return `<div class="slot ${got?"got":LU.over?"lost":""}"><span class="dot">${got?"✓":h?esc(h):"?"}</span><span class="nm">${show?esc(pl.n):""}</span><span class="ps">${posLabel(m,pl.li)}</span></div>`}).join("")}</div>`).join("");
+  $("lu-score").textContent=`${LU.got.length}/11`;$("lu-miss").textContent=LU.miss;
+  $("lu-input").disabled=LU.over;$("lu-try").disabled=LU.over;$("lu-hint").disabled=LU.over;$("lu-give").disabled=LU.over;
+  if(LU.over){
+    setMsg("lu-msg",LU.gave?`Has acertado ${LU.got.length} de 11.`:`¡Once completo con ${LU.miss} fallo${LU.miss===1?"":"s"}!`,LU.gave?"bad":"ok");
+    renderShare("lu",`Dugout · Lineup (${tag(LU.daily)})\n${m.comp} · ${m.team}\n${m.players.map((_,i)=>LU.got.includes(i)?"🟩":"⬛").join("")} ${LU.got.length}/11`+(LU.miss?` · ❌${LU.miss}`:"")+(Object.keys(LU.hints).length?` · 💡${Object.keys(LU.hints).length}`:""));
+  } else renderShare("lu",null);
+}
+function tryLineup(){
+  if(LU.over)return;const raw=$("lu-input").value;const q=norm(raw.trim()).replace(/-/g," ");if(!q)return;$("lu-input").value="";
+  const m=LU.m;const hits=m.players.map((pl,i)=>i).filter(i=>m.players[i].keys.has(q));
+  const fresh=hits.filter(i=>!LU.got.includes(i));
+  if(fresh.length){LU.got.push(...fresh);setMsg("lu-msg",`¡Sí! ${fresh.map(i=>m.players[i].n).join(" y ")}.`,"ok");if(LU.got.length===11)LU.over=true}
+  else if(hits.length)setMsg("lu-msg","Ese ya lo tienes.","bad");
+  else{LU.miss++;setMsg("lu-msg",`${raw.trim()} no fue titular en este partido.`,"bad");const c=$("lu-input");c.classList.add("shake");setTimeout(()=>c.classList.remove("shake"),400)}
+  saveLineup();renderLineup();if(!LU.over)$("lu-input").focus();
+}
+$("lu-try").onclick=tryLineup;$("lu-input").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();tryLineup()}});
+$("lu-hint").onclick=()=>{const m=LU.m;const left=m.players.map((_,i)=>i).filter(i=>!LU.got.includes(i)&&!LU.hints[i]);if(!left.length)return;
+  const i=left[Math.floor(Math.random()*left.length)];const parts=m.players[i].n.split(" ");LU.hints[i]=parts.length>1?parts[parts.length-1][0]:parts[0][0];
+  setMsg("lu-msg",`Pista: un ${posLabel(m,m.players[i].li)==="POR"?"portero":posLabel(m,m.players[i].li)==="DEF"?"defensa":posLabel(m,m.players[i].li)==="MED"?"centrocampista":"delantero"} cuyo apellido empieza por ${LU.hints[i]}.`,"ok");saveLineup();renderLineup()};
+$("lu-give").onclick=()=>{LU.over=true;LU.gave=true;saveLineup();renderLineup()};
+$("lu-new").onclick=()=>startLineup(false);$("lu-daily").onclick=()=>startLineup(true);
+
+// ---------- 5-4-3-2-1 ----------
+const NAT_ADJ={ESP:"españoles",ARG:"argentinos",BRA:"brasileños",FRA:"franceses",GER:"alemanes",POR:"portugueses",ENG:"ingleses",NED:"neerlandeses",CRO:"croatas",URU:"uruguayos",BEL:"belgas",ITA:"italianos",COL:"colombianos",CHI:"chilenos"};
+function makeFive(seed){
+  const r=rng(seed),pick=a=>a[Math.floor(r()*a.length)],levels=[];
+  const count=f=>PLAYERS.filter(f);
+  const tryN=(fn,lo,hi)=>{for(let t=0;t<3000;t++){const L=fn();if(L){const a=count(L.test);if(a.length>=lo&&a.length<=hi){L.ans=a.map(p=>p.id);return L}}}};
+  levels.push(tryN(()=>{const c=pick(CLUB_POOL);return {text:`5 jugadores que hayan jugado en el ${clubName(c)}`,test:p=>p.set.has(c)}},12,99));
+  levels.push(tryN(()=>{const c=pick(CLUB_POOL),n=pick(Object.keys(NAT_ADJ));return {text:`4 jugadores ${NAT_ADJ[n]} que hayan jugado en el ${clubName(c)}`,test:p=>p.nat===n&&p.set.has(c)}},5,9));
+  levels.push(tryN(()=>{const a=pick(CLUB_POOL),b=pick(CLUB_POOL);if(a===b)return null;return {text:`3 jugadores que hayan jugado en el ${clubName(a)} y en el ${clubName(b)}`,test:p=>p.set.has(a)&&p.set.has(b)}},3,6));
+  levels.push(tryN(()=>{if(r()<0.5){const a=pick(CLUB_POOL),b=pick(CLUB_POOL),n=pick(Object.keys(NAT_ADJ));if(a===b)return null;return {text:`2 jugadores ${NAT_ADJ[n]} que hayan jugado en el ${clubName(a)} y en el ${clubName(b)}`,test:p=>p.nat===n&&p.set.has(a)&&p.set.has(b)}}
+    const a=pick(CLUB_POOL),b=pick(CLUB_POOL),c=pick(CLUB_POOL);if(new Set([a,b,c]).size<3)return null;return {text:`2 jugadores que hayan jugado en el ${clubName(a)}, el ${clubName(b)} y el ${clubName(c)}`,test:p=>p.set.has(a)&&p.set.has(b)&&p.set.has(c)}},2,3));
+  levels.push(tryN(()=>{const A=pick(PLAYERS),B=pick(PLAYERS);if(A===B||MATES[A.id].has(B.id))return null;return {text:`1 jugador que fuera compañero de equipo de ${A.name} y también de ${B.name}`,test:p=>MATES[A.id].has(p.id)&&MATES[B.id].has(p.id)}},1,2));
+  return levels.map((L,i)=>({...L,need:5-i}));
+}
+const F={};
+function startFive(daily){
+  const seed=daily?hash("five"+dayKey):Math.floor(Math.random()*1e9);
+  Object.assign(F,{daily,levels:makeFive(seed),lv:0,picks:[[],[],[],[],[]],lives:3,over:false,won:false});
+  if(daily){const s=store.get("five-"+dayKey,null);if(s)Object.assign(F,{lv:s.lv,picks:s.picks,lives:s.lives,over:s.over,won:s.won})}
+  $("f-label").textContent=daily?dayLabel:"libre";$("f-daily").hidden=daily;setMsg("f-msg","");renderFive();
+}
+function saveFive(){if(F.daily)store.set("five-"+dayKey,{lv:F.lv,picks:F.picks,lives:F.lives,over:F.over,won:F.won});updateHome()}
+function renderFive(){
+  $("f-levels").innerHTML=F.levels.map((L,i)=>{const st=i<F.lv||(F.won&&i===4)?"done":i===F.lv&&!F.over?"cur":F.over&&i===F.lv&&!F.won?"fail":"lock";
+    const pk=F.picks[i];let chips=pk.map(id=>`<span class="y">${esc(PLAYERS[id].name)}</span>`).join("");
+    if(F.over&&!F.won&&i>=F.lv){const sol=L.ans.filter(id=>!pk.includes(id)).slice(0,L.need-pk.length);chips+=sol.map(id=>`<span class="sol">${esc(PLAYERS[id].name)}</span>`).join("")}
+    else chips+=Array.from({length:L.need-pk.length},()=>`<span>?</span>`).join("");
+    const showCond=i<=F.lv||F.over;
+    return `<div class="lvl ${st}"><span class="num">${L.need}</span><span class="cond">${showCond?esc(L.text):"Nivel bloqueado"}</span><span class="picks">${chips}</span></div>`}).join("");
+  $("f-lives").textContent="❤️".repeat(F.lives)+"🖤".repeat(3-F.lives);
+  $("f-search").hidden=F.over;$("f-give").disabled=F.over;
+  if(!F.over)$("f-ask").textContent=`Nivel ${F.lv+1}: ${F.levels[F.lv].text}`;
+  if(F.over){
+    setMsg("f-msg",F.won?`¡Has superado los 5 niveles con ${F.lives} vida${F.lives===1?"":"s"}!`:`Te quedaste en el nivel ${F.lv+1}. En gris, respuestas válidas.`,F.won?"ok":"bad");
+    renderShare("f",`Dugout · 5-4-3-2-1 (${tag(F.daily)})\n`+F.levels.map((L,i)=>`${["5️⃣","4️⃣","3️⃣","2️⃣","1️⃣"][i]}${i<F.lv||F.won?"✅":i===F.lv?"❌":"⬛"}`).join(" ")+`\n${"❤️".repeat(F.lives)}${"🖤".repeat(3-F.lives)}`);
+  } else renderShare("f",null);
+}
+function pickFive(id){
+  if(F.over)return;const L=F.levels[F.lv],p=PLAYERS[id],pk=F.picks[F.lv];
+  if(pk.includes(id)){setMsg("f-msg",`${p.name} ya está en este nivel.`,"bad");return}
+  if(L.test(p)){pk.push(id);setMsg("f-msg",`¡Bien! ${p.name} vale.`,"ok");
+    if(pk.length===L.need){if(F.lv===4){F.over=true;F.won=true}else{F.lv++;setMsg("f-msg",`¡Nivel superado! Ahora necesitas ${5-F.lv}.`,"ok")}}}
+  else{F.lives--;setMsg("f-msg",`${p.name} no cumple la condición.`,"bad");if(F.lives<=0)F.over=true;const c=$("f-input");c.classList.add("shake");setTimeout(()=>c.classList.remove("shake"),400)}
+  saveFive();renderFive();if(!F.over)$("f-input").focus();
+}
+inlineSearch("f-input","f-results",()=>new Set(F.picks[F.lv]||[]),pickFive);
+$("f-give").onclick=()=>{F.over=true;F.lives=0;saveFive();renderFive()};
+$("f-new").onclick=()=>startFive(false);$("f-daily").onclick=()=>startFive(true);
+
+// ---------- Nivel de dificultad ----------
+const DIFF_TXT={easy:"Solo estrellas y grandes clubes, más tiempo y más pistas. Ideal si sabes poco de fútbol.",mid:"Todos los jugadores y clubes. El nivel estándar.",hard:"Cadenas más largas, menos tiempo, trayectorias menos conocidas y rejillas con menos respuestas."};
+function renderDiff(){document.querySelectorAll("[data-diff]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.diff===DIFF));$("diff-txt").textContent=DIFF_TXT[DIFF]}
+document.querySelector(".diff").addEventListener("click",e=>{const b=e.target.closest("[data-diff]");if(!b||b.dataset.diff===DIFF)return;
+  DIFF=b.dataset.diff;try{localStorage.setItem("pq-diff",DIFF)}catch(err){}
+  dayKey=baseDay+(DIFF==="mid"?"":"-"+DIFF);renderDiff();
+  startLink(true);startGrid(true);startTray(true);startOdd(true);startTimeline(true);startLineup(true);startFive(true);
+  if(!$("s-play").hidden){cancelAnimationFrame(SV.raf);svShow("start")}
+  updateHome();
+});
+renderDiff();
+
+// ---------- CROMOS Y TROFEOS ----------
+const LEGENDS=["Lionel Messi","Cristiano Ronaldo","Ronaldo Nazário","Zinedine Zidane","Ronaldinho","Kylian Mbappé","Erling Haaland","Lamine Yamal","Kaká","Thierry Henry","Andrés Iniesta","Xavi Hernández","Francesco Totti","Gianluigi Buffon"];
+const RAR_INFO={legend:{n:"Leyenda",p:.04},epic:{n:"Épica",p:.16},rare:{n:"Rara",p:.30},common:{n:"Común",p:.50}};
+const STAT_NAMES=new Set(STATS.map(s=>s.name));
+PLAYERS.forEach(p=>{p.rar=LEGENDS.includes(p.name)?"legend":STARS_SET.has(p.id)?"epic":(STAT_NAMES.has(p.name)||p.stints.length>=7)?"rare":"common"});
+const BY_RAR={};Object.keys(RAR_INFO).forEach(k=>BY_RAR[k]=PLAYERS.filter(p=>p.rar===k));
+const C={tab:"packs",filter:"all"};
+function album(){return store.get("album",{})}
+function packs(){let n=store.get("packs",null);if(n===null){n=2;store.set("packs",n)}return n}
+function addPacks(n){store.set("packs",packs()+n)}
+function owned(){const a=album();return Object.keys(a).filter(k=>a[k]>0).length}
+function cardHTML(p,o={}){
+  const first=p.stints[0],last=p.stints[p.stints.length-1];const clubs=[...new Set(p.stints.map(s=>s.club))];
+  const big=clubs.filter(c=>CLUBS[c]).slice(0,5);
+  return `<div class="ccard ${p.rar}">${o.tag?`<span class="tagn ${o.tag==="NUEVO"?"":"dup"}">${o.tag}</span>`:""}<div class="top"><span>${RAR_INFO[p.rar].n}</span><span>#${String(p.id+1).padStart(3,"0")}</span></div><span class="fl" aria-hidden="true">${flag(p)}</span><span class="nm">${esc(p.name)}</span><span class="ft">${first.s}–${last.e>=2026?"hoy":last.e} · ${clubs.length} clubes</span><div class="cl">${big.map(c=>clubBadge(c)).join("")}</div>${o.count>1?`<span class="ft">×${o.count}</span>`:""}</div>`;
+}
+function drawCard(){let x=Math.random(),acc=0,r="common";for(const k of ["legend","epic","rare","common"]){acc+=RAR_INFO[k].p;if(x<acc){r=k;break}}const L=BY_RAR[r];return L[Math.floor(Math.random()*L.length)]}
+function openPack(){
+  if(packs()<1)return;const a=album();const got=[];
+  for(let i=0;i<3;i++){const p=drawCard();const isNew=!(a[p.id]>0);a[p.id]=(a[p.id]||0)+1;got.push({p,tag:isNew?"NUEVO":"×"+a[p.id]})}
+  store.set("album",a);store.set("packs",packs()-1);
+  $("c-reveal").innerHTML=got.map(g=>cardHTML(g.p,{tag:g.tag})).join("");
+  checkTrophies();renderAlbum();
+}
+// Trofeos
+function streakNow(){const set=daySet();let n=0;const d=new Date();if(!set.has(isoDay(d)))d.setDate(d.getDate()-1);while(set.has(isoDay(d))){n++;d.setDate(d.getDate()-1)}return n}
+const TROPHIES=[
+ {id:"first",ic:"⚽",n:"Primer reto",d:"Completa tu primer reto diario.",t:()=>store.get("dailies",0)>=1},
+ {id:"str3",ic:"🔥",n:"Racha de 3",d:"Juega 3 días seguidos.",t:()=>streakNow()>=3},
+ {id:"str7",ic:"🔥",n:"Semana completa",d:"Juega 7 días seguidos.",t:()=>streakNow()>=7},
+ {id:"str30",ic:"🏅",n:"Un mes en el banquillo",d:"Juega 30 días seguidos.",t:()=>streakNow()>=30},
+ {id:"link",ic:"🔗",n:"Cadena perfecta",d:"Resuelve un Link-Up con la cadena más corta.",t:()=>L.won&&L.chain.length-1===L.par},
+ {id:"grid",ic:"🟩",n:"Rejilla llena",d:"Completa las 9 casillas del Grid.",t:()=>G.over&&G.filled.every(x=>x!=null)},
+ {id:"lineup",ic:"📋",n:"Once perfecto",d:"Acierta un once completo en Lineup.",t:()=>LU.over&&!LU.gave},
+ {id:"five",ic:"5️⃣",n:"Cinco de cinco",d:"Supera los 5 niveles de 5-4-3-2-1.",t:()=>F.won},
+ {id:"tl",ic:"⏳",n:"Orden perfecto",d:"Ordena los 5 fichajes del Timeline sin fallo.",t:()=>TL.done&&tlCorrect().every(Boolean)},
+ {id:"sv10",ic:"💪",n:"Superviviente",d:"Llega a 10 en Survival.",t:()=>store.get("sv-best",0)>=10},
+ {id:"sv25",ic:"🦾",n:"Indestructible",d:"Llega a 25 en Survival.",t:()=>store.get("sv-best",0)>=25},
+ {id:"hl10",ic:"📈",n:"Ojo de ojeador",d:"Racha de 10 en Higher or Lower.",t:()=>Math.max(...HL_CATS.map(c=>store.get("hl-best-"+c.k,0)))>=10},
+ {id:"col25",ic:"📒",n:"Coleccionista",d:"Consigue 25 cromos distintos.",t:()=>owned()>=25},
+ {id:"col75",ic:"📚",n:"Medio álbum",d:"Consigue 75 cromos distintos.",t:()=>owned()>=75},
+ {id:"col177",ic:"🏆",n:"Álbum completo",d:"Consigue todos los cromos del álbum.",t:()=>owned()>=PLAYERS.length},
+ {id:"legend",ic:"⭐",n:"Primera leyenda",d:"Consigue un cromo de Leyenda.",t:()=>BY_RAR.legend.some(p=>album()[p.id]>0)},
+ {id:"spin",ic:"🎡",n:"A la suerte",d:"Gira la ruleta por primera vez.",t:()=>Object.keys((()=>{try{return localStorage}catch(e){return {}}})()).some(k=>k.startsWith("spin-"))},
+ {id:"trade",ic:"🤝",n:"Primer intercambio",d:"Intercambia un cromo con un amigo.",t:()=>store.get("trades",0)>=1}
+];
+const toastQ=[];let toastOn=false;
+function toast(t){toastQ.push(t);if(!toastOn)nextToast()}
+function nextToast(){const t=toastQ.shift();if(!t){toastOn=false;$("toast").hidden=true;return}toastOn=true;$("toast").textContent=t;$("toast").hidden=false;setTimeout(nextToast,2600)}
+function checkTrophies(){
+  const got=store.get("trophies",{});let changed=false;
+  for(const T of TROPHIES){if(!got[T.id]){let ok=false;try{ok=T.t()}catch(e){}if(ok){got[T.id]=true;changed=true;addPacks(1);toast(`🏆 Trofeo: ${T.n} · +1 sobre`)}}}
+  if(changed)store.set("trophies",got);
+}
+// Un sobre por cada reto diario completado (una vez por juego y día, sea cual sea el nivel)
+const DAILY_GAMES=[
+ ["link","Link-Up",k=>{const x=store.get("link-"+k,null);return x&&x.over}],["grid","Grid",k=>{const x=store.get("grid-"+k,null);return x&&x.over}],
+ ["tray","Career",k=>{const x=store.get("tray-"+k,null);return x&&x.over}],["odd","Odd One Out",k=>{const x=store.get("odd-"+k,null);return x&&x.res&&x.res.length===ROUNDS}],
+ ["tl","Timeline",k=>{const x=store.get("tl-"+k,null);return x&&x.done}],["lu","Lineup",k=>{const x=store.get("lu-"+k,null);return x&&x.over}],
+ ["five","5-4-3-2-1",k=>{const x=store.get("five-"+k,null);return x&&x.over}]];
+function checkRewards(){
+  const keys=[baseDay,baseDay+"-easy",baseDay+"-hard"];
+  for(const [id,name,done] of DAILY_GAMES){const rk="rw-"+baseDay+"-"+id;if(store.get(rk,false))continue;
+    if(keys.some(k=>done(k))){store.set(rk,true);addPacks(1);store.set("dailies",store.get("dailies",0)+1);toast(`🎴 +1 sobre por completar ${name}`)}}
+  checkTrophies();
+}
+function renderAlbum(){
+  const n=packs(),a=album(),got=store.get("trophies",{});
+  $("c-npacks").textContent=n;$("c-count").textContent=`${owned()}/${PLAYERS.length}`;$("c-ntro").textContent=`${Object.keys(got).length}/${TROPHIES.length}`;
+  $("c-packtxt").textContent=n?`Tienes ${n} sobre${n===1?"":"s"} sin abrir.`:"No te quedan sobres. Completa retos diarios o desbloquea trofeos para conseguir más.";
+  $("c-open").disabled=n<1;
+  document.querySelectorAll("[data-tab]").forEach(b=>b.setAttribute("aria-selected",b.dataset.tab===C.tab));
+  ["packs","album","wheel","trophies","trade"].forEach(t=>$("c-tab-"+t).hidden=t!==C.tab);
+  if(C.tab==="wheel")renderWheel();
+  if(C.tab==="album"){
+    const F=[["all","Todos"],["legend","Leyenda"],["epic","Épica"],["rare","Rara"],["common","Común"],["dup","Repetidos"]];
+    $("c-filters").innerHTML=F.map(([k,t])=>`<button class="btn" type="button" data-filter="${k}" aria-pressed="${k===C.filter}">${t}</button>`).join("");
+    const list=PLAYERS.filter(p=>C.filter==="all"||C.filter===p.rar||(C.filter==="dup"&&a[p.id]>1));
+    $("c-grid").innerHTML=list.map(p=>a[p.id]>0?cardHTML(p,{count:a[p.id]}):`<div class="ccard locked"><span class="q">?</span><span class="ft">#${String(p.id+1).padStart(3,"0")} · ${RAR_INFO[p.rar].n}</span></div>`).join("")||`<p class="beta">Aún no tienes cromos repetidos.</p>`;
+  }
+  if(C.tab==="trophies")$("c-trolist").innerHTML=TROPHIES.map(T=>`<li class="${got[T.id]?"on":""}"><span class="ic" aria-hidden="true">${T.ic}</span><div><b>${T.n}</b><span>${T.d}</span></div></li>`).join("");
+  if(C.tab==="trade")renderTrade();
+  const st=$("st-album");if(st){st.textContent=n?`${n} sobre${n===1?"":"s"} por abrir`:`${owned()}/${PLAYERS.length} cromos`;st.className="st"+(n?"":" done")}
+}
+document.querySelector(".tabs").addEventListener("click",e=>{const b=e.target.closest("[data-tab]");if(b){C.tab=b.dataset.tab;renderAlbum()}});
+$("c-filters").addEventListener("click",e=>{const b=e.target.closest("[data-filter]");if(b){C.filter=b.dataset.filter;renderAlbum()}});
+$("c-open").onclick=openPack;
+document.addEventListener("click",e=>{if(e.target.closest("[data-go-wheel]")){C.tab="wheel";renderAlbum()}});
+
+// Intercambio en directo con un amigo (sala con código)
+const TR={r:null,code:null,offer:null,ok:null,done:new Set(),unsub:null};
+function trPartner(){if(!TR.r)return null;return TR.r.peers().find(p=>!p.sameTab&&p.kind==="viewer"&&p.presence&&p.presence.nick)||null}
+function trPres(patch){if(TR.r)TR.r.presence(patch).catch(()=>{})}
+async function trEnter(code){
+  code=code.toLowerCase().replace(/[^a-z0-9]/g,"");if(code.length<4){setMsg("tr-msg0","El código tiene 5 caracteres.","bad");return}
+  if(!V.api){setMsg("tr-msg0","No se puede conectar desde esta vista.","bad");return}
+  try{TR.r=await V.api.join("dg-trade-"+code)}catch(e){setMsg("tr-msg0","No se pudo entrar. Inténtalo de nuevo.","bad");return}
+  TR.code=code;TR.offer=null;TR.ok=null;trPres({nick:nick(),offer:null,ok:null,done:null});
+  TR.unsub=TR.r.onPeers(trSync);setMsg("tr-msg0","");renderTrade();
+}
+async function trLeave(){if(TR.unsub)TR.unsub();if(TR.r){try{await TR.r.leave()}catch(e){}}TR.r=null;TR.code=null;renderTrade()}
+function trSync(){
+  const p=trPartner();
+  if(p&&TR.ok&&p.presence.ok){const mo=TR.ok,po=p.presence.ok;
+    if(po.mine===mo.theirs&&po.theirs===mo.mine){const sig=[mo.n,po.n].sort().join(":");
+      if(!TR.done.has(sig)){const a=album();
+        if(a[mo.mine]>0){a[mo.mine]--;a[mo.theirs]=(a[mo.theirs]||0)+1;store.set("album",a);store.set("trades",store.get("trades",0)+1);TR.done.add(sig);trPres({done:sig});
+          setMsg("tr-msg",`¡Intercambio hecho! Has recibido a ${PLAYERS[mo.theirs].name}.`,"ok");checkTrophies()}
+      }}}
+  if(p&&TR.ok&&p.presence.done&&TR.done.has(p.presence.done)){TR.ok=null;TR.offer=null;trPres({ok:null,offer:null})}
+  renderTrade();
+}
+function renderTrade(){
+  $("tr-offline").hidden=!!V.api;$("tr-create").disabled=!V.api;$("tr-join").disabled=!V.api;
+  $("tr-setup").hidden=!!TR.r;$("tr-live").hidden=!TR.r;if(!TR.r)return;
+  $("tr-codeshow").textContent=TR.code.toUpperCase();
+  const a=album(),p=trPartner();
+  $("tr-partner").textContent=p?`Intercambiando con ${p.presence.nick}`:"Esperando a tu amigo… pásale el código.";
+  $("tr-mine").innerHTML=TR.offer!=null?cardHTML(PLAYERS[TR.offer],{count:a[TR.offer]}):"<p>Ningún cromo elegido.</p>";
+  const mine=PLAYERS.filter(x=>a[x.id]>0).sort((x,y)=>(a[y.id]>1)-(a[x.id]>1)||x.name.localeCompare(y.name));
+  $("tr-pick").innerHTML=mine.map(x=>`<button type="button" data-o="${x.id}" aria-pressed="${x.id===TR.offer}">${esc(x.name)}${a[x.id]>1?" ×"+a[x.id]:""}</button>`).join("")||"<p>Aún no tienes cromos. Abre un sobre primero.</p>";
+  const po=p&&Number.isInteger(p.presence.offer)&&PLAYERS[p.presence.offer]?p.presence.offer:null;
+  $("tr-theirs").innerHTML=po!=null?cardHTML(PLAYERS[po],{tag:a[po]>0?"Ya lo tienes":"NUEVO"})+(p.presence.ok?"<p>✅ Tu amigo ha aceptado.</p>":""):"<p>Aún no ha elegido.</p>";
+  $("tr-accept").disabled=!(p&&TR.offer!=null&&po!=null)||!!TR.ok;
+  $("tr-accept").textContent=TR.ok?"Esperando a tu amigo…":"Aceptar intercambio";
+}
+$("tr-pick").addEventListener("click",e=>{const b=e.target.closest("[data-o]");if(!b)return;TR.offer=+b.dataset.o;TR.ok=null;trPres({offer:TR.offer,ok:null});setMsg("tr-msg","");renderTrade()});
+$("tr-accept").onclick=()=>{const p=trPartner();if(!p||TR.offer==null)return;TR.ok={mine:TR.offer,theirs:p.presence.offer,n:Math.random().toString(36).slice(2,10)};trPres({ok:TR.ok});trSync()};
+$("tr-create").onclick=()=>{const abc="abcdefghjkmnpqrstuvwxyz23456789";let c="";for(let i=0;i<5;i++)c+=abc[Math.floor(Math.random()*abc.length)];trEnter(c)};
+$("tr-join").onclick=()=>trEnter($("tr-code").value);
+$("tr-leave").onclick=trLeave;
+setTimeout(renderTrade,1500);
+
+const _uh2=updateHome;updateHome=function(){_uh2();checkRewards();renderAlbum()};
+
+// ---------- RULETA Y CONGELADOR DE RACHA ----------
+const PRIZES=[
+ {k:"p1",ic:"🎴",n:"1 sobre",w:28,c:"#2f6b51"},{k:"fz",ic:"❄️",n:"Congelador de racha",w:15,c:"#3d6f8f"},
+ {k:"rare",ic:"🔵",n:"Cromo Raro asegurado",w:16,c:"#285a44"},{k:"p2",ic:"🎴",n:"2 sobres",w:9,c:"#c99a2e"},
+ {k:"none",ic:"✖️",n:"Sin premio",w:19,c:"#1d4837"},{k:"epic",ic:"🟣",n:"Cromo Épico asegurado",w:9,c:"#6d4f8f"},
+ {k:"p3",ic:"🎴",n:"3 sobres",w:2,c:"#e0a92a"},{k:"legend",ic:"⭐",n:"Cromo Leyenda asegurado",w:2,c:"#f6c945"}];
+const W_TOTAL=PRIZES.reduce((a,p)=>a+p.w,0);
+let wRot=0,wBusy=false;
+(function drawWheel(){
+  let acc=0;const stops=[],labels=[];
+  PRIZES.forEach(p=>{const a0=acc/W_TOTAL*360,a1=(acc+p.w)/W_TOTAL*360;stops.push(`${p.c} ${a0}deg ${a1}deg`);
+    const mid=(a0+a1)/2;if(p.w>=5)labels.push(`<span style="transform:rotate(${mid}deg) translate(-50%,-${p.w>=9?100:110}px) rotate(${-mid}deg)">${p.ic}</span>`);acc+=p.w});
+  $("w-wheel").style.background=`conic-gradient(${stops.join(",")})`;$("w-wheel").innerHTML=labels.join("");
+  $("w-prizes").innerHTML=PRIZES.map(p=>`<li><span><i style="background:${p.c}"></i>${p.ic} ${p.n}</span><span>${p.w} %</span></li>`).join("");
+})();
+function spinAvailable(){return !store.get("spin-"+baseDay,false)}
+function renderWheel(){
+  const av=spinAvailable();$("w-spin").disabled=!av||wBusy;$("w-fz").textContent=store.get("freezes",0);
+  $("w-txt").textContent=av?"Tienes una tirada gratis hoy.":"Ya has usado la tirada de hoy. Vuelve mañana.";
+}
+function giveCard(r){const L=BY_RAR[r],p=L[Math.floor(Math.random()*L.length)],a=album(),isNew=!(a[p.id]>0);a[p.id]=(a[p.id]||0)+1;store.set("album",a);return {p,tag:isNew?"NUEVO":"×"+a[p.id]}}
+$("w-spin").onclick=()=>{
+  if(!spinAvailable()||wBusy)return;wBusy=true;store.set("spin-"+baseDay,true);setMsg("w-msg","");$("w-reveal").innerHTML="";
+  let x=Math.random()*W_TOTAL,acc=0,idx=0;for(let i=0;i<PRIZES.length;i++){if(x<acc+PRIZES[i].w){idx=i;break}acc+=PRIZES[i].w}
+  const a0=acc/W_TOTAL*360,a1=(acc+PRIZES[idx].w)/W_TOTAL*360,target=a0+(a1-a0)*(0.2+Math.random()*0.6);
+  const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+  wRot+=360*5+((360-target)-(wRot%360)+360)%360;$("w-wheel").style.transform=`rotate(${wRot}deg)`;renderWheel();
+  setTimeout(()=>{wBusy=false;const P=PRIZES[idx];let txt="";
+    if(P.k==="p1"||P.k==="p2"||P.k==="p3"){const n=+P.k[1];addPacks(n);txt=`¡${n} sobre${n>1?"s":""}! Ábrelo${n>1?"s":""} en la pestaña Sobres.`}
+    else if(P.k==="fz"){const f=store.get("freezes",0);if(f<2){store.set("freezes",f+1);txt="¡Congelador de racha! Si un día no juegas, tu racha no se pierde."}else{addPacks(1);txt="Ya tenías 2 congeladores, así que te damos 1 sobre."}}
+    else if(P.k==="none")txt="Esta vez no ha habido suerte. Mañana tienes otra tirada.";
+    else{const g=giveCard(P.k);$("w-reveal").innerHTML=cardHTML(g.p,{tag:g.tag});txt=`¡Cromo ${RAR_INFO[P.k].n} para tu álbum!`;checkTrophies()}
+    setMsg("w-msg",`${P.ic} ${txt}`,P.k==="none"?"bad":"ok");renderWheel();renderAlbum();updateHome();
+  },reduce?50:4300);
+};
+// Congeladores: cubren los días sin jugar para no perder la racha
+function applyFreezes(){
+  const days=new Set(store.get("days",[])),frozen=new Set(store.get("frozen",[]));let fz=store.get("freezes",0);if(!fz||!days.size)return;
+  const has=d=>days.has(isoDay(d))||frozen.has(isoDay(d));
+  const y=new Date();y.setDate(y.getDate()-1);const gap=[];const d=new Date(y);
+  while(!has(d)&&gap.length<31){gap.push(isoDay(d));d.setDate(d.getDate()-1)}
+  if(!gap.length||gap.length>fz||!has(d))return;
+  gap.forEach(g=>frozen.add(g));store.set("frozen",[...frozen].slice(-200));store.set("freezes",fz-gap.length);
+  toast(`❄️ Has usado ${gap.length} congelador${gap.length>1?"es":""}: tu racha sigue viva`);
+}
+function daySet(){return new Set([...store.get("days",[]),...store.get("frozen",[])])}
+
+// ---------- RANKED ----------
+const DIVS=[[0,"Bronce","🥉"],[900,"Plata","🥈"],[1100,"Oro","🥇"],[1300,"Platino","💠"],[1500,"Diamante","💎"],[1700,"Leyenda","👑"]];
+function rk(){return store.get("ranked",{elo:1000,w:0,l:0,d:0,best:1000})}
+function divOf(e){let d=DIVS[0];for(const x of DIVS)if(e>=x[0])d=x;return d}
+const RQ={q:null,unsub:null,since:0,timer:null,proposed:null};
+function renderRanked(){const r=rk(),d=divOf(r.elo);$("rk-div").textContent=`${d[2]} ${d[1]}`;$("rk-elo").textContent=r.elo;$("rk-rec").textContent=`${r.w}V · ${r.d}E · ${r.l}D`;
+  $("rk-find").disabled=!V.api;$("rk-find").textContent=RQ.q?"Cancelar búsqueda":"Buscar partida"}
+function rkCode(){const abc="abcdefghjkmnpqrstuvwxyz23456789";let c="";for(let i=0;i<6;i++)c+=abc[Math.floor(Math.random()*abc.length)];return c}
+async function rkFind(){
+  if(RQ.q){await rkCancel();setMsg("rk-msg","");return}
+  if(!V.api){setMsg("rk-msg","El modo ranked no está disponible en esta vista.","bad");return}
+  try{RQ.q=await V.api.join("dg-ranked-queue")}catch(e){setMsg("rk-msg","No se pudo entrar en la cola. Inténtalo de nuevo.","bad");return}
+  RQ.since=Date.now();RQ.proposed=null;
+  RQ.q.presence({nick:nick(),elo:rk().elo,seeking:true,match:null}).catch(()=>{});
+  RQ.unsub=RQ.q.onPeers(rkMatch);clearInterval(RQ.timer);RQ.timer=setInterval(rkMatch,2500);
+  setMsg("rk-msg","Buscando rival de tu nivel…");renderRanked();
+}
+async function rkCancel(){clearInterval(RQ.timer);if(RQ.unsub)RQ.unsub();const q=RQ.q;RQ.q=null;RQ.unsub=null;RQ.proposed=null;if(q){try{await q.leave()}catch(e){}}renderRanked()}
+function rkMatch(){
+  if(!RQ.q)return;
+  const ps=RQ.q.peers().filter(p=>p.kind==="viewer"&&p.presence&&p.presence.nick),me=ps.find(p=>p.sameTab);if(!me)return;
+  const inv=ps.find(p=>!p.sameTab&&p.presence.match&&p.presence.match.with===me.peer);
+  if(inv&&!V.r){const code=inv.presence.match.code;rkCancel();rkGo(code,false,inv.presence.elo);return}
+  if(RQ.proposed){
+    if(Date.now()-RQ.proposed.t>15000&&(!V.r||peers().length<2)){RQ.proposed=null;RQ.q.presence({match:null}).catch(()=>{});if(V.r&&V.ranked)leaveRoom().then(()=>{setMsg("rk-msg","El rival no llegó. Seguimos buscando…")})}
+    return}
+  if(V.r)return;
+  const my=rk().elo,range=150+(Date.now()-RQ.since)/1000*10;
+  const opp=ps.filter(p=>!p.sameTab&&p.presence.seeking&&!p.presence.match&&Math.abs((p.presence.elo|0)-my)<=range)
+    .sort((a,b)=>Math.abs(a.presence.elo-my)-Math.abs(b.presence.elo-my))[0];
+  if(!opp)return;
+  if(me.peer<opp.peer){const c=rkCode();RQ.proposed={t:Date.now(),code:c};RQ.q.presence({match:{with:opp.peer,code:c}}).catch(()=>{});rkGo(c,true,opp.presence.elo)}
+}
+async function rkGo(code,asHost,oppElo){
+  V.ranked=true;V.rkStarted=false;V.rkApplied=false;V.rkOpp=null;V.rkOppElo=oppElo|0||1000;
+  setMsg("rk-msg","¡Rival encontrado!","ok");
+  await enterRoom(code,asHost);pres({elo:rk().elo,ranked:true});
+  $("vs-wait").textContent="Partida ranked: empieza sola en cuanto estéis los dos.";
+}
+function rkFinalize(){
+  if(!V.ranked||V.rkApplied||V.mode!=="results")return;
+  const ps=peers().filter(p=>p.presence.game===V.game),opp=ps.find(p=>!p.sameTab);
+  if(opp)V.rkOpp=opp.presence;
+  const o=V.rkOpp;
+  if(opp&&!opp.presence.done)return;
+  const S=!o||!o.done?1:V.score>(o.score|0)?1:V.score<(o.score|0)?0:0.5;
+  rkApply(S,o&&typeof o.elo==="number"?o.elo:V.rkOppElo,!o||!o.done?"Tu rival abandonó: victoria.":"");
+}
+function rkApply(S,oe,note){
+  V.rkApplied=true;const r=rk(),before=divOf(r.elo);
+  const E=1/(1+Math.pow(10,(oe-r.elo)/400)),delta=Math.round(32*(S-E));
+  r.elo=Math.max(0,r.elo+delta);r.best=Math.max(r.best,r.elo);if(S===1)r.w++;else if(S===0)r.l++;else r.d++;
+  store.set("ranked",r);const d=divOf(r.elo);
+  const el=$("vs-elo");el.hidden=false;el.className="rkres "+(delta>=0?"up":"down");
+  el.textContent=`${S===1?"Victoria":S===0?"Derrota":"Empate"} · ${delta>=0?"+":""}${delta} ELO → ${d[2]} ${d[1]} (${r.elo})`+(d!==before?(delta>0?" · ¡Ascenso!":" · Descenso"):"")+(note?" · "+note:"");
+  renderRanked();checkTrophies();
+}
+const _syncR=sync;sync=function(){
+  _syncR();if(!V.ranked||!V.r)return;
+  const ps=peers(),opp=ps.find(p=>!p.sameTab);if(opp&&opp.presence.game===V.game)V.rkOpp=opp.presence;
+  if(V.host&&V.mode==="lobby"&&ps.length>=2&&!V.rkStarted){V.rkStarted=true;rkCancel();V.seed=Math.floor(Math.random()*1e9);startDuel(V.seed,V.game+1)}
+  if(!V.host&&RQ.q&&ps.length>=2)rkCancel();
+  rkFinalize();
+};
+const _rbR=renderBoards;renderBoards=function(){_rbR();
+  const r=!!V.ranked;$("rk-again").hidden=!r||V.mode!=="results";if(r){$("vs-start").hidden=true;$("vs-again").hidden=true;$("vs-wait").hidden=false}
+  if(!r)$("vs-elo").hidden=true;
+  if(r&&V.mode==="results"&&!$("vs-reswait").textContent.startsWith("Esperando"))$("vs-reswait").textContent="Partida ranked terminada.";
+  if(r)rkFinalize();
+};
+const _lrR=leaveRoom;leaveRoom=async function(){
+  if(V.ranked&&V.mode==="play"&&!V.rkApplied)rkApply(0,V.rkOpp&&typeof V.rkOpp.elo==="number"?V.rkOpp.elo:V.rkOppElo,"Abandonaste la partida.");
+  V.ranked=false;V.rkStarted=false;await _lrR();$("vs-elo").hidden=true;
+};
+$("rk-find").onclick=rkFind;
+$("rk-again").onclick=async()=>{await leaveRoom();rkFind()};
+$("vs-leave").onclick=()=>leaveRoom();$("vs-exit").onclick=()=>leaveRoom();
+TROPHIES.push({id:"rkwin",ic:"⚔️",n:"Primera victoria ranked",d:"Gana una partida ranked.",t:()=>rk().w>=1},{id:"rkgold",ic:"🥇",n:"Oro",d:"Llega a 1100 de ELO en ranked.",t:()=>rk().best>=1100},{id:"rkdia",ic:"💎",n:"Diamante",d:"Llega a 1500 de ELO en ranked.",t:()=>rk().best>=1500});
+setTimeout(renderRanked,1200);setTimeout(renderRanked,4000);
+
+const VIEWS=["home","link-up","grid","career","odd-one-out","lineup","54321","higher-lower","survival","timeline","versus","album"];
+function route(){
+  let h=location.hash.slice(1);
+  if(/^vs-[a-z0-9]{4,6}$/.test(h)){const c=h.slice(3);if(!V.r)$("vs-code").value=c.toUpperCase();h="versus"}
+  const v=VIEWS.includes(h)?h:"home";
+  VIEWS.forEach(n=>{document.getElementById("v-"+n).hidden=n!==v;const a=document.getElementById("nav-"+n);if(n===v)a.setAttribute("aria-current","page");else a.removeAttribute("aria-current")});
+  if(v==="home")updateHome();
+  window.scrollTo(0,0);
+}
+window.addEventListener("hashchange",route);
+startLink(true);startGrid(true);startTray(true);startOdd(true);hlStart();startTimeline(true);startLineup(true);startFive(true);route();updateHome();
+</script>

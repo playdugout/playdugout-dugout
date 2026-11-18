@@ -1,0 +1,34 @@
+# Dugout · ideas pendientes
+
+Lista de ideas apuntadas para versiones futuras. Se van tachando al construirlas.
+
+## Personaje propio (idea del 18 nov)
+Cada jugador crea su propio futbolista (avatar ilustrado, diseño propio, sin jugadores reales) y lo mejora con la racha y con logros.
+
+- **Creación:** nombre, dorsal, país, posición, colores de la equipación, peinado y botas.
+- **Mejoras por racha:** hitos a 3, 7, 14, 30, 60, 100 y 365 días que desbloquean equipaciones, botas, celebraciones, brazalete de capitán, estadio de fondo…
+- **Mejoras por otros logros:** álbum completado, división ranked alcanzada, trofeos, victorias en Versus.
+- **Atributos del personaje** (ritmo, tiro, pase, regate…) que suben con los retos completados; se muestran en una carta tipo cromo que se puede compartir.
+- **Visible para los demás:** en el ranking, en Versus y en el mercado de cromos.
+- **Solo estético:** nunca da ventaja en ranked ni en Versus. Nada se vende por dinero.
+- Pérdida de racha: el personaje no pierde lo desbloqueado (evita frustración); la racha actual solo afecta a los próximos hitos.
+
+## Anuncios con recompensa (cuando haya dominio y AdSense)
+- Segunda vida en Survival (1 por partida).
+- Recuperar la racha perdida si no hay congelador.
+- Doble recompensa al completar un reto diario.
+- Pista extra en Career, Lineup y Link-Up.
+- Jugar retos de días anteriores (archivo).
+- Elegir un cromo que falte tras ver 3 vídeos.
+- Sobre extra y tirada extra en la ruleta.
+- Límite total de 6–8 vídeos al día. Nunca en ranked ni Versus, nunca forzados.
+
+## Producto
+- Importar miles de jugadores desde Wikidata (pendiente de permitir `query.wikidata.org`).
+- Estadísticas reales para Higher or Lower (API-Football).
+- Idiomas ES / EN / PT con detección automática.
+- Ranking global y temporadas mensuales con recompensas por división.
+- Mercado de cromos con desconocidos (ya preparado en la base de datos).
+- Guess the Stadium con pistas de texto (sin fotos ni escudos).
+- Más partidos para Lineup y una plantilla para añadirlos.
+- Páginas para Google («Jugadores que han jugado en el Real Madrid y el Barça», etc.).
