@@ -345,6 +345,10 @@ a:focus-visible,button:focus-visible,input:focus-visible,.cell:focus-visible{out
 .rkres.up{color:var(--ok)} .rkres.down{color:var(--bad)}
 /* Compartir y racha */
 .share{flex-basis:100%;display:flex;flex-direction:column;gap:8px;border:2px dashed var(--line);border-radius:12px;padding:12px 14px;min-width:0}
+.chal{position:relative;margin:14px 0 4px;padding:14px 44px 14px 16px;border:2px solid var(--card);border-radius:12px;background:rgba(246,201,69,.1);display:flex;flex-direction:column;gap:6px;min-width:0}
+.chal .k{font-family:var(--mono);font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;color:var(--card)}
+.chal pre{margin:0;font-family:var(--mono);font-size:.85rem;white-space:pre-wrap;overflow-wrap:anywhere}
+.chal .x{position:absolute;top:8px;right:8px;width:30px;height:30px;border-radius:8px;border:1px solid var(--line);background:transparent;color:var(--chalk);cursor:pointer;font:inherit}
 .share pre{margin:0;font-family:var(--mono);font-size:.82rem;line-height:1.45;white-space:pre-wrap;overflow-wrap:anywhere;color:var(--chalk)}
 .share .row a{text-decoration:none}
 .streak{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
@@ -405,6 +409,7 @@ footer{margin-top:40px;color:var(--chalk-dim);font-size:.82rem;border-top:2px da
   </header>
 
   <main>
+  <div id="chal" class="chal" role="status" hidden></div>
   <!-- PORTADA -->
   <section id="v-home">
     <div class="hero">
@@ -1008,8 +1013,8 @@ function makeLink(seed){
   // plan B: cualquier pareja que no fueran compañeros
   const pool=PP();for(let t=0;t<200;t++){const a=pool[Math.floor(r()*pool.length)].id;const {d}=bfs(a);const c=pool.filter(p=>d[p.id]>=2);if(c.length){const b=c[Math.floor(r()*c.length)].id;return {a,b,par:d[b]}}}
 }
-function startLink(daily){
-  const seed=daily?hash("link"+dayKey):Math.floor(Math.random()*1e9);
+function startLink(daily,sd){
+  const seed=daily?hash("link"+dayKey):(sd??Math.floor(Math.random()*1e9));CSEED["link"]=seed;
   Object.assign(L,makeLink(seed),{daily,chain:[],strikes:0,hints:0,careers:[],over:false,won:false,gaveUp:false});
   L.chain=[L.a]; L.distB=bfs(L.b).d;
   if(daily){const s=store.get("link-"+dayKey,null);if(s&&s.a===L.a&&s.b===L.b)Object.assign(L,s)}
@@ -1120,8 +1125,8 @@ function makeGrid(seed){
   }
 }
 const G={};
-function startGrid(daily){
-  const seed=daily?hash("grid"+dayKey):Math.floor(Math.random()*1e9);
+function startGrid(daily,sd){
+  const seed=daily?hash("grid"+dayKey):(sd??Math.floor(Math.random()*1e9));CSEED["grid"]=seed;
   Object.assign(G,makeGrid(seed),{daily,filled:Array(9).fill(null),tries:12,revealed:false,over:false});
   if(daily){const s=store.get("grid-"+dayKey,null);if(s)Object.assign(G,s)}
   document.getElementById("g-label").textContent=daily?dayLabel:"free play";
@@ -1177,8 +1182,8 @@ document.getElementById("g-daily").onclick=()=>startGrid(true);
 // ---------- CAREER ----------
 const T={},MAXT=5;
 const T_POOL=PLAYERS.filter(p=>p.stints.length>=4);
-function startTray(daily){
-  const r=rng(daily?hash("tray"+dayKey):Math.floor(Math.random()*1e9));
+function startTray(daily,sd){
+  const seed=daily?hash("tray"+dayKey):(sd??Math.floor(Math.random()*1e9));CSEED["tray"]=seed;const r=rng(seed);
   const TP=PP().filter(p=>p.stints.length>=(DIFF==="easy"?3:4));
   const p=TP[Math.floor(r()*TP.length)];
   Object.assign(T,{daily,p,guesses:[],over:false,won:false});
@@ -1235,8 +1240,8 @@ function makeOdd(seed){
   }
   return rounds;
 }
-function startOdd(daily){
-  const seed=daily?hash("odd"+dayKey):Math.floor(Math.random()*1e9);
+function startOdd(daily,sd){
+  const seed=daily?hash("odd"+dayKey):(sd??Math.floor(Math.random()*1e9));CSEED["odd"]=seed;
   Object.assign(O,{daily,rounds:makeOdd(seed),i:0,res:[],picked:null});
   if(daily){const s=store.get("odd-"+dayKey,null);if(s)Object.assign(O,s)}
   document.getElementById("o-label").textContent=daily?dayLabel:"free play";
@@ -1548,8 +1553,8 @@ function makeTimeline(seed){
   for(const it of shuffle(TL_POOL.filter(x=>PPS().has(x.p.id)),r)){if(years.has(it.y)||who.has(it.p.id))continue;if(items.length&&items.some(x=>Math.abs(x.y-it.y)<gap))continue;items.push(it);years.add(it.y);who.add(it.p.id);if(items.length===5)break}
   return items;
 }
-function startTimeline(daily){
-  const seed=daily?hash("tl"+dayKey):Math.floor(Math.random()*1e9);
+function startTimeline(daily,sd){
+  const seed=daily?hash("tl"+dayKey):(sd??Math.floor(Math.random()*1e9));CSEED["tl"]=seed;
   const items=makeTimeline(seed);
   Object.assign(TL,{daily,items,order:shuffle(items.map((_,i)=>i),rng(seed+7)),done:false});
   if(daily){const s=store.get("tl-"+dayKey,null);if(s&&s.order&&s.order.length===5)Object.assign(TL,{order:s.order,done:s.done})}
@@ -1572,15 +1577,80 @@ $("tl-new").onclick=()=>startTimeline(false);$("tl-daily").onclick=()=>startTime
 
 // ---------- Compartir y racha ----------
 const SITE_URL=ARTIFACT_URL;
+// Juegos que se pueden retar: misma partida (semilla) y mismo nivel para el amigo
+const CH_GAMES={l:{v:"link-up",n:"Link-Up",s:"link",go:sd=>startLink(false,sd)},g:{v:"grid",n:"Grid",s:"grid",go:sd=>startGrid(false,sd)},
+ t:{v:"career",n:"Career",s:"tray",go:sd=>startTray(false,sd)},o:{v:"odd-one-out",n:"Odd One Out",s:"odd",go:sd=>startOdd(false,sd)},
+ tl:{v:"timeline",n:"Timeline",s:"tl",go:sd=>startTimeline(false,sd)},lu:{v:"lineup",n:"Lineup",s:"lu",go:sd=>startLineup(false,sd)},
+ f:{v:"54321",n:"5-4-3-2-1",s:"five",go:sd=>startFive(false,sd)},w2:{v:"who-said-it",n:"Who Said It?",s:"who",go:sd=>startWho(false,sd)},
+ dc:{v:"deep-cut",n:"Deep Cut",s:"deep2",go:sd=>startDeep(false,sd)},h:{v:"higher-lower",n:"Higher or Lower"},s:{v:"survival",n:"Survival"}};
+const CSEED={};
+function challengeURL(k,text){
+  const G=CH_GAMES[k];if(!G)return SITE_URL;
+  const body=text.split("\n").slice(1).join("\n").slice(0,240);
+  const sd=G.s?CSEED[G.s]:(k==="h"?H.cat:0);
+  return `${SITE_URL}#c/${k}/${DIFF}/${encodeURIComponent(sd??0)}/${encodeURIComponent(body)}`;
+}
 function renderShare(k,text){
   const el=$("sh-"+k); if(!text){el.hidden=true;return}
   const full=text+"\n"+SITE_URL, enc=encodeURIComponent(full);
-  el.innerHTML=`<pre>${esc(text)}</pre><div class="row"><button class="btn primary" type="button" data-copy>Copy result</button><a class="btn" href="https://wa.me/?text=${enc}" target="_blank" rel="noopener">WhatsApp</a><a class="btn" href="https://twitter.com/intent/tweet?text=${enc}" target="_blank" rel="noopener">X</a></div>`;
+  el.innerHTML=`<pre>${esc(text)}</pre><div class="row"><button class="btn primary" type="button" data-copy>Copy result</button><button class="btn" type="button" data-img>📸 Story image</button><button class="btn" type="button" data-chal>⚔️ Challenge a friend</button><a class="btn" href="https://wa.me/?text=${enc}" target="_blank" rel="noopener">WhatsApp</a><a class="btn" href="https://twitter.com/intent/tweet?text=${enc}" target="_blank" rel="noopener">X</a></div>`;
   el.hidden=false;
-  el.querySelector("[data-copy]").onclick=e=>{const b=e.currentTarget;
-    const ok=()=>{b.textContent="Copied!";setTimeout(()=>b.textContent="Copy result",1500)};
-    const sel=()=>{const r=document.createRange();r.selectNodeContents(el.querySelector("pre"));const s=getSelection();s.removeAllRanges();s.addRange(r);b.textContent="Select and copy"};
-    try{navigator.clipboard.writeText(full).then(ok,sel)}catch(err){sel()}};
+  const copy=(b,str,label)=>{const ok=()=>{b.textContent="Copied!";setTimeout(()=>b.textContent=label,1500)};
+    try{navigator.clipboard.writeText(str).then(ok,()=>prompt("Copy this:",str))}catch(err){prompt("Copy this:",str)}};
+  el.querySelector("[data-copy]").onclick=e=>copy(e.currentTarget,full,"Copy result");
+  el.querySelector("[data-img]").onclick=e=>shareImage(text,e.currentTarget);
+  el.querySelector("[data-chal]").onclick=async e=>{const url=challengeURL(k,text),G=CH_GAMES[k];
+    const msg=`⚔️ I just played ${G?G.n:"Dugout"} on Dugout (${DIFF_NAMES[DIFF]}). Can you beat me?`;
+    if(navigator.share){try{await navigator.share({text:msg,url});return}catch(err){if(err&&err.name==="AbortError")return}}
+    copy(e.currentTarget,msg+"\n"+url,"⚔️ Challenge a friend")};
+}
+// Imagen vertical (1080×1920) para stories de Instagram/TikTok/WhatsApp
+async function makeShareImage(text){
+  try{await Promise.all([document.fonts.load('800 120px "Barlow Condensed"'),document.fonts.load('500 40px "JetBrains Mono"'),document.fonts.load('500 40px Barlow')])}catch(e){}
+  const W=1080,H=1920,c=document.createElement("canvas");c.width=W;c.height=H;const x=c.getContext("2d");
+  const g=x.createLinearGradient(0,0,0,H);g.addColorStop(0,"#1d4837");g.addColorStop(1,"#0f2a20");x.fillStyle=g;x.fillRect(0,0,W,H);
+  // rayas de césped y líneas del campo
+  for(let i=0;i<10;i++){if(i%2){x.fillStyle="rgba(255,255,255,.025)";x.fillRect(0,i*H/10,W,H/10)}}
+  x.strokeStyle="rgba(238,243,234,.12)";x.lineWidth=4;x.strokeRect(60,60,W-120,H-120);
+  x.beginPath();x.arc(W/2,H/2,170,0,Math.PI*2);x.stroke();x.beginPath();x.moveTo(60,H/2);x.lineTo(W-60,H/2);x.stroke();
+  const lines=text.split("\n"),head=lines[0]||"",m=head.match(/^Dugout · (.+?) \(([^)]+)\)\s*(.*)$/)||head.match(/^Dugout · (.+)$/);
+  const game=m?m[1]:"Dugout",meta=m&&m[2]?m[2]:"",body=[...(m&&m[3]?[m[3]]:[]),...lines.slice(1).filter(Boolean)];
+  x.textAlign="center";x.textBaseline="alphabetic";
+  x.font='800 150px "Barlow Condensed",Impact,sans-serif';const w1=x.measureText("DUG").width,w2=x.measureText("OUT").width,x0=W/2-(w1+w2)/2;
+  x.textAlign="left";x.fillStyle="#eef3ea";x.fillText("DUG",x0,300);x.fillStyle="#f6c945";x.fillText("OUT",x0+w1,300);x.textAlign="center";
+  x.fillStyle="#a9c0b2";x.font='500 38px "JetBrains Mono",monospace';x.fillText("DAILY FOOTBALL PUZZLES",W/2,360);
+  x.fillStyle="#f6c945";x.font='800 120px "Barlow Condensed",Impact,sans-serif';x.fillText(game.toUpperCase(),W/2,600);
+  if(meta){x.fillStyle="#eef3ea";x.font='500 44px Barlow,sans-serif';x.fillText(meta,W/2,670)}
+  // cuerpo: las líneas de emojis van grandes; el texto, mediano
+  const isEmoji=s=>/^[\s\p{Extended_Pictographic}⬛⬜️⃣\d️⃣]+(\s*[\dX]+\/\d+)?$/u.test(s)&&/\p{Extended_Pictographic}/u.test(s);
+  let y=820;const maxW=W-200;
+  const fit=(s,size,weight,fam)=>{let sz=size;do{x.font=`${weight} ${sz}px ${fam}`;sz-=4}while(x.measureText(s).width>maxW&&sz>24)};
+  for(const L of body.slice(0,9)){
+    if(isEmoji(L)){fit(L,110,400,'"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif');x.fillStyle="#eef3ea";x.fillText(L,W/2,y+90);y+=150}
+    else{fit(L,52,600,'Barlow,sans-serif');x.fillStyle="#eef3ea";x.fillText(L,W/2,y+50);y+=86}
+  }
+  x.fillStyle="#f6c945";x.font='800 92px "Barlow Condensed",Impact,sans-serif';x.fillText("CAN YOU BEAT ME?",W/2,H-330);
+  x.fillStyle="#eef3ea";x.font='500 42px "JetBrains Mono",monospace';x.fillText(SITE_URL.replace(/^https?:\/\//,"").replace(/\/$/,""),W/2,H-240);
+  return new Promise(res=>c.toBlob(res,"image/png"));
+}
+async function shareImage(text,btn){
+  const label=btn.textContent;btn.textContent="Creating…";btn.disabled=true;
+  try{const blob=await makeShareImage(text);const file=new File([blob],"dugout-result.png",{type:"image/png"});
+    if(navigator.canShare&&navigator.canShare({files:[file]})){try{await navigator.share({files:[file],text:"Can you beat me? "+SITE_URL})}catch(e){}}
+    else{const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="dugout-result.png";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),4000)}
+  }finally{btn.textContent=label;btn.disabled=false}
+}
+// Abrir un reto recibido: #c/<juego>/<nivel>/<semilla>/<resultado del amigo>
+function openChallenge(h){
+  const [,k,lvl,sdRaw,res]=h.split("/");const G=CH_GAMES[k];if(!G)return "home";
+  if(DIFF_NAMES[lvl]&&lvl!==DIFF){const b=document.querySelector(`[data-diff="${lvl}"]`);b&&b.click()}
+  const sd=decodeURIComponent(sdRaw||"0");
+  if(G.go)G.go(+sd>>>0);else if(k==="h"&&HL_CATS.some(c=>c.k===sd)){H.cat=sd;hlStart()}
+  const box=$("chal");box.dataset.view=G.v;
+  box.innerHTML=`<div><b>⚔️ A friend challenged you</b> · ${esc(G.n)} · ${esc(DIFF_NAMES[DIFF])}${G.go?" · same puzzle":""}</div>${res?`<div class="k">Their result</div><pre>${esc(decodeURIComponent(res))}</pre>`:""}<div>Beat it, then send yours back.</div><button type="button" class="x" aria-label="Close">✕</button>`;
+  box.hidden=false;box.querySelector(".x").onclick=()=>{box.hidden=true};
+  const lab=$(k+"-label");if(lab&&G.go)lab.textContent="challenge";
+  return G.v;
 }
 const tag=d=>(d?dayLabel:"free play")+" · "+DIFF_NAMES[DIFF];
 const _rl=renderLink;renderLink=function(){_rl();
@@ -1652,9 +1722,9 @@ LINEUPS.forEach(m=>{m.players=[];m.lines=m.lines.map((ln,li)=>ln.map(str=>{const
 const POS=["POR","DEF","MED","MED","DEL"];
 function posLabel(m,li){const L=m.lines.length;if(li===0)return "GK";if(li===1)return "DEF";if(li===L-1)return "FWD";return "MID"}
 const LU={};
-function startLineup(daily){
-  const seed=daily?hash("lu"+dayKey):Math.floor(Math.random()*1e9);
-  const idx=daily?seed%LINEUPS.length:(()=>{let i;do{i=Math.floor(Math.random()*LINEUPS.length)}while(LINEUPS.length>1&&i===LU.idx);return i})();
+function startLineup(daily,sd){
+  const seed=daily?hash("lu"+dayKey):(sd??Math.floor(Math.random()*1e9));CSEED["lu"]=seed;
+  const idx=(daily||sd!=null)?seed%LINEUPS.length:(()=>{let i;do{i=Math.floor(Math.random()*LINEUPS.length)}while(LINEUPS.length>1&&i===LU.idx);return i})();
   Object.assign(LU,{daily,idx,m:LINEUPS[idx],got:[],miss:0,hints:{},over:false,gave:false});
   if(daily){const s=store.get("lu-"+dayKey,null);if(s&&s.idx===idx)Object.assign(LU,{got:s.got,miss:s.miss,hints:s.hints||{},over:s.over,gave:s.gave})}
   $("lu-label").textContent=daily?dayLabel:"free play";$("lu-daily").hidden=daily;setMsg("lu-msg","");renderLineup();
@@ -1709,8 +1779,8 @@ function makeFive(seed){
   return levels.map((L,i)=>({...L,need:5-i}));
 }
 const F={};
-function startFive(daily){
-  const seed=daily?hash("five"+dayKey):Math.floor(Math.random()*1e9);
+function startFive(daily,sd){
+  const seed=daily?hash("five"+dayKey):(sd??Math.floor(Math.random()*1e9));CSEED["five"]=seed;
   Object.assign(F,{daily,levels:makeFive(seed),lv:0,picks:[[],[],[],[],[]],lives:3,over:false,won:false});
   if(daily){const s=store.get("five-"+dayKey,null);if(s)Object.assign(F,{lv:s.lv,picks:s.picks,lives:s.lives,over:s.over,won:s.won})}
   $("f-label").textContent=daily?dayLabel:"free play";$("f-daily").hidden=daily;setMsg("f-msg","");renderFive();
@@ -2075,8 +2145,8 @@ function makeWho(seed){
     out.push({i,opts});if(out.length===WQ_N)break}
   return out;
 }
-function startWho(daily){
-  const seed=daily?hash("who"+dayKey):Math.floor(Math.random()*1e9);
+function startWho(daily,sd){
+  const seed=daily?hash("who"+dayKey):(sd??Math.floor(Math.random()*1e9));CSEED["who"]=seed;
   Object.assign(WQ,{daily,rounds:makeWho(seed),k:0,res:[],picked:null,hint:false,hints:0});
   if(daily){const s=store.get("who-"+dayKey,null);if(s)Object.assign(WQ,s)}
   $("w2-label").textContent=daily?dayLabel:"free play";$("w2-daily").hidden=daily;setMsg("w2-msg","");renderWho();
@@ -2142,8 +2212,8 @@ function makeDeep(seed){const r=rng(seed),qs=[],seen=new Set();
   const kinds=shuffle(["clubs","clubs","players"],r);
   for(const k of kinds){let q=null;for(let t=0;t<5&&!q;t++){const c=dcQuestion(r,k);if(c&&!seen.has(c.s))q=c}if(!q)q=dcQuestion(r,"clubs");seen.add(q.s);qs.push(q)}
   return qs}
-function startDeep(daily){
-  const seed=daily?hash("deep2"+dayKey):Math.floor(Math.random()*1e9);
+function startDeep(daily,sd){
+  const seed=daily?hash("deep2"+dayKey):(sd??Math.floor(Math.random()*1e9));CSEED["deep2"]=seed;
   Object.assign(DC,{daily,qs:makeDeep(seed),k:0,found:[[],[],[]],miss:[0,0,0],shut:[false,false,false]});
   if(daily){const s=store.get("deep2-"+dayKey,null);if(s)Object.assign(DC,s)}
   $("dc-label").textContent=daily?dayLabel:"free play";$("dc-daily").hidden=daily;setMsg("dc-msg","");renderDeep();
@@ -2207,6 +2277,8 @@ const _ptW=playedToday;playedToday=function(){return _ptW()||whoDone(dayKey)||de
 const VIEWS=["home","link-up","grid","career","odd-one-out","lineup","54321","higher-lower","survival","timeline","who-said-it","deep-cut","versus","album"];
 function route(){
   let h=location.hash.slice(1);
+  if(/^c\//.test(h)){const v=openChallenge(h);history.replaceState(null,"","#"+v);h=v}
+  const cb=$("chal");if(cb&&!cb.hidden&&cb.dataset.view!==h)cb.hidden=true;
   if(/^vs-[a-z0-9]{4,6}$/.test(h)){const c=h.slice(3);if(!V.r)$("vs-code").value=c.toUpperCase();h="versus"}
   const v=VIEWS.includes(h)?h:"home";
   VIEWS.forEach(n=>{document.getElementById("v-"+n).hidden=n!==v;const a=document.getElementById("nav-"+n);if(n===v)a.setAttribute("aria-current","page");else a.removeAttribute("aria-current")});
