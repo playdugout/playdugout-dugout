@@ -6,6 +6,8 @@ Survival, Timeline, Versus/Ranked online, cromos, trofeos y ruleta.
 - `index.html` — la web pública (todos los juegos).
 - `js/online.js` — conexión con Supabase: cuenta anónima automática y salas en tiempo real (Versus, Ranked, intercambios).
 - `js/config.js` — dirección y clave pública de Supabase.
+- `js/players.js` — base de datos de 2.843 futbolistas (Wikidata + revisión manual).
+- `herramientas/` — programas para actualizar la base de datos de futbolistas.
 - `PUBLICAR.md` — cómo publicarla en Netlify.
 - `prototipo-claude.html` — prototipo original (versión publicada en Claude), como referencia.
 - `supabase/` — base de datos (esquema con reglas de seguridad y catálogo de cromos). Ver `supabase/LEEME.md`.
@@ -13,6 +15,7 @@ Survival, Timeline, Versus/Ranked online, cromos, trofeos y ruleta.
 
 ## Estado
 - ✅ Web independiente lista para Netlify.
+- ✅ 2.843 futbolistas con trayectorias, años y nacionalidad.
 - ✅ Modo online (Versus, Ranked, intercambio con amigos) sobre Supabase Realtime.
 - ⏳ Siguiente fase: sobres, cromos, trofeos, racha y ELO guardados y validados en el servidor
   (ahora se guardan en el navegador de cada jugador).

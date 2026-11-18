@@ -1,0 +1,15 @@
+# Actualizar la base de datos de futbolistas
+
+Los datos vienen de **Wikidata** (licencia CC0, uso comercial permitido) y se combinan con la
+base revisada a mano del prototipo (`prototipo-claude.html`).
+
+```bash
+mkdir -p datos && python3 herramientas/fetch_wd.py datos 3100   # necesita datos/top.csv (lista por popularidad)
+python3 herramientas/build_players.py datos/raw.json prototipo-claude.html js/players.js /dev/null
+```
+
+Después hay que regenerar `supabase/02_cartas.sql` y ejecutarlo en Supabase (SQL Editor) para que
+el catálogo de cromos coincida con los jugadores.
+
+Limpieza que se aplica: se quitan selecciones nacionales, filiales, equipos juveniles y de cantera
+(etapas antes de los 17 años), fútbol femenino (por ahora) y jugadores sin fechas.
