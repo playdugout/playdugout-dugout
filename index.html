@@ -162,6 +162,11 @@ a:focus-visible,button:focus-visible,input:focus-visible,.cell:focus-visible{out
 .chain{display:flex;flex-direction:column;align-items:stretch;margin-top:10px}
 .pl{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;border:2px solid var(--line);background:rgba(0,0,0,.14);min-width:0}
 .pl .flag{font-size:1.5rem;line-height:1}
+.pl .plb{flex:1;min-width:0}
+.pl .plc{font-size:.8rem;margin-top:4px;line-height:1.35;opacity:.85;overflow-wrap:anywhere}
+.pl .plc span{font-family:var(--mono);font-size:.7rem;opacity:.75}
+.plbtn{font:inherit;font-size:.75rem;font-weight:600;padding:6px 9px;border-radius:8px;border:1px solid currentColor;background:transparent;color:inherit;cursor:pointer;white-space:nowrap;opacity:.85}
+.plbtn:hover{opacity:1}
 .pl .nm{font-family:var(--display);font-weight:800;font-size:1.35rem;text-transform:uppercase;letter-spacing:.02em;line-height:1.05;overflow-wrap:anywhere}
 .pl .rl{font-family:var(--mono);font-size:.68rem;text-transform:uppercase;letter-spacing:.06em;color:var(--chalk-dim)}
 .pl.start{border-color:var(--chalk);background:var(--chalk);color:var(--felt)}
@@ -904,7 +909,9 @@ const MIDP=PLAYERS.filter(p=>STARS_SET.has(p.id)||p.pop>=75||(p.pop>=48&&p.stint
 function PPSET(){return DIFF==="easy"?STARS_SET:DIFF==="hard"?null:MID_SET}
 function mateIn(a,set){const all=[...MATES[a.id].keys()];const f=set?all.filter(k=>set.has(k)):all;const L=f.length?f:all;return PLAYERS[L[Math.floor(Math.random()*L.length)]]}
 const BIG=["RMA","FCB","ATM","MUN","MCI","LIV","CHE","ARS","JUV","MIL","INT","BAY","PSG","BVB"];
-function PP(){return DIFF==="easy"?STARS:DIFF==="hard"?PLAYERS:MIDP}
+// Intermedio: los jugadores que aparecen en pantalla salen de los más conocidos (MIDE); las respuestas válidas siguen siendo todas
+const MIDE=MIDP.filter(p=>STARS_SET.has(p.id)||(p.pop>=55&&p.stints.some(s=>MAJOR_KEYS.has(s.club))));
+function PP(){return DIFF==="easy"?STARS:DIFF==="hard"?PLAYERS:MIDE}
 function CP(){return DIFF==="easy"?BIG:DIFF==="hard"?CLUB_POOL:CLUB_TOP}
 function initialOf(n){const w=n.split(" ");return (w.length>1?w[w.length-1]:w[0])[0]}
 
@@ -918,7 +925,7 @@ const MATES=PLAYERS.map(()=>new Map());
 })();
 function bfs(from){const d=new Array(PLAYERS.length).fill(-1),prev=new Array(PLAYERS.length).fill(-1);d[from]=0;const q=[from];
   while(q.length){const u=q.shift();for(const v of MATES[u].keys())if(d[v]<0){d[v]=d[u]+1;prev[v]=u;q.push(v)}}return {d,prev}}
-function seasons(s,e){const f=y=>String(y%100).padStart(2,"0");return e-s===1?`${f(s)}/${f(e)}`:`${s}–${e}`}
+function seasons(s,e){const f=y=>String(y%100).padStart(2,"0");if(e<=s)e=s+1;return e-s===1?`${f(s)}/${f(e)}`:`${s}–${e}`}
 
 // ---------- Utilidades ----------
 function rng(seed){let s=seed>>>0||1;return()=>{s^=s<<13;s>>>=0;s^=s>>17;s^=s<<5;s>>>=0;return s/4294967296}}
@@ -970,7 +977,7 @@ function makeLink(seed){
   const r=rng(seed);
   for(let t=0;t<500;t++){
     const pool=PP(); const a=pool[Math.floor(r()*pool.length)].id; const {d}=bfs(a);
-    const want=DIFF==="easy"?2:DIFF==="hard"?4:(r()<0.65?3:4);
+    const want=DIFF==="easy"?2:DIFF==="hard"?4:(r()<0.85?3:4);
     const cands=pool.filter(p=>d[p.id]===want).map(p=>p.id);
     if(cands.length) return {a,b:cands[Math.floor(r()*cands.length)],par:want};
   }
@@ -979,7 +986,7 @@ function makeLink(seed){
 }
 function startLink(daily){
   const seed=daily?hash("link"+dayKey):Math.floor(Math.random()*1e9);
-  Object.assign(L,makeLink(seed),{daily,chain:[],strikes:0,hints:0,over:false,won:false,gaveUp:false});
+  Object.assign(L,makeLink(seed),{daily,chain:[],strikes:0,hints:0,careers:[],over:false,won:false,gaveUp:false});
   L.chain=[L.a]; L.distB=bfs(L.b).d;
   if(daily){const s=store.get("link-"+dayKey,null);if(s&&s.a===L.a&&s.b===L.b)Object.assign(L,s)}
   document.getElementById("l-label").textContent=daily?dayLabel:"free play";
@@ -987,8 +994,17 @@ function startLink(daily){
   document.getElementById("l-par").textContent=L.par;
   setMsg("l-msg",""); renderLink();
 }
-function saveLink(){if(L.daily)store.set("link-"+dayKey,{a:L.a,b:L.b,chain:L.chain,strikes:L.strikes,hints:L.hints,over:L.over,won:L.won,gaveUp:L.gaveUp});updateHome()}
-function plCard(id,cls,role){const p=PLAYERS[id];return `<div class="pl ${cls}"><span class="flag" aria-hidden="true">${flag(p)}</span><div><div class="rl">${role}</div><div class="nm">${p.name}</div></div></div>`}
+function saveLink(){if(L.daily)store.set("link-"+dayKey,{a:L.a,b:L.b,chain:L.chain,strikes:L.strikes,hints:L.hints,careers:L.careers,over:L.over,won:L.won,gaveUp:L.gaveUp});updateHome()}
+document.getElementById("l-chain").addEventListener("click",async e=>{const b=e.target.closest("[data-career]");if(!b)return;const id=+b.dataset.career;
+  b.disabled=true;if(!(await watchRewarded("career"))){b.disabled=false;return}
+  L.careers=L.careers||[];if(!L.careers.includes(id))L.careers.push(id);saveLink();renderLink()});
+function plCard(id,cls,role){const p=PLAYERS[id],seen=(L.careers||[]).includes(id);
+  return `<div class="pl ${cls}"><span class="flag" aria-hidden="true">${flag(p)}</span><div class="plb"><div class="rl">${role}</div><div class="nm">${p.name}</div>`+
+  (seen?`<div class="plc">${p.stints.map(st=>`${esc(clubName(st.club))} <span>${seasons(st.s,st.e)}</span>`).join(" → ")}</div>`:"")+`</div>`+
+  (seen?"":`<button class="plbtn" type="button" data-career="${id}" aria-label="See ${esc(p.name)}’s career">📺 Career</button>`)+`</div>`}
+// Vídeo con recompensa: de momento no hay red de anuncios, así que desbloquea directamente.
+// Cuando haya AdSense/H5 Games Ads, aquí se muestra el vídeo y se resuelve true solo si se ve entero.
+function watchRewarded(reason){return Promise.resolve(true)}
 function linkRow(x,y){const m=MATES[x].get(y);return `<div class="link">${clubBadge(m.club,"sm")}<span>Together at <b>${clubName(m.club)}</b> <span class="pill">${seasons(m.s,m.e)}</span></span></div>`}
 function renderLink(){
   let h="";
@@ -1063,7 +1079,7 @@ function gridClubs(){
 }
 function makeGrid(seed){
   const r=rng(seed); const pick=a=>a[Math.floor(r()*a.length)];
-  const pool=gridClubs(),ps=DIFF==="hard"?null:MID_SET,need0=DIFF==="hard"?1:2;
+  const pool=gridClubs(),ps=DIFF==="hard"?null:MID_SET,need0=DIFF==="hard"?1:DIFF==="mid"?3:2;
   const count=(A,B)=>{const [x,y]=A.size<B.size?[A,B]:[B,A];let n=0;for(const id of x)if(y.has(id)&&(!ps||ps.has(id)))n++;return n};
   for(let t=0;t<30000;t++){
     const used=new Set(); const rows=[],cols=[];
@@ -1139,7 +1155,7 @@ const T={},MAXT=5;
 const T_POOL=PLAYERS.filter(p=>p.stints.length>=4);
 function startTray(daily){
   const r=rng(daily?hash("tray"+dayKey):Math.floor(Math.random()*1e9));
-  const TP=DIFF==="easy"?T_POOL.filter(p=>STARS_SET.has(p.id)):DIFF==="hard"?T_POOL.filter(p=>!STARS_SET.has(p.id)):T_POOL.filter(p=>MID_SET.has(p.id));
+  const TP=DIFF==="easy"?T_POOL.filter(p=>STARS_SET.has(p.id)):DIFF==="hard"?T_POOL.filter(p=>!STARS_SET.has(p.id)):T_POOL.filter(p=>MIDE.includes(p));
   const p=TP[Math.floor(r()*TP.length)];
   Object.assign(T,{daily,p,guesses:[],over:false,won:false});
   if(daily){const s=store.get("tray-"+dayKey,null);if(s&&s.pid===p.id)Object.assign(T,{guesses:s.guesses,over:s.over,won:s.won})}
@@ -1542,7 +1558,7 @@ const tag=d=>(d?dayLabel:"free play")+" · "+DIFF_NAMES[DIFF];
 const _rl=renderLink;renderLink=function(){_rl();
   if(!L.over){renderShare("l",null);return}
   const steps=L.chain.length-1;
-  renderShare("l",`Dugout · Link-Up (${tag(L.daily)})\n${PLAYERS[L.a].name} → ${PLAYERS[L.b].name}\n`+(L.won?`${"🔗".repeat(steps)} ${steps} steps (best possible: ${L.par})${steps===L.par?" ⭐":""}`:"🏳️ Gave up")+(L.strikes?`\n${"❌".repeat(Math.min(L.strikes,10))}`:"")+(L.hints?` 💡×${L.hints}`:""));
+  renderShare("l",`Dugout · Link-Up (${tag(L.daily)})\n${PLAYERS[L.a].name} → ${PLAYERS[L.b].name}\n`+(L.won?`${"🔗".repeat(steps)} ${steps} steps (best possible: ${L.par})${steps===L.par?" ⭐":""}`:"🏳️ Gave up")+(L.strikes?`\n${"❌".repeat(Math.min(L.strikes,10))}`:"")+(L.hints?` 💡×${L.hints}`:"")+(L.careers&&L.careers.length?` 📺×${L.careers.length}`:""));
 };
 const _rg=renderGrid;renderGrid=function(){_rg();
   if(!G.over){renderShare("g",null);return}
