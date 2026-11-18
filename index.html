@@ -183,6 +183,11 @@ a:focus-visible,button:focus-visible,input:focus-visible,.cell:focus-visible{out
 .link b{color:var(--chalk);font-weight:600}
 .pill{font-family:var(--mono);font-size:.72rem;padding:2px 8px;border-radius:99px;border:1px solid var(--line);text-transform:uppercase;letter-spacing:.05em}
 
+/* Solución al fallar */
+.sol{margin-top:12px;padding:12px 14px;border:2px solid var(--card);border-radius:12px;background:rgba(246,201,69,.08);min-width:0;text-align:left}
+.sol .k{font-family:var(--mono);font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;color:var(--card)}
+.sol .v{font-family:var(--display);font-weight:800;font-size:1.4rem;text-transform:uppercase;line-height:1.1;overflow-wrap:anywhere}
+.sol ol{margin:6px 0 0;padding-left:22px}.sol li{margin:3px 0;overflow-wrap:anywhere}.sol li b{font-family:var(--mono);margin-right:6px}
 /* Who Said It? + Deep Cut */
 .wq blockquote{margin:14px 0 6px;font-family:var(--display);font-size:1.55rem;line-height:1.2;font-weight:600;letter-spacing:.01em;overflow-wrap:anywhere}
 .wq .ctx{font-family:var(--mono);font-size:.75rem;color:var(--chalk-dim);margin-bottom:12px}
@@ -512,6 +517,7 @@ footer{margin-top:40px;color:var(--chalk-dim);font-size:.82rem;border-top:2px da
     </div>
     <div class="meta"><span>Puzzle <b id="t-label">—</b></span><span class="tries" id="t-tries" aria-label="Guesses"></span></div>
     <div class="path" id="t-path"></div>
+    <div class="sol" id="t-sol" hidden></div>
     <div class="hints" id="t-hints"></div>
     <div class="inline-search">
       <label for="t-input" class="meta">Your answer</label>
@@ -627,6 +633,7 @@ footer{margin-top:40px;color:var(--chalk-dim);font-size:.82rem;border-top:2px da
     <div id="s-over" class="box" style="margin-top:12px" hidden>
       <h3>Streak over</h3>
       <div class="big" id="s-final">0</div>
+      <div class="sol" id="s-sol" hidden></div>
       <p id="s-overtxt"></p>
       <div class="share" id="sh-s" hidden></div>
       <button class="btn primary" id="s-again" type="button">Again</button>
@@ -641,6 +648,7 @@ footer{margin-top:40px;color:var(--chalk-dim);font-size:.82rem;border-top:2px da
     </div>
     <div class="meta"><span>Puzzle <b id="tl-label">—</b></span><span>Result <b id="tl-score">—</b></span></div>
     <ol class="tl" id="tl-list"></ol>
+    <div class="sol" id="tl-sol" hidden></div>
     <div class="bar">
       <button class="btn primary" id="tl-check" type="button">Check</button>
       <button class="btn" id="tl-new" type="button">New puzzle</button>
@@ -1176,6 +1184,8 @@ function renderTray(){
   document.getElementById("t-guesses").innerHTML=T.guesses.map(id=>`<li class="${id===p.id?"y":"x"}">${PLAYERS[id].name}<span>${id===p.id?"Correct":"No"}</span></li>`).join("");
   document.getElementById("t-input").disabled=T.over;
   if(T.over)setMsg("t-msg",T.won?`Correct! It was ${p.name}.`:`It was ${p.name}.`,T.won?"ok":"bad");
+  const sol=document.getElementById("t-sol");sol.hidden=!(T.over&&!T.won);
+  if(!sol.hidden)sol.innerHTML=`<div class="k">The answer</div><div class="v">${flag(p)} ${esc(p.name)}</div>`;
 }
 function guessT(id){
   if(T.over)return;
@@ -1506,7 +1516,7 @@ function svAnswer(i){
   [...$("s-q").querySelectorAll(".opt")].forEach((b,k)=>{b.disabled=true;if(q.opts[k].ok)b.classList.add("right");else if(k===i)b.classList.add("wrong")});
   if(ok){SV.streak++;if(SV.streak>store.get("sv-best",0))store.set("sv-best",SV.streak);$("s-streak").textContent=SV.streak;$("s-best").textContent=store.get("sv-best",0);
     setMsg("s-fb","Nice! "+q.reveal,"ok");setTimeout(svNext,900)}
-  else{setMsg("s-fb",(i<0?"Time’s up! ":"Wrong. ")+q.reveal,"bad");
+  else{setMsg("s-fb",(i<0?"Time’s up! ":"Wrong. ")+q.reveal,"bad");$("s-sol").hidden=false;$("s-sol").innerHTML=`<div class="k">${esc(q.title)}</div><div>${esc(q.reveal)}</div>`;
     setTimeout(()=>{svShow("over");$("s-final").textContent=SV.streak;const best=store.get("sv-best",0);
       $("s-overtxt").textContent=SV.streak>=best&&SV.streak>0?"New personal best!":`Your best is ${best}.`;updateHome()},1600)}
 }
@@ -1539,6 +1549,8 @@ function renderTimeline(){
   $("tl-check").hidden=TL.done;
   const n=okArr.filter(Boolean).length;$("tl-score").textContent=TL.done?`${n}/5`:"—";
   if(TL.done)setMsg("tl-msg",n===5?"Perfect order!":`${n} of 5 in the right place. The green ones were correct.`,n>=3?"ok":"bad");
+  $("tl-sol").hidden=!TL.done||n===5;
+  if(!$("tl-sol").hidden)$("tl-sol").innerHTML=`<div class="k">Correct order</div><ol>${TL.items.slice().sort((a,b)=>a.y-b.y).map(it=>`<li><b>${it.y}</b>${esc(it.p.name)} → ${esc(clubName(it.club))}</li>`).join("")}</ol>`;
 }
 $("tl-list").addEventListener("click",e=>{const b=e.target.closest("button[data-k]");if(!b||TL.done)return;const k=+b.dataset.k,j=k+ +b.dataset.d;[TL.order[k],TL.order[j]]=[TL.order[j],TL.order[k]];renderTimeline();const nb=$("tl-list").querySelector(`button[data-k="${j}"][data-d="${b.dataset.d}"]`)||$("tl-list").querySelector(`button[data-k="${j}"]`);nb&&nb.focus()});
 $("tl-check").onclick=()=>{TL.done=true;if(TL.daily)store.set("tl-"+dayKey,{order:TL.order,done:true});renderTimeline();updateHome()};
