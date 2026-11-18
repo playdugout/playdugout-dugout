@@ -78,6 +78,11 @@ create table if not exists public.trade_offers (
   done_at    timestamptz
 );
 create index if not exists trade_offers_open on public.trade_offers (status, give_card, want_card);
+create index if not exists collection_card_idx     on public.collection (card_id);
+create index if not exists trade_offers_user_idx   on public.trade_offers (user_id);
+create index if not exists trade_offers_taker_idx  on public.trade_offers (taker);
+create index if not exists trade_offers_give_idx   on public.trade_offers (give_card);
+create index if not exists trade_offers_want_idx   on public.trade_offers (want_card);
 
 create table if not exists public.matches (
   id          uuid primary key default gen_random_uuid(),
@@ -94,6 +99,8 @@ create table if not exists public.matches (
   finished_at timestamptz,
   check (p1 <> p2)
 );
+create index if not exists matches_p1_idx on public.matches (p1);
+create index if not exists matches_p2_idx on public.matches (p2);
 
 -- ---------- Seguridad por filas (RLS) --------------------------------
 
@@ -115,20 +122,20 @@ drop policy if exists "leer mis tiradas"      on public.spins;
 drop policy if exists "leer mis ofertas"      on public.trade_offers;
 drop policy if exists "leer mis partidas"     on public.matches;
 
-create policy "leer mi perfil"    on public.profiles      for select to authenticated using (id = auth.uid());
+create policy "leer mi perfil"    on public.profiles      for select to authenticated using (id = (select auth.uid()));
 create policy "leer cartas"       on public.cards         for select to anon, authenticated using (true);
-create policy "leer mi coleccion" on public.collection    for select to authenticated using (user_id = auth.uid());
-create policy "leer mis retos"    on public.daily_results for select to authenticated using (user_id = auth.uid());
-create policy "leer mis trofeos"  on public.trophies      for select to authenticated using (user_id = auth.uid());
-create policy "leer mis tiradas"  on public.spins         for select to authenticated using (user_id = auth.uid());
-create policy "leer mis ofertas"  on public.trade_offers  for select to authenticated using (user_id = auth.uid() or taker = auth.uid());
-create policy "leer mis partidas" on public.matches       for select to authenticated using (auth.uid() in (p1, p2));
+create policy "leer mi coleccion" on public.collection    for select to authenticated using (user_id = (select auth.uid()));
+create policy "leer mis retos"    on public.daily_results for select to authenticated using (user_id = (select auth.uid()));
+create policy "leer mis trofeos"  on public.trophies      for select to authenticated using (user_id = (select auth.uid()));
+create policy "leer mis tiradas"  on public.spins         for select to authenticated using (user_id = (select auth.uid()));
+create policy "leer mis ofertas"  on public.trade_offers  for select to authenticated using (user_id = (select auth.uid()) or taker = (select auth.uid()));
+create policy "leer mis partidas" on public.matches       for select to authenticated using ((select auth.uid()) in (p1, p2));
 -- No hay políticas de INSERT/UPDATE/DELETE: solo las funciones de abajo escriben.
 
 -- ---------- Utilidades ------------------------------------------------
 
 create or replace function public.dg_today() returns date
-language sql stable as $$ select (now() at time zone 'Europe/Madrid')::date $$;
+language sql stable set search_path = public as $$ select (now() at time zone 'Europe/Madrid')::date $$;
 
 create or replace function public.dg_add_card(p_user uuid, p_card int) returns int
 language plpgsql security definer set search_path = public as $$
