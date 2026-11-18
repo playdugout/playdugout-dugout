@@ -24,11 +24,18 @@ Cada jugador crea su propio futbolista (avatar ilustrado, diseño propio, sin ju
 - Límite total de 6–8 vídeos al día. Nunca en ranked ni Versus, nunca forzados.
 
 ## Producto
-- Importar miles de jugadores desde Wikidata (pendiente de permitir `query.wikidata.org`).
-- Estadísticas reales para Higher or Lower (API-Football).
+- ~~Importar miles de jugadores desde Wikidata~~ (hecho: 4.361).
+- ~~Estadísticas reales para Higher or Lower~~ (hecho con Wikidata; solo liga y selección).
 - Idiomas ES / EN / PT con detección automática.
 - Ranking global y temporadas mensuales con recompensas por división.
 - Mercado de cromos con desconocidos (ya preparado en la base de datos).
 - Guess the Stadium con pistas de texto (sin fotos ni escudos).
 - Más partidos para Lineup y una plantilla para añadirlos.
 - Páginas para Google («Jugadores que han jugado en el Real Madrid y el Barça», etc.).
+
+## Juegos nuevos (idea del 18 nov)
+- **Who Said It?** Frase célebre («I'm a special one», etc.) y adivinar quién la dijo: jugadores, entrenadores, presidentes.
+  - Modo diario con pistas progresivas (año, club de entonces, nacionalidad) y modo Survival de frases.
+  - Frases cortas, comprobadas y con contexto (fecha y ocasión); nada de frases inventadas o atribuidas en falso.
+  - Si se usan de Wikiquote (CC BY-SA), citar la fuente.
+- **Juego tipo «la luna»** (inspirado en footbillion.org). Pendiente de definir mecánica propia, sin copiar su diseño.
