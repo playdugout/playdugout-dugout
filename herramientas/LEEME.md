@@ -4,7 +4,8 @@ Los datos vienen de **Wikidata** (licencia CC0, uso comercial permitido) y se co
 base revisada a mano del prototipo (`prototipo-claude.html`).
 
 ```bash
-mkdir -p datos && python3 herramientas/fetch_wd.py datos 3100   # necesita datos/top.csv (lista por popularidad)
+mkdir -p datos && python3 herramientas/fetch_wd.py datos 3100   # necesita datos/top.csv y datos/current_u.csv
+python3 herramientas/fetch_stats.py datos/raw.json               # partidos y goles por club
 python3 herramientas/build_players.py datos/raw.json prototipo-claude.html js/players.js /dev/null
 ```
 

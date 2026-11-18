@@ -38,7 +38,7 @@ def team_ok(t):
     return bool(I.get('en') or I.get('es'))
 def team_key(t):
     if t in MAJOR: return MAJOR[t]
-    I = T[t]; return short(I.get('en') or I.get('es'), I.get('es'))
+    I = T[t]; return short(I.get('en') or I.get('es'))
 def season(v, is_end):
     m = re.match(r'(-?\d{4})-(\d{2})-(\d{2})', v or '')
     if not m: return None
@@ -46,6 +46,14 @@ def season(v, is_end):
     if mo == 1 and da == 1: return y            # fecha con precisión de año
     return y if (is_end or mo >= 6) else y - 1
 # --- jugadores de Wikidata ---
+def _num(v):
+    try: return str(float(v))
+    except Exception: return None
+for _s in S:
+    _s['apps'] = _num(_s.get('apps')); _s['goals'] = _num(_s.get('goals'))
+S_ALL = collections.defaultdict(list)
+for s in S: S_ALL[s['p']].append(s)
+POSL = d.get('positions', {})
 women = set()
 by_p = collections.defaultdict(list)
 for s in S:
@@ -64,7 +72,8 @@ ISO3_FIFA = {'DEU':'GER','NLD':'NED','CHE':'SUI','PRT':'POR','HRV':'CRO','URY':'
  'VNM':'VIE','PHL':'PHI','GTM':'GUA','HND':'HON','TTO':'TRI','HTI':'HAI','KWT':'KUW','ARE':'UAE','LBN':'LIB','GMB':'GAM','MDG':'MAD',
  'BGD':'BAN','NPL':'NEP','SLV':'SLV','IRN':'IRN','IDN':'IDN','LVA':'LVA','OMN':'OMA','BHR':'BHR','NGA':'NGA','CPV':'CPV','SVN':'SVN',
  'MNG':'MGL','KHM':'CAM','SGP':'SIN','LKA':'SRI','TWN':'TPE','CHN':'CHN','MAC':'MAC','SDN':'SDN','LBY':'LBY','TZA':'TAN','PRI':'PUR'}
-HOME = {'Q21':('ENG','Inglaterra'),'Q22':('SCO','Escocia'),'Q25':('WAL','Gales'),'Q26':('NIR','Irlanda del Norte')}
+HOME = {'Q21':('ENG','England'),'Q22':('SCO','Scotland'),'Q25':('WAL','Wales'),'Q26':('NIR','Northern Ireland')}
+ENNAME = {'NED':'Netherlands','USA':'United States','KOR':'South Korea','PRK':'North Korea','CZE':'Czech Republic','RUS':'Russia','CIV':"Côte d'Ivoire",'COD':'DR Congo','IRN':'Iran','BIH':'Bosnia and Herzegovina','MKD':'North Macedonia','TUR':'Türkiye','CHN':'China','TPE':'Taiwan','VEN':'Venezuela','BOL':'Bolivia','URS':'Soviet Union','TCH':'Czechoslovakia','YUG':'Yugoslavia','GDR':'East Germany','FRG':'West Germany'}
 def nat_of(p):
     for c in p['sport'] + p['cit']:
         if c in HOME:
@@ -75,16 +84,24 @@ def nat_of(p):
         iso3 = (ci.get('iso3') or '').upper()
         code = ci.get('fifa') or ISO3_FIFA.get(iso3, iso3)
         if code:
-            if code not in nats: nats[code] = [ci.get('es') or code, flag(ci.get('iso2'), code)]
+            if code not in nats: nats[code] = [ENNAME.get(code) or ci.get('en') or ci.get('es') or code, flag(ci.get('iso2'), code)]
             return code
     return None
 wd = []
 for k, p in P.items():
     if k in women: continue
-    name = p.get('es') or p.get('en')
+    name = p.get('en') or p.get('es')
     if not name or re.match(r'^Q\d+$', name): continue
     st = []
     by = int(p['birth'][:4]) if p.get('birth', '')[:4].isdigit() else None
+    caps = ig = None
+    for s in S_ALL.get(k, []):
+        lab = T.get(s['team'], {}).get('en', '')
+        if re.search(r'national', lab, re.I) and not re.search(r'under|U-?\d|olympic|youth|amateur|women|\bB\b|futsal|beach|regional|autonomous', lab, re.I) and s.get('apps'):
+            caps = int(float(s['apps'])); ig = int(float(s['goals'] or 0))
+    labs = ' | '.join(POSL.get(x, '').lower() for x in p.get('pos', []))
+    pos = ('GK' if re.search(r'goal|gate', labs) else 'FWD' if re.search(r'forward|striker|attacker|winger', labs)
+           else 'MID' if re.search(r'midfield|playmaker|wing half|centerhalf', labs) else 'DEF' if re.search(r'back|defender|sweeper|stopper', labs) else None)
     for s in by_p.get(k, []):
         a = season(s['start'], False)
         if a is None or a < 1950: continue
@@ -92,7 +109,7 @@ for k, p in P.items():
         if by and e0 and e0 <= by + 17: continue      # equipo de cantera
         if by and a < by + 16: a = by + 16
         b = season(s['end'], True)
-        st.append([team_key(s['team']), a, b])
+        st.append([team_key(s['team']), a, b, s.get('apps'), s.get('goals')])
     if not st: continue
     st.sort(key=lambda x: (x[1], x[2] if x[2] else 9999))
     # fin desconocido: hasta el inicio de la siguiente etapa, o hasta hoy si es la última
@@ -104,11 +121,20 @@ for k, p in P.items():
     # unir etapas seguidas en el mismo club
     merged = []
     for x in st:
-        if merged and merged[-1][0] == x[0] and x[1] <= merged[-1][2]: merged[-1][2] = max(merged[-1][2], x[2])
+        if merged and merged[-1][0] == x[0] and x[1] <= merged[-1][2]:
+            m = merged[-1]; m[2] = max(m[2], x[2])
+            m[3] = None if (m[3] is None or x[3] is None) else str(float(m[3]) + float(x[3]))
+            m[4] = None if (m[4] is None and x[4] is None) else str(float(m[4] or 0) + float(x[4] or 0))
         else: merged.append(list(x))
+    # estadísticas de liga: solo si TODAS las etapas tienen partidos registrados
+    complete = all(x[3] is not None for x in merged)
+    la = sum(int(float(x[3])) for x in merged) if complete else None
+    lg = sum(int(float(x[4] or 0)) for x in merged) if complete else None
+    merged = [x[:3] for x in merged]
     nat = nat_of(p)
     if not nat: continue
-    wd.append({'name': name, 'nat': nat, 'pop': p['pop'], 'st': merged, 'alt': {norm(p.get('es', '')), norm(p.get('en', ''))}})
+    wd.append({'name': name, 'nat': nat, 'pop': p['pop'], 'st': merged, 'alt': {norm(p.get('es', '')), norm(p.get('en', ''))},
+               'la': la, 'lg': lg, 'caps': caps, 'ig': ig, 'pos': pos, 'cur': bool(merged) and merged[-1][2] >= NOW, 'by': by})
 # --- base curada del prototipo ---
 src = open(PROTO, encoding='utf-8').read()
 raw = src[src.index('const RAW = `') + 13: src.index('`;', src.index('const RAW = `'))]
@@ -125,13 +151,17 @@ for w in wd:
     for a in w['alt']:
         if a: wd_by.setdefault(a, w)
 out, used, kept_cur, took_wd = [], set(), 0, 0
+CLUB_EN = {'Hamburgo':'Hamburg','Colonia':'Cologne','Burdeos':'Bordeaux','Niza':'Nice','Basilea':'Basel','Salzburgo':'Salzburg','Estrella Roja':'Red Star Belgrade','Spartak Moscú':'Spartak Moscow','CSKA Moscú':'CSKA Moscow','Lokomotiv Moscú':'Lokomotiv Moscow','Standard Lieja':'Standard Liège','Club Brujas':'Club Brugge','Rubin Kazán':'Rubin Kazan','Núremberg':'Nuremberg','CSKA Sofía':'CSKA Sofia','Dinamo Kiev':'Dynamo Kyiv','Al-Ahli Dubái':'Al-Ahli Dubai'}
 for c in cur:
+    c['st'] = [[CLUB_EN.get(x[0], x[0]), x[1], x[2]] for x in c['st']]
     w = wd_by.get(norm(c['name']))
     if w and id(w) not in used and majors(c['st']) <= majors(w['st']) and len(w['st']) >= 1:
         used.add(id(w)); out.append({**w, 'name': c['name'], 'nat': c['nat'] or w['nat']}); took_wd += 1
     else:
         if w: used.add(id(w))
-        out.append({'name': c['name'], 'nat': c['nat'], 'pop': w['pop'] if w else 60, 'st': c['st']}); kept_cur += 1
+        extra = {f: w.get(f) for f in ('la', 'lg', 'caps', 'ig', 'pos', 'by')} if w else {}
+        if w and set(majors(c['st'])) != set(majors(w['st'])): extra['la'] = extra['lg'] = None   # trayectoria distinta: no fiarse de los totales
+        out.append({'name': c['name'], 'nat': c['nat'], 'pop': w['pop'] if w else 60, 'st': c['st'], 'cur': c['st'][-1][2] >= NOW, **extra}); kept_cur += 1
 for w in sorted(wd, key=lambda x: -x['pop']):
     if id(w) in used: continue
     out.append(w)
@@ -150,9 +180,10 @@ lines = []
 for o in final:
     name = o['name'].replace('|', ' ').replace('`', "'").replace('\\', '')
     sts = ';'.join(f"{x[0].replace(';',' ').replace('|',' ').replace(':',' ').replace('`', '')}:{x[1]}-{x[2]}" for x in o['st'])
-    lines.append(f"{name}|{o['nat']}|{sts}|{o['pop']}")
+    ex = [o.get('la'), o.get('lg'), o.get('caps'), o.get('ig'), o.get('pos'), 1 if o.get('cur') else 0, o.get('by')]
+    lines.append(f"{name}|{o['nat']}|{sts}|{o['pop']}|" + ','.join('' if v is None else str(v) for v in ex))
 with open(OUTJS, 'w', encoding='utf-8') as f:
-    f.write('// Base de datos de futbolistas de Dugout.\n// Fuente: Wikidata (CC0) combinada con la base revisada a mano del prototipo.\n// Formato: nombre|país|CLUB:temporadaInicio-temporadaFin;...|popularidad\n')
+    f.write('// Base de datos de futbolistas de Dugout.\n// Fuente: Wikidata (CC0) combinada con la base revisada a mano del prototipo.\n// Formato: nombre|país|CLUB:inicio-fin;...|popularidad|partidosLiga,golesLiga,partidosSelección,golesSelección,posición,actual,añoNacimiento\n')
     f.write('window.DG_NATS=' + json.dumps(nats, ensure_ascii=False) + ';\n')
     f.write('window.DG_PLAYERS=' + json.dumps('\n'.join(lines), ensure_ascii=False) + ';\n')
 print('curados', len(cur), 'con datos de wikidata', took_wd, 'curados mantenidos', kept_cur, 'total', len(final), 'paises', len(nats))

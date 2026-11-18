@@ -401,7 +401,7 @@ footer{margin-top:40px;color:var(--chalk-dim);font-size:.82rem;border-top:2px da
       </a>
       <a class="game" href="#higher-lower">
         <svg viewBox="0 0 72 72" aria-hidden="true"><rect x="6" y="14" width="26" height="44" rx="5" fill="#eef3ea"/><rect x="40" y="14" width="26" height="44" rx="5" fill="none" stroke="#f6c945" stroke-width="3"/><path d="M53 26l-6 8h12zM53 46l-6-8h12z" fill="#f6c945"/><text x="19" y="42" text-anchor="middle" font-family="Barlow Condensed,sans-serif" font-weight="800" font-size="14" fill="#163a2c">G</text></svg>
-        <div><h3>Higher or Lower <span class="tag">NEW</span></h3><p>More or fewer goals, assists or cards? Build a streak and beat your record.</p><span class="st" id="st-hl"></span></div>
+        <div><h3>Higher or Lower <span class="tag">NEW</span></h3><p>More or fewer league goals, games or caps? Build a streak and beat your record.</p><span class="st" id="st-hl"></span></div>
       </a>
       <a class="game" href="#survival">
         <svg viewBox="0 0 72 72" aria-hidden="true"><path d="M36 8c10 14 18 20 18 34a18 18 0 0 1-36 0c0-8 4-12 8-16 0 6 3 9 6 10-2-12 2-20 4-28z" fill="#f6c945"/><path d="M36 40c4 5 7 8 7 13a7 7 0 0 1-14 0c0-5 3-8 7-13z" fill="#163a2c"/></svg>
@@ -565,7 +565,7 @@ footer{margin-top:40px;color:var(--chalk-dim);font-size:.82rem;border-top:2px da
   <section id="v-higher-lower" hidden>
     <div class="intro">
       <h2>Higher or Lower</h2>
-      <p>Does the second player have more or less than the first? Get it right and keep going; one mistake and you start again. Club career totals.</p>
+      <p>Does the second player have more or fewer than the first? Get it right and keep going; one mistake and you start again.</p>
     </div>
     <div class="meta"><span>Streak <b id="h-streak">0</b></span><span>Best <b id="h-best">0</b></span></div>
     <div class="cats" id="h-cats" role="group" aria-label="Stat"></div>
@@ -575,7 +575,7 @@ footer{margin-top:40px;color:var(--chalk-dim);font-size:.82rem;border-top:2px da
       <span class="msg" id="h-msg" role="status"></span>
       <div class="share" id="sh-h" hidden></div>
     </div>
-    <p class="beta">Beta: approximate (≈) club-career totals across all competitions. Only players with clear differences are compared.</p>
+    <p class="beta">Real totals from Wikipedia/Wikidata player infoboxes: league games and goals summed over every club, plus senior international caps and goals. Only players with complete records are used.</p>
   </section>
 
   <!-- SURVIVAL -->
@@ -823,9 +823,9 @@ const RAW = window.DG_PLAYERS || "";
 for(const k in (window.DG_NATS||{}))if(!NATS[k])NATS[k]=window.DG_NATS[k];
 function norm(s){return s.normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[ıİ]/g,"i").toLowerCase()}
 const PLAYERS = RAW.trim().split("\n").map((l,i)=>{
-  const [name,nat,c,pop]=l.split("|");
+  const [name,nat,c,pop,ex]=l.split("|");const X=(ex||"").split(",");const nz=v=>v===""||v===undefined?null:+v;
   const stints=c.split(";").map(s=>{const k=s.lastIndexOf(":");const [a,b]=s.slice(k+1).split("-").map(Number);return {club:s.slice(0,k),s:a,e:b}});
-  return {id:i,name,nat,pop:+pop||50,stints,path:stints.map(x=>x.club),set:new Set(stints.map(x=>x.club)),key:norm(name)};
+  return {id:i,name,nat,pop:+pop||50,la:nz(X[0]),lg:nz(X[1]),caps:nz(X[2]),ig:nz(X[3]),pos:X[4]||null,cur:X[5]==="1",by:nz(X[6]),stints,path:stints.map(x=>x.club),set:new Set(stints.map(x=>x.club)),key:norm(name)};
 });
 function clubName(k){return CLUBS[k]?CLUBS[k][0]:k}
 document.getElementById("count").textContent=PLAYERS.length;
@@ -833,7 +833,7 @@ document.getElementById("count").textContent=PLAYERS.length;
 const STAR_NAMES=["Cristiano Ronaldo","Lionel Messi","Neymar","Kylian Mbappé","Lamine Yamal","Vinícius Júnior","Erling Haaland","Jude Bellingham","Robert Lewandowski","Karim Benzema","Luka Modrić","Toni Kroos","Sergio Ramos","Iker Casillas","Andrés Iniesta","Xavi Hernández","Gerard Piqué","Sergio Busquets","Mohamed Salah","Harry Kane","Antoine Griezmann","Luis Suárez","Zlatan Ibrahimović","Ángel Di María","Sergio Agüero","Kevin De Bruyne","Thibaut Courtois","Eden Hazard","Gareth Bale","Marcelo","Dani Carvajal","Rodrygo","Pedri","Ronaldinho","Ronaldo Nazário","Kaká","Zinedine Zidane","David Beckham","Thierry Henry","Wayne Rooney","Paul Pogba","Manuel Neuer","Thomas Müller","Raúl González","Fernando Torres","David Villa","Gianluigi Buffon","Didier Drogba","Samuel Eto'o","Julián Álvarez","Lautaro Martínez","Achraf Hakimi","Dani Alves","Diego Costa","Álvaro Morata","Koke","Jan Oblak","Federico Valverde","Casemiro","Rodri"];
 const STARS=PLAYERS.filter(p=>STAR_NAMES.includes(p.name)); const STARS_SET=new Set(STARS.map(p=>p.id));
 const MAJOR_KEYS=new Set(Object.keys(CLUBS));
-const MIDP=PLAYERS.filter(p=>STARS_SET.has(p.id)||p.pop>=75||(p.pop>=48&&p.stints.some(s=>MAJOR_KEYS.has(s.club)))); const MID_SET=new Set(MIDP.map(p=>p.id));
+const MIDP=PLAYERS.filter(p=>STARS_SET.has(p.id)||p.pop>=75||(p.pop>=48&&p.stints.some(s=>MAJOR_KEYS.has(s.club)))||(p.cur&&p.pop>=42&&p.stints.some(s=>MAJOR_KEYS.has(s.club)&&s.e-s.s>=2))); const MID_SET=new Set(MIDP.map(p=>p.id));
 function PPSET(){return DIFF==="easy"?STARS_SET:DIFF==="hard"?null:MID_SET}
 function mateIn(a,set){const all=[...MATES[a.id].keys()];const f=set?all.filter(k=>set.has(k)):all;const L=f.length?f:all;return PLAYERS[L[Math.floor(Math.random()*L.length)]]}
 const BIG=["RMA","FCB","ATM","MUN","MCI","LIV","CHE","ARS","JUV","MIL","INT","BAY","PSG","BVB"];
@@ -868,7 +868,7 @@ function clubBadge(k,cls=""){
   return `<span class="badge ${cls}" style="background:var(--felt-3);color:var(--chalk)" aria-hidden="true">${norm(k).replace(/[^a-z]/g,"").slice(0,3).toUpperCase()}</span>`;
 }
 function badge(cat){return cat.type==="nat"?`<span class="badge flag" aria-hidden="true">${NATS[cat.key][1]}</span>`:clubBadge(cat.key)}
-function catName(cat){return cat.type==="nat"?NATS[cat.key][0]:CLUBS[cat.key][0]}
+function catName(cat){return cat.type==="nat"?(NATS[cat.key]||[cat.key])[0]:clubName(cat.key)}
 function fits(p,cat){return cat.type==="nat"?p.nat===cat.key:p.set.has(cat.key)}
 function flag(p){return NATS[p.nat]?.[1]||""}
 function setMsg(id,t,cls){const m=document.getElementById(id);m.textContent=t;m.className="msg "+(cls||"")}
@@ -1085,7 +1085,7 @@ function renderTray(){
   const p=T.p;
   document.getElementById("t-path").innerHTML=p.stints.map(st=>`<div class="stop">${clubBadge(st.club)}<span class="lbl">${clubName(st.club)}</span><span class="yr">${seasons(st.s,st.e)}</span></div>`).join('<span class="arrow" aria-hidden="true">→</span>');
   const wrong=T.guesses.filter(g=>g!==p.id).length+(DIFF==="easy"?1:0),show=n=>T.over||wrong>=n;
-  const hints=[["Nationality",1,()=>flag(p)+" "+NATS[p.nat][0]],["Different clubs",2,()=>p.set.size],["Initials",3,()=>p.name.split(" ").map(w=>w[0]).join(". ")+"."],["Name",4,()=>masked(p.name)]];
+  const hints=[["Nationality",1,()=>flag(p)+" "+NATS[p.nat][0]],[p.pos?"Position":"Different clubs",2,()=>p.pos?({GK:"Goalkeeper",DEF:"Defender",MID:"Midfielder",FWD:"Forward"})[p.pos]:p.set.size],["Initials",3,()=>p.name.split(" ").map(w=>w[0]).join(". ")+"."],["Name",4,()=>masked(p.name)]];
   document.getElementById("t-hints").innerHTML=hints.map(([k,n,f])=>`<div class="hint ${show(n)?"":"locked"}"><div class="k">${k}</div><div class="v">${show(n)?f():"After "+n+" miss"+(n>1?"es":"")}</div></div>`).join("");
   document.getElementById("t-tries").innerHTML="Guesses "+Array.from({length:MAXT},(_,i)=>`<i class="${i<T.guesses.length?"spent":""}"></i>`).join("");
   document.getElementById("t-guesses").innerHTML=T.guesses.map(id=>`<li class="${id===p.id?"y":"x"}">${PLAYERS[id].name}<span>${id===p.id?"Correct":"No"}</span></li>`).join("");
@@ -1349,70 +1349,24 @@ $("vs-copylink").onclick=e=>copy(`${ARTIFACT_URL}#vs-${V.code}`,e.currentTarget)
 // ---------- HIGHER OR LOWER ----------
 // Cifras APROXIMADAS de carrera en clubes (todas las competiciones). Sustituir por datos con licencia antes del lanzamiento.
 // Nombre|goles|asistencias|amarillas|rojas
-const STATS_RAW=`Cristiano Ronaldo|800|230|115|12
-Lionel Messi|760|360|90|3
-Robert Lewandowski|620|150|45|1
-Zlatan Ibrahimović|500|200|110|12
-Luis Suárez|520|260|110|7
-Karim Benzema|470|190|30|1
-Kylian Mbappé|380|140|35|2
-Erling Haaland|290|50|15|0
-Harry Kane|380|90|35|0
-Sergio Agüero|427|110|50|3
-Neymar|360|230|110|6
-Thomas Müller|250|270|30|0
-Mohamed Salah|330|140|15|0
-Antoine Griezmann|300|130|50|0
-Sergio Ramos|115|45|280|29
-Luka Modrić|110|160|80|2
-Toni Kroos|70|180|40|0
-Sergio Busquets|20|50|160|3
-Andrés Iniesta|80|150|30|0
-Xavi Hernández|85|200|50|0
-Gerard Piqué|50|15|130|7
-Marcelo|40|110|80|2
-Dani Alves|50|170|150|6
-Gianluigi Buffon|0|0|40|1
-Iker Casillas|0|0|20|1
-Francesco Totti|310|200|100|10
-Alessandro Del Piero|340|150|40|3
-Thierry Henry|360|180|40|2
-Wayne Rooney|360|200|110|6
-Steven Gerrard|200|150|90|7
-Frank Lampard|275|160|70|2
-Didier Drogba|320|120|60|4
-Samuel Eto'o|370|100|60|2
-Gonzalo Higuaín|330|100|30|3
-Edinson Cavani|410|70|50|3
-Kevin De Bruyne|150|250|30|0
-Ángel Di María|180|270|90|4
-Ronaldinho|250|180|50|2
-Ronaldo Nazário|350|80|30|1
-Zinedine Zidane|95|120|60|14
-Vinícius Júnior|110|90|40|2
-Jude Bellingham|80|60|30|1
-Lamine Yamal|30|45|5|0
-Diego Costa|200|60|110|8
-Pepe|35|15|200|15
-Mario Balotelli|200|40|70|8
-Arturo Vidal|130|100|180|10
-Javier Mascherano|5|20|170|7`;
-const HL_CATS=[{k:"g",n:"Goals",u:"goals"},{k:"a",n:"Assists",u:"assists"},{k:"ga",n:"Goals + assists",u:"goals + assists"},{k:"y",n:"Yellow cards",u:"yellow cards"},{k:"r",n:"Red cards",u:"red cards"}];
-const STATS=STATS_RAW.trim().split("\n").map(l=>{const [n,g,a,y,r]=l.split("|");const p=PLAYERS.find(x=>x.name===n);return {name:n,nat:p?p.nat:"",g:+g,a:+a,ga:+g+ +a,y:+y,r:+r}});
+// Totales reales de Wikidata (fichas de Wikipedia): partidos y goles de liga sumando todos sus clubes, y partidos y goles con la selección.
+const HL_CATS=[{k:"lg",n:"League goals",u:"league goals"},{k:"la",n:"League apps",u:"league appearances"},{k:"caps",n:"Caps",u:"international caps"},{k:"ig",n:"Intl goals",u:"international goals"}];
+const STATS=PLAYERS.filter(p=>(MID_SET.has(p.id)||STARS_SET.has(p.id))&&(p.la!=null||p.caps!=null)).map(p=>({name:p.name,nat:p.nat,pos:p.pos,lg:p.lg,la:p.la,caps:p.caps,ig:p.ig}));
 function clearlyDifferent(x,y){const hi=Math.max(x,y),lo=Math.min(x,y);return hi-lo>=Math.max(3,hi*0.15)}
-const H={cat:"g",a:null,b:null,streak:0,busy:false,over:false};
+const H={cat:"lg",a:null,b:null,streak:0,busy:false,over:false};
+function hlPool(){return STATS.filter(s=>s[H.cat]!=null&&!((H.cat==="lg"||H.cat==="ig")&&s.pos==="GK"))}
 function hlBest(){return store.get("hl-best-"+H.cat,0)}
 function hlPickNext(prev){
-  const cands=STATS.filter(s=>s!==prev&&clearlyDifferent(s[H.cat],prev[H.cat]));
+  const cands=hlPool().filter(s=>s!==prev&&clearlyDifferent(s[H.cat],prev[H.cat]));
   return cands[Math.floor(Math.random()*cands.length)];
 }
 function hlStart(){
   H.streak=0;H.over=false;H.busy=false;
-  let a;do{a=STATS[Math.floor(Math.random()*STATS.length)]}while(!STATS.some(s=>s!==a&&clearlyDifferent(s[H.cat],a[H.cat])));
+  const pool=hlPool();let a;do{a=pool[Math.floor(Math.random()*pool.length)]}while(!pool.some(s=>s!==a&&clearlyDifferent(s[H.cat],a[H.cat])));
   H.a=a;H.b=hlPickNext(a);$("h-restart").hidden=true;setMsg("h-msg","");hlRender(false);
 }
 function hlCard(s,show,cls=""){const c=HL_CATS.find(c=>c.k===H.cat);
-  return `<div class="hlc ${cls}"><span class="flag" aria-hidden="true">${NATS[s.nat]?.[1]||""}</span><span class="nm">${esc(s.name)}</span>${show?`<span class="val">≈${s[H.cat]}</span><span class="unit">${c.u}</span>`:`<span class="unit">has…</span><div class="hlbtns"><button class="btn primary" type="button" data-hl="1">▲ More</button><button class="btn" type="button" data-hl="-1">▼ Fewer</button></div><span class="unit">${c.u} than ${esc(H.a.name.split(" ").slice(-1)[0])}</span>`}</div>`}
+  return `<div class="hlc ${cls}"><span class="flag" aria-hidden="true">${NATS[s.nat]?.[1]||""}</span><span class="nm">${esc(s.name)}</span>${show?`<span class="val">${s[H.cat]}</span><span class="unit">${c.u}</span>`:`<span class="unit">has…</span><div class="hlbtns"><button class="btn primary" type="button" data-hl="1">▲ More</button><button class="btn" type="button" data-hl="-1">▼ Fewer</button></div><span class="unit">${c.u} than ${esc(H.a.name.split(" ").slice(-1)[0])}</span>`}</div>`}
 function hlRender(revealB,cls){
   $("h-cats").innerHTML=HL_CATS.map(c=>`<button class="btn" type="button" data-cat="${c.k}" aria-pressed="${c.k===H.cat}">${c.n}</button>`).join("");
   $("h-board").innerHTML=hlCard(H.a,true)+`<span class="hlvs">VS</span>`+hlCard(H.b,revealB,cls||"");
@@ -1688,7 +1642,7 @@ renderDiff();
 const LEGENDS=["Lionel Messi","Cristiano Ronaldo","Ronaldo Nazário","Zinedine Zidane","Ronaldinho","Kylian Mbappé","Erling Haaland","Lamine Yamal","Kaká","Thierry Henry","Andrés Iniesta","Xavi Hernández","Francesco Totti","Gianluigi Buffon"];
 const RAR_INFO={legend:{n:"Legend",p:.04},epic:{n:"Epic",p:.16},rare:{n:"Rare",p:.30},common:{n:"Common",p:.50}};
 const STAT_NAMES=new Set(STATS.map(s=>s.name));
-PLAYERS.forEach(p=>{p.rar=LEGENDS.includes(p.name)?"legend":STARS_SET.has(p.id)?"epic":(STAT_NAMES.has(p.name)||p.pop>=70)?"rare":"common"});
+PLAYERS.forEach(p=>{p.rar=LEGENDS.includes(p.name)?"legend":STARS_SET.has(p.id)?"epic":(p.pop>=70)?"rare":"common"});
 const BY_RAR={};Object.keys(RAR_INFO).forEach(k=>BY_RAR[k]=PLAYERS.filter(p=>p.rar===k));
 const C={tab:"packs",filter:"all"};
 function album(){return store.get("album",{})}
