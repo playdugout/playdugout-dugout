@@ -957,16 +957,18 @@ const inMajor=p=>p.stints.some(s=>MAJOR_KEYS.has(s.club));
 const MIDE=MIDP.filter(p=>STARS_SET.has(p.id)||(p.pop>=55&&inMajor(p))); const MIDE_SET=new Set(MIDE.map(p=>p.id));
 // NIVELES. Cada nivel enseña jugadores distintos (no se repiten entre niveles):
 //  Principiante: estrellas actuales o recientes, las que conoce un niño que empieza.
-//  Intermedio: conocidos de grandes clubes, sin las estrellas de Principiante.
-//  Experto: el resto con algo de recorrido.
+//  Intermedio: conocidos de grandes clubes de los 90 en adelante, sin las estrellas de Principiante.
+//  Experto: el resto con algo de recorrido, incluidas las leyendas de los 60–80.
 const EASYP=PLAYERS.filter(p=>STARS_SET.has(p.id)||(p.pop>=75&&inMajor(p)&&(p.by==null||p.by>=1975))); const EASY_SET=new Set(EASYP.map(p=>p.id));
-const MIDS=MIDE.filter(p=>!EASY_SET.has(p.id));
-const HARDP=PLAYERS.filter(p=>!EASY_SET.has(p.id)&&!MIDE_SET.has(p.id)&&(p.pop>=30||inMajor(p)));
+const lastEnd=p=>p.stints.length?p.stints[p.stints.length-1].e:0;
+// Intermedio: de los 90 en adelante. Las leyendas más antiguas pasan a Experto.
+const MIDS=MIDE.filter(p=>!EASY_SET.has(p.id)&&lastEnd(p)>=1995); const MIDS_SET=new Set(MIDS.map(p=>p.id));
+const HARDP=PLAYERS.filter(p=>!EASY_SET.has(p.id)&&!MIDS_SET.has(p.id)&&(p.pop>=30||inMajor(p)));
 const KNOWN_MID=new Set([...EASY_SET,...MIDE_SET]);
 function PP(){return DIFF==="easy"?EASYP:DIFF==="hard"?HARDP:MIDS}
 // A quién se espera que sepa nombrar el jugador de cada nivel (para garantizar que hay respuestas a su alcance)
 function KNOWN(){return DIFF==="easy"?EASY_SET:DIFF==="hard"?null:KNOWN_MID}
-function CP(){return DIFF==="easy"?BIG:DIFF==="hard"?CLUB_POOL.filter(c=>!BIG.includes(c)):CLUB_TOP}
+let _CPH=null;function CP(){if(DIFF==="hard")return _CPH||(_CPH=CLUB_POOL.filter(c=>!BIG.includes(c)).sort((a,b)=>clubCounts[b]-clubCounts[a]).slice(0,110));return DIFF==="easy"?BIG:CLUB_TOP}
 function initialOf(n){const w=n.split(" ");return (w.length>1?w[w.length-1]:w[0])[0]}
 
 // Compañeros: mismo club con al menos una temporada en común
@@ -1794,7 +1796,7 @@ function makeFive(seed){
   const clubs=DIFF==="easy"?BIG:DIFF==="hard"?CLUB_TOP:CLUB_TOP.slice(0,25);
   const nats=DIFF==="easy"?["ESP","ARG","BRA","FRA","POR","ENG","GER","NED"]:Object.keys(NAT_ADJ);
   const people=DIFF==="easy"?EASYP:DIFF==="hard"?MIDP:MIDE;
-  const R=DIFF==="easy"?[[25,999],[7,99],[6,99],[3,99],[2,99]]:DIFF==="hard"?[[12,99],[5,9],[3,6],[2,3],[1,2]]:[[18,999],[6,15],[4,10],[2,6],[2,4]];
+  const R=DIFF==="easy"?[[25,999],[7,99],[6,99],[3,99],[2,99]]:DIFF==="hard"?[[12,9999],[5,14],[3,9],[2,5],[1,3]]:[[18,999],[6,15],[4,10],[2,6],[2,4]];
   const count=f=>PLAYERS.filter(p=>f(p)&&(!K||K.has(p.id)));
   const tryN=(fn,[lo,hi])=>{for(let t=0;t<3000;t++){const L=fn();if(L){const a=count(L.test);if(a.length>=lo&&a.length<=hi){L.ans=PLAYERS.filter(L.test).sort((x,y)=>y.pop-x.pop).map(p=>p.id);return L}}}};
   levels.push(tryN(()=>{const c=pick(clubs);return {text:`5 players who played for ${clubName(c)}`,test:p=>p.set.has(c)}},R[0]));
@@ -2232,7 +2234,7 @@ function dcQuestion(r,kind){
       const cs=CP(),a=cs[Math.floor(r()*cs.length)],b=cs[Math.floor(r()*cs.length)];if(a===b)continue;
       const ans=PLAYERS.filter(p=>p.set.has(a)&&p.set.has(b));
       if(ans.length<2||ans.length>3)continue;
-      if(DIFF!=="hard"&&!ans.every(p=>KNOWN().has(p.id)))continue;
+      if(DIFF!=="hard"&&!ans.every(p=>KNOWN_MID.has(p.id)))continue;
       return {kind,t:`Name the ${ans.length} players who played for both <b>${esc(clubName(a))}</b> and <b>${esc(clubName(b))}</b>`,sub:"In our database",
         s:"p"+[a,b].sort().join("-"),ans:ans.sort((x,y)=>y.pop-x.pop).map(p=>p.id)};
     }

@@ -7,6 +7,11 @@ NOW = 2026
 # País de cada club (P17), descargado aparte: team_country.json junto a raw.json
 _TC = os.path.join(os.path.dirname(os.path.abspath(RAW)), 'team_country.json')
 TEAM_COUNTRY = json.load(open(_TC)) if os.path.exists(_TC) else {}
+for _t, _i in T.items():
+    if _i.get('country'): TEAM_COUNTRY.setdefault(_t, _i['country'])
+# Clubes que han jugado en primera en LaLiga, Premier/First Division, Serie A, Bundesliga y Ligue 1 (topclubs.json junto a raw.json)
+_B5 = os.path.join(os.path.dirname(os.path.abspath(RAW)), 'topclubs.json')
+BIG5 = set(json.load(open(_B5))) if os.path.exists(_B5) else set()
 # Ligas conocidas: España, Reino Unido, Italia, Alemania, Francia, Portugal, Países Bajos, Bélgica, Turquía
 TOP_COUNTRIES = {'Q29','Q145','Q38','Q183','Q142','Q45','Q55','Q31','Q43'}
 FAMOUS_POP = 110          # con tanta presencia en Wikipedia se queda aunque solo jugara en ligas menores
@@ -23,7 +28,7 @@ MAJOR = {"Q8682":"RMA","Q7156":"FCB","Q8701":"ATM","Q10329":"SEV","Q10333":"VAL"
 NAT_TYPES = {"Q6979593","Q135408445","Q6979740","Q23901123","Q21945604","Q1203196","Q23901137","Q23904671","Q23759293","Q23904672"}
 WOMEN_TYPES = {"Q51481377","Q28140340"}
 RESERVE_TYPES = {"Q2412834"}
-BAD_LABEL = re.compile(r"(national|olympic|selecci[oó]n|\bU-?\d{2}\b|under-\d+|sub-\d+|\byouth\b|juvenil|castilla|promesas|primavera|reserves?\b|academy|\bjong\b|atl[eè]tic\b(?!o)|mestalla|bilbao athletic|sevilla atl[eé]tico|fabril|next gen|\bII\b|\bIII\b|\"?\bB\"?$|\"B\"|\"C\"|\bC$|amateure|cantera|development squad|women|femenin|f[eé]minine|ladies|frauen|w\.f\.c\.|\bwfc\b)", re.I)
+BAD_LABEL = re.compile(r"(national|olympic|selecci[oó]n|\bU-?\d{2}\b|under-\d+|sub-\d+|\byouth\b|juvenil|castilla|promesas|primavera|reserves?\b|academy|\bjong\b|\bXI\b|atl[eè]tic\b(?!o)|mestalla|bilbao athletic|sevilla atl[eé]tico|fabril|next gen|\bII\b|\bIII\b|\"?\bB\"?$|\"B\"|\"C\"|\bC$|amateure|cantera|development squad|women|femenin|f[eé]minine|ladies|frauen|w\.f\.c\.|\bwfc\b)", re.I)
 def norm(s): return unicodedata.normalize('NFD', s).encode('ascii','ignore').decode().lower().strip()
 LONG = [r'Association Football Club', r'Football Club', r'Fútbol Club', r'Futebol Clube', r'Club de Fútbol', r'Spor Kulübü', r'Sport Club', r'Società Sportiva', r'Associazione Calcio', r'Unione Calcio', r'Calcio \d{4}', r'Clube de Regatas do', r'Club Atlético', r'Real Club Deportivo', r'Club Deportivo', r'Unión Deportiva', r'Sociedad Deportiva', r'Sporting Clube de']
 ABBR = {'FC','CF','AFC','SC','SE','CA','CD','UD','RCD','AS','AC','SS','SSC','US','ACF','FK','NK','GNK','HŠK','SK','PFC','RC','OGC','OSC','SL','SV','TSG','FSV','CR','EC','KRC','RSC','SAD','JK','IF','BK','FF','AIK','CFC','FBC','SpVgg','TSV','KV','KAA','RKC','SBV','PSV','AZ','NAC','FBPA','SFC','CSD','SCC','GD','CFR','CS','OFK','PAOK','AEK'} - {'PSV','AZ','NAC','PAOK','AEK','AIK'}
@@ -114,19 +119,27 @@ for k, p in P.items():
            else 'MID' if re.search(r'midfield|playmaker|wing half|centerhalf', labs) else 'DEF' if re.search(r'back|defender|sweeper|stopper', labs) else None)
     for s in by_p.get(k, []):
         a = season(s['start'], False)
-        if a is None or a < 1950: continue
+        if a is None or a < 1930: continue
         e0 = season(s['end'], True)
         if by and e0 and e0 <= by + 17: continue      # equipo de cantera
         if by and a < by + 16: a = by + 16
+        if by and a >= by + 43 and a >= NOW - 12: continue   # etapa reciente a los 43+: casi siempre un error (entrenador, fichaje simbólico)
         b = season(s['end'], True)
         st.append([team_key(s['team']), a, b, s.get('apps'), s.get('goals')])
     if not st: continue
     st.sort(key=lambda x: (x[1], x[2] if x[2] else 9999))
-    # fin desconocido: hasta el inicio de la siguiente etapa, o hasta hoy si es la última
+    # fin desconocido: hasta el inicio de la siguiente etapa; si es la última, hasta su fallecimiento o fin de carrera,
+    # y si no hay datos y el jugador ya tiene 40 años y lleva tiempo en ese club, se da por retirado
+    yr = lambda v: int(v[:4]) if v and v[:4].isdigit() else None
+    death, wend = yr(p.get('death')), yr(p.get('wend'))
     for i, x in enumerate(st):
         if x[2] is None:
             nxt = [y[1] for y in st[i+1:] if y[1] > x[1]]
-            x[2] = min(nxt) if nxt else NOW
+            if nxt: x[2] = min(nxt)
+            elif death: x[2] = death
+            elif wend: x[2] = max(wend, x[1] + 1)
+            elif by and NOW - by >= 40 and x[1] <= NOW - 4: x[2] = x[1] + 2
+            else: x[2] = NOW
         x[2] = min(max(x[2], x[1] + 1), NOW)
     # unir etapas seguidas en el mismo club
     merged = []
@@ -144,7 +157,8 @@ for k, p in P.items():
     nat = nat_of(p)
     if not nat: continue
     if name in NOT_FOOTBALL: continue                                   # otros deportes (fútbol americano…)
-    top = any(s['team'] in MAJOR or set(TEAM_COUNTRY.get(s['team'], [])) & TOP_COUNTRIES for s in by_p.get(k, []))
+    if BIG5: top = any(s['team'] in MAJOR or s['team'] in BIG5 for s in by_p.get(k, []))
+    else: top = any(s['team'] in MAJOR or set(TEAM_COUNTRY.get(s['team'], [])) & TOP_COUNTRIES for s in by_p.get(k, []))
     if not top and p['pop'] < FAMOUS_POP and name not in KEEP_ANYWAY: continue                      # solo ligas poco conocidas
     wd.append({'name': name, 'nat': nat, 'pop': p['pop'], 'st': merged, 'alt': {norm(p.get('es', '')), norm(p.get('en', ''))},
                'la': la, 'lg': lg, 'caps': caps, 'ig': ig, 'pos': pos, 'cur': bool(merged) and merged[-1][2] >= NOW, 'by': by})
@@ -162,19 +176,26 @@ majors = lambda st: {x[0] for x in st if x[0] in set(MAJOR.values())}
 wd_by = {}
 for w in wd:
     for a in w['alt']:
-        if a: wd_by.setdefault(a, w)
+        if a: wd_by.setdefault(a, []).append(w)
+def best_match(c):
+    # Varios jugadores pueden llamarse igual (p. ej. dos Jorginho): elegir el que comparte clubes y nacionalidad
+    cands = [w for w in wd_by.get(norm(c['name']), []) if id(w) not in used]
+    if not cands: return None
+    sc = lambda w: (len(majors(c['st']) & majors(w['st'])), len({x[0] for x in c['st']} & {x[0] for x in w['st']}), w['nat'] == c['nat'], w['pop'])
+    w = max(cands, key=sc)
+    return w if sc(w)[0] > 0 or sc(w)[1] > 0 else None
 out, used, kept_cur, took_wd = [], set(), 0, 0
 CLUB_EN = {'Hamburgo':'Hamburg','Colonia':'Cologne','Burdeos':'Bordeaux','Niza':'Nice','Basilea':'Basel','Salzburgo':'Salzburg','Estrella Roja':'Red Star Belgrade','Spartak Moscú':'Spartak Moscow','CSKA Moscú':'CSKA Moscow','Lokomotiv Moscú':'Lokomotiv Moscow','Standard Lieja':'Standard Liège','Club Brujas':'Club Brugge','Rubin Kazán':'Rubin Kazan','Núremberg':'Nuremberg','CSKA Sofía':'CSKA Sofia','Dinamo Kiev':'Dynamo Kyiv','Al-Ahli Dubái':'Al-Ahli Dubai'}
 for c in cur:
     c['st'] = [[CLUB_ALIAS.get(CLUB_EN.get(x[0], x[0]), CLUB_EN.get(x[0], x[0])), x[1], x[2]] for x in c['st']]
-    w = wd_by.get(norm(c['name']))
+    w = best_match(c)
     if w and id(w) not in used and majors(c['st']) <= majors(w['st']) and len(w['st']) >= 1:
-        used.add(id(w)); out.append({**w, 'name': c['name'], 'nat': c['nat'] or w['nat']}); took_wd += 1
+        used.add(id(w)); out.append({**w, 'name': c['name'], 'nat': c['nat'] or w['nat'], 'curated': True}); took_wd += 1
     else:
         if w: used.add(id(w))
         extra = {f: w.get(f) for f in ('la', 'lg', 'caps', 'ig', 'pos', 'by')} if w else {}
         if w and set(majors(c['st'])) != set(majors(w['st'])): extra['la'] = extra['lg'] = None   # trayectoria distinta: no fiarse de los totales
-        out.append({'name': c['name'], 'nat': c['nat'], 'pop': w['pop'] if w else 60, 'st': c['st'], 'cur': c['st'][-1][2] >= NOW, **extra}); kept_cur += 1
+        out.append({'name': c['name'], 'nat': c['nat'], 'pop': w['pop'] if w else 60, 'st': c['st'], 'cur': c['st'][-1][2] >= NOW, 'curated': True, **extra}); kept_cur += 1
 for w in sorted(wd, key=lambda x: -x['pop']):
     if id(w) in used: continue
     out.append(w)
@@ -183,7 +204,8 @@ groups = collections.defaultdict(list)
 for o in out: groups[o['name']].append(o)
 for n, g in groups.items():
     if len(g) > 1:
-        for o in sorted(g, key=lambda x: -x['pop'])[1:]: o['name'] = f"{o['name']} ({o['nat']})"
+        # el de la lista revisada a mano se queda el nombre; si no, el más conocido
+        for o in sorted(g, key=lambda x: (not x.get('curated'), -x['pop']))[1:]: o['name'] = f"{o['name']} ({o['nat']})"
 cnt = collections.Counter(o['name'] for o in out)
 seen = set(); final = []
 for o in out:
