@@ -30,9 +30,17 @@
         const { data } = await sb.from("profiles").select("*").eq("id", DG.user.id).maybeSingle();
         DG.profile = data || null;
       }
+      DG.status = DG.user ? "ok" : "sin cuenta";
       return DG.user;
-    } catch (e) { console.warn("No se pudo iniciar sesión", e); return null; }
+    } catch (e) { console.warn("No se pudo iniciar sesión", e); DG.status = "error"; DG.error = (e && (e.message || e.msg)) || String(e); return null; }
   })();
+  // Indicador de conexión en el pie de página
+  DG.ready.then(() => {
+    const el = document.getElementById("dg-status"); if (!el) return;
+    if (!sb) el.textContent = "Servidor: no disponible (no se pudo cargar Supabase).";
+    else if (DG.user) el.textContent = "Servidor: conectado ✓ (" + (DG.user.is_anonymous ? "cuenta anónima" : "cuenta") + ")";
+    else el.textContent = "Servidor: sin cuenta — " + (DG.error || "error desconocido");
+  });
 
   DG.setNick = async (nick) => {
     if (!sb || !DG.user) return;
