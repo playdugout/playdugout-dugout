@@ -188,7 +188,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,.cell:focus-visible{out
 .sol .k{font-family:var(--mono);font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;color:var(--card)}
 .sol .v{font-family:var(--display);font-weight:800;font-size:1.4rem;text-transform:uppercase;line-height:1.1;overflow-wrap:anywhere}
 .sol ol{margin:6px 0 0;padding-left:22px}.sol li{margin:3px 0;overflow-wrap:anywhere}.sol li b{font-family:var(--mono);margin-right:6px}
-/* Who Said It? + Deep Cut */
+/* Quote Unquote + Deep Cut */
 .wq blockquote{margin:14px 0 6px;font-family:var(--display);font-size:1.55rem;line-height:1.2;font-weight:600;letter-spacing:.01em;overflow-wrap:anywhere}
 .wq .ctx{font-family:var(--mono);font-size:.75rem;color:var(--chalk-dim);margin-bottom:12px}
 .dcq,#dc-q{font-size:1.15rem;margin:12px 0 8px}
@@ -419,7 +419,7 @@ footer{margin-top:40px;color:var(--chalk-dim);font-size:.82rem;border-top:2px da
       <a href="#higher-lower" id="nav-higher-lower">Higher/Lower</a>
       <a href="#survival" id="nav-survival">Survival</a>
       <a href="#timeline" id="nav-timeline">Timeline</a>
-      <a href="#who-said-it" id="nav-who-said-it">Who Said It?</a>
+      <a href="#quote-unquote" id="nav-quote-unquote">Quote Unquote</a>
       <a href="#deep-cut" id="nav-deep-cut">Deep Cut</a>
       <a href="#versus" id="nav-versus">Versus</a>
       <a href="#album" id="nav-album">Cards</a>
@@ -448,9 +448,9 @@ footer{margin-top:40px;color:var(--chalk-dim);font-size:.82rem;border-top:2px da
         <svg viewBox="0 0 72 72" aria-hidden="true"><rect x="10" y="12" width="34" height="46" rx="4" fill="#a9c0b2" transform="rotate(-10 27 35)"/><rect x="26" y="10" width="34" height="46" rx="4" fill="#f6c945" stroke="#163a2c" stroke-width="2" transform="rotate(8 43 33)"/><text x="44" y="40" text-anchor="middle" font-family="Barlow Condensed,sans-serif" font-weight="800" font-size="16" fill="#163a2c" transform="rotate(8 43 33)">★</text></svg>
         <div><h3>Cards &amp; trophies <span class="tag">NEW</span></h3><p>Earn packs by playing, complete the album and swap duplicates with friends.</p><span class="st" id="st-album"></span></div>
       </a>
-      <a class="game" href="#who-said-it">
+      <a class="game" href="#quote-unquote">
         <svg viewBox="0 0 72 72" aria-hidden="true"><path d="M10 14h52a6 6 0 0 1 6 6v24a6 6 0 0 1-6 6H32l-12 10v-10h-10a6 6 0 0 1-6-6V20a6 6 0 0 1 6-6z" fill="none" stroke="#eef3ea" stroke-width="3"/><text x="36" y="42" text-anchor="middle" font-family="Barlow Condensed,sans-serif" font-weight="800" font-size="26" fill="#f6c945">“ ”</text></svg>
-        <div><h3>Who Said It? <span class="tag">NEW</span></h3><p>Famous football quotes. Guess the player, manager or commentator behind each one.</p><span class="st" id="st-who"></span></div>
+        <div><h3>Quote Unquote <span class="tag">NEW</span></h3><p>Famous football quotes. Guess the player, manager or commentator behind each one.</p><span class="st" id="st-who"></span></div>
       </a>
       <a class="game" href="#deep-cut">
         <svg viewBox="0 0 72 72" aria-hidden="true"><rect x="8" y="10" width="56" height="12" rx="3" fill="#eef3ea"/><rect x="8" y="28" width="56" height="12" rx="3" fill="#a9c0b2"/><rect x="8" y="46" width="56" height="12" rx="3" fill="#f6c945"/><text x="58" y="56" text-anchor="end" font-family="JetBrains Mono,monospace" font-weight="700" font-size="10" fill="#163a2c">100</text><text x="58" y="20" text-anchor="end" font-family="JetBrains Mono,monospace" font-weight="700" font-size="10" fill="#163a2c">1</text></svg>
@@ -690,9 +690,9 @@ footer{margin-top:40px;color:var(--chalk-dim);font-size:.82rem;border-top:2px da
   </section>
 
   <!-- WHO SAID IT? -->
-  <section id="v-who-said-it" hidden>
+  <section id="v-quote-unquote" hidden>
     <div class="intro">
-      <h2>Who Said It?</h2>
+      <h2>Quote Unquote</h2>
       <p>Five famous quotes from football. Who said each one? On Intermediate you can reveal the context; on Beginner it’s always shown.</p>
     </div>
     <div class="meta"><span>Puzzle <b id="w2-label">—</b></span><span>Quote <b id="w2-round">1/5</b></span><span class="dots" id="w2-dots"></span></div>
@@ -1627,7 +1627,7 @@ const SITE_URL=ARTIFACT_URL;
 const CH_GAMES={l:{v:"link-up",n:"Link-Up",s:"link",go:sd=>startLink(false,sd)},g:{v:"grid",n:"Grid",s:"grid",go:sd=>startGrid(false,sd)},
  t:{v:"career",n:"Career",s:"tray",go:sd=>startTray(false,sd)},o:{v:"odd-one-out",n:"Odd One Out",s:"odd",go:sd=>startOdd(false,sd)},
  tl:{v:"timeline",n:"Timeline",s:"tl",go:sd=>startTimeline(false,sd)},lu:{v:"lineup",n:"Lineup",s:"lu",go:sd=>startLineup(false,sd)},
- f:{v:"54321",n:"5-4-3-2-1",s:"five",go:sd=>startFive(false,sd)},w2:{v:"who-said-it",n:"Who Said It?",s:"who",go:sd=>startWho(false,sd)},
+ f:{v:"54321",n:"5-4-3-2-1",s:"five",go:sd=>startFive(false,sd)},w2:{v:"quote-unquote",n:"Quote Unquote",s:"who",go:sd=>startWho(false,sd)},
  dc:{v:"deep-cut",n:"Deep Cut",s:"deep2",go:sd=>startDeep(false,sd)},h:{v:"higher-lower",n:"Higher or Lower"},s:{v:"survival",n:"Survival"}};
 const CSEED={};
 function challengeURL(k,text){
@@ -2216,7 +2216,7 @@ function renderWho(){
   $("w2-next").hidden=!done||last;
   const fin=done&&last;
   if(fin){const n=WQ.res.filter(Boolean).length;setMsg("w2-msg",`Game over: ${n} of ${WQ_N} correct.`,n>=3?"ok":"bad");
-    renderShare("w2",`Dugout · Who Said It? (${tag(WQ.daily)})\n${WQ.res.map(x=>x?"🟩":"🟥").join("")} ${n}/${WQ_N}`+(WQ.hints?` 💡×${WQ.hints}`:""))}
+    renderShare("w2",`Dugout · Quote Unquote (${tag(WQ.daily)})\n${WQ.res.map(x=>x?"🟩":"🟥").join("")} ${n}/${WQ_N}`+(WQ.hints?` 💡×${WQ.hints}`:""))}
   else renderShare("w2",null);
 }
 $("w2-opts").addEventListener("click",e=>{const b=e.target.closest(".opt");if(!b||WQ.picked!=null)return;
@@ -2318,7 +2318,7 @@ $("dc-new").onclick=()=>startDeep(false);$("dc-daily").onclick=()=>startDeep(tru
 const deepDone=k=>{const x=store.get("deep2-"+k,null);return !!(x&&x.k>=DC_N)};
 
 // Enganches: portada, racha y sobres
-DAILY_GAMES.push(["who","Who Said It?",whoDone],["deep","Deep Cut",deepDone]);
+DAILY_GAMES.push(["who","Quote Unquote",whoDone],["deep","Deep Cut",deepDone]);
 const _uhW=updateHome;updateHome=function(){_uhW();
   const w=store.get("who-"+dayKey,null),wd=whoDone(dayKey);$("st-who").textContent=wd?`Done · ${w.res.filter(Boolean).length}/${WQ_N}`:"Today’s puzzle waiting";$("st-who").className="st"+(wd?" done":"");
   const d=store.get("deep2-"+dayKey,null),dd=deepDone(dayKey);$("st-deep").textContent=dd?`Done · ${d.tot||0} pts`:"Today’s puzzle waiting";$("st-deep").className="st"+(dd?" done":"");
@@ -2553,7 +2553,7 @@ $("fb-form").addEventListener("submit",async e=>{
 // ---------- Ventana de resultado al terminar un juego ----------
 // Aparece al acabar cualquier juego: resultado, estadísticas del juego (retos diarios), distribución,
 // cuenta atrás hasta el siguiente reto, compartir y botón al siguiente reto pendiente.
-const DAILY_VIEW={link:"link-up",grid:"grid",tray:"career",odd:"odd-one-out",tl:"timeline",lu:"lineup",five:"54321",who:"who-said-it",deep:"deep-cut"};
+const DAILY_VIEW={link:"link-up",grid:"grid",tray:"career",odd:"odd-one-out",tl:"timeline",lu:"lineup",five:"54321",who:"quote-unquote",deep:"deep-cut"};
 const KEY2ID={l:"link",g:"grid",t:"tray",o:"odd",tl:"tl",lu:"lu",f:"five",w2:"who",dc:"deep"};
 const LASTSHARE={};
 // Resultado de cada juego: si cuenta como victoria, en qué columna de la distribución cae y el orden de columnas
@@ -2627,9 +2627,10 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("rm").hidden)clo
   setTimeout(()=>showResult(k,text),k==="s"?200:700);
 }}
 
-const VIEWS=["home","link-up","grid","career","odd-one-out","lineup","54321","higher-lower","survival","timeline","who-said-it","deep-cut","versus","album"];
+const VIEWS=["home","link-up","grid","career","odd-one-out","lineup","54321","higher-lower","survival","timeline","quote-unquote","deep-cut","versus","album"];
 function route(){
   let h=location.hash.slice(1);
+  if(h==="who-said-it"){h="quote-unquote";history.replaceState(null,"","#quote-unquote")}   // nombre antiguo
   if(/^c\//.test(h)){const v=openChallenge(h);history.replaceState(null,"","#"+v);h=v}
   if(h==="delete-data"){history.replaceState(null,"","#home");h="home";setTimeout(deleteMyData,300)}
   const cb=$("chal");if(cb&&!cb.hidden&&cb.dataset.view!==h)cb.hidden=true;
