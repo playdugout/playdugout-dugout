@@ -3,8 +3,16 @@
 Juegos diarios de fútbol: Link-Up, Grid, Career, Odd One Out, Lineup, 5-4-3-2-1, Higher or Lower,
 Survival, Timeline, Versus/Ranked online, cromos, trofeos y ruleta.
 
-- `prototipo-claude.html` — prototipo completo (versión publicada en Claude).
+- `index.html` — la web pública (todos los juegos).
+- `js/online.js` — conexión con Supabase: cuenta anónima automática y salas en tiempo real (Versus, Ranked, intercambios).
+- `js/config.js` — dirección y clave pública de Supabase.
+- `PUBLICAR.md` — cómo publicarla en Netlify.
+- `prototipo-claude.html` — prototipo original (versión publicada en Claude), como referencia.
 - `supabase/` — base de datos (esquema con reglas de seguridad y catálogo de cromos). Ver `supabase/LEEME.md`.
 - `IDEAS.md` — ideas pendientes.
 
-La versión pública (web conectada a Supabase y lista para Netlify) se construye a partir del prototipo.
+## Estado
+- ✅ Web independiente lista para Netlify.
+- ✅ Modo online (Versus, Ranked, intercambio con amigos) sobre Supabase Realtime.
+- ⏳ Siguiente fase: sobres, cromos, trofeos, racha y ELO guardados y validados en el servidor
+  (ahora se guardan en el navegador de cada jugador).
