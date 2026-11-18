@@ -194,6 +194,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,.cell:focus-visible{out
 .dcs li.x{border-color:var(--bad);background:rgba(255,122,107,.1)}
 .dcs li.empty{color:var(--chalk-dim);border-style:dashed}
 .dcs .pts{font-family:var(--mono);font-weight:700}
+.dcsub{font-size:.8rem;color:var(--chalk-dim);margin-top:2px}
 .dcr{font-size:.85rem;color:var(--chalk-dim);margin:8px 0 0}
 .dcblk{margin-bottom:16px}
 /* Intruso */
@@ -417,7 +418,7 @@ footer{margin-top:40px;color:var(--chalk-dim);font-size:.82rem;border-top:2px da
       </a>
       <a class="game" href="#deep-cut">
         <svg viewBox="0 0 72 72" aria-hidden="true"><rect x="8" y="10" width="56" height="12" rx="3" fill="#eef3ea"/><rect x="8" y="28" width="56" height="12" rx="3" fill="#a9c0b2"/><rect x="8" y="46" width="56" height="12" rx="3" fill="#f6c945"/><text x="58" y="56" text-anchor="end" font-family="JetBrains Mono,monospace" font-weight="700" font-size="10" fill="#163a2c">100</text><text x="58" y="20" text-anchor="end" font-family="JetBrains Mono,monospace" font-weight="700" font-size="10" fill="#163a2c">1</text></svg>
-        <div><h3>Deep Cut <span class="tag">NEW</span></h3><p>Three answers per question. The more obscure your answer, the more points you score.</p><span class="st" id="st-deep"></span></div>
+        <div><h3>Deep Cut <span class="tag">NEW</span></h3><p>Find the 2–3 answers to each question. The more obscure the answer, the more points it scores.</p><span class="st" id="st-deep"></span></div>
       </a>
       <a class="game" href="#lineup">
         <svg viewBox="0 0 72 72" aria-hidden="true"><rect x="8" y="4" width="56" height="64" rx="4" fill="none" stroke="#a9c0b2" stroke-width="2"/><line x1="8" y1="36" x2="64" y2="36" stroke="#a9c0b2" stroke-width="1.5"/><circle cx="36" cy="60" r="4" fill="#f6c945"/><circle cx="18" cy="48" r="4" fill="#eef3ea"/><circle cx="30" cy="48" r="4" fill="#eef3ea"/><circle cx="42" cy="48" r="4" fill="#eef3ea"/><circle cx="54" cy="48" r="4" fill="#eef3ea"/><circle cx="24" cy="30" r="4" fill="#eef3ea"/><circle cx="36" cy="30" r="4" fill="#eef3ea"/><circle cx="48" cy="30" r="4" fill="#eef3ea"/><circle cx="22" cy="14" r="4" fill="none" stroke="#f6c945" stroke-width="2"/><circle cx="36" cy="12" r="4" fill="none" stroke="#f6c945" stroke-width="2"/><circle cx="50" cy="14" r="4" fill="none" stroke="#f6c945" stroke-width="2"/></svg>
@@ -673,9 +674,9 @@ footer{margin-top:40px;color:var(--chalk-dim);font-size:.82rem;border-top:2px da
   <section id="v-deep-cut" hidden>
     <div class="intro">
       <h2>Deep Cut</h2>
-      <p>Three questions, three answers each. Every valid answer scores 1–100 points depending on how obscure it is: the obvious star gets 1, the forgotten squad player gets 100. A wrong answer loses the slot.</p>
+      <p>Three questions, each with only 2 or 3 correct answers. Find them all. Every answer scores 1–100 points depending on how obscure it is: Real Madrid is worth a point or two, a small club much more. Three misses and the question closes.</p>
     </div>
-    <div class="meta"><span>Puzzle <b id="dc-label">—</b></span><span>Question <b id="dc-round">1/3</b></span><span>Points <b id="dc-total">0</b></span></div>
+    <div class="meta"><span>Puzzle <b id="dc-label">—</b></span><span>Question <b id="dc-round">1/3</b></span><span>Points <b id="dc-total">0</b></span><span>Misses <span class="dots" id="dc-lives" style="display:inline-flex;vertical-align:middle;margin-left:6px"></span></span></div>
     <div id="dc-q"></div>
     <div id="dc-slots"></div>
     <div class="inline-search" id="dc-search">
@@ -684,13 +685,14 @@ footer{margin-top:40px;color:var(--chalk-dim);font-size:.82rem;border-top:2px da
       <ul class="results" id="dc-results" hidden></ul>
     </div>
     <div class="bar">
+      <button class="btn" id="dc-give" type="button">Give up</button>
       <button class="btn primary" id="dc-next" type="button" hidden>Next question</button>
       <button class="btn" id="dc-new" type="button">New game</button>
       <button class="btn" id="dc-daily" type="button" hidden>Daily puzzle</button>
       <span class="msg" id="dc-msg" role="status"></span>
       <div class="share" id="sh-dc" hidden></div>
     </div>
-    <p class="beta">Rarity is based on how widely each player is covered on Wikipedia.</p>
+    <p class="beta">Rarity: clubs by how many players in our database played there; players by how widely they are covered on Wikipedia.</p>
   </section>
 
   <!-- CROMOS -->
@@ -2073,66 +2075,100 @@ $("w2-new").onclick=()=>startWho(false);$("w2-daily").onclick=()=>startWho(true)
 const whoDone=k=>{const x=store.get("who-"+k,null);return !!(x&&x.res&&x.res.length===WQ_N)};
 
 // ---------- DEEP CUT ----------
-// Respuestas válidas puntúan según su rareza (popularidad en Wikipedia) dentro de las respuestas posibles.
-const DC={},DC_N=3,DC_SLOTS=3;
-function dcQuestion(r){
-  const clubs=CP(),stars=DIFF==="easy"?STARS:MIDP.filter(p=>p.pop>=70);
-  for(let t=0;t<400;t++){
-    const kind=r();let q;
-    if(kind<0.45){const a=clubs[Math.floor(r()*clubs.length)],b=clubs[Math.floor(r()*clubs.length)];if(a===b)continue;
-      q={t:`A player who played for <b>${esc(clubName(a))}</b> and <b>${esc(clubName(b))}</b>`,s:`${clubName(a)} + ${clubName(b)}`,ok:p=>p.set.has(a)&&p.set.has(b)}}
-    else if(kind<0.75){const c=clubs[Math.floor(r()*clubs.length)];const nats=[...new Set(PLAYERS.filter(p=>p.set.has(c)).map(p=>p.nat))];const n=nats[Math.floor(r()*nats.length)];if(!NATS[n])continue;
-      q={t:`A player from <b>${NATS[n][1]} ${esc(NATS[n][0])}</b> who played for <b>${esc(clubName(c))}</b>`,s:`${NATS[n][0]} @ ${clubName(c)}`,ok:p=>p.nat===n&&p.set.has(c)}}
-    else{const s=stars[Math.floor(r()*stars.length)];
-      q={t:`A player who was a teammate of <b>${esc(s.name)}</b>`,s:`Teammate of ${s.name}`,ok:p=>MATES[s.id].has(p.id)}}
-    const ans=PLAYERS.filter(q.ok).sort((x,y)=>y.pop-x.pop);
-    const famous=ans.filter(p=>MID_SET.has(p.id)).length;
-    if(ans.length<8||famous<4||ans.length>400)continue;
-    q.ans=ans.map(p=>p.id);return q;
+// Cada pregunta tiene una lista cerrada de 2–3 respuestas correctas. Hay que encontrarlas todas;
+// cada una puntúa según lo rara que sea (un club o jugador muy conocido da pocos puntos).
+const DC={},DC_N=3,DC_MISS=3;
+const CLUB_MAX=Math.max(...Object.values(clubCounts));
+function clubPts(c){const n=clubCounts[c]||1;return Math.min(100,Math.max(1,Math.round(100*(1-Math.log(n)/Math.log(CLUB_MAX)))))}
+const POP_RANK=new Map(PLAYERS.slice().sort((a,b)=>b.pop-a.pop).map((p,i)=>[p.id,i]));
+function playerPts(id){return Math.max(1,Math.round(100*POP_RANK.get(id)/(PLAYERS.length-1)))}
+const cnorm=s=>norm(s).replace(/[^a-z0-9 ]/g,"").replace(/\butd\b/g,"united").replace(/\s+/g," ").trim();
+const CLUB_LIST=Object.keys(clubCounts).sort((a,b)=>clubCounts[b]-clubCounts[a]).map(k=>({k,n:cnorm(clubName(k)),kk:cnorm(k)}));
+function searchClubs(q,limit=8){q=cnorm(q);if(!q)return [];const w=q.split(" ");
+  return CLUB_LIST.filter(c=>c.n.includes(q)||c.kk===q||w.every(x=>c.n.split(" ").some(t=>t.startsWith(x)))).slice(0,limit).map(c=>c.k)}
+function dcQuestion(r,kind){
+  const pp=DIFF==="hard"?PLAYERS.filter(p=>p.pop>=35):PP();
+  for(let t=0;t<600;t++){
+    if(kind==="clubs"){
+      const p=pp[Math.floor(r()*pp.length)];const clubs=[...new Set(p.stints.map(s=>s.club))];
+      if(clubs.length<2||clubs.length>3)continue;
+      return {kind,t:`Name the ${clubs.length} clubs <b>${esc(p.name)}</b> played for`,sub:`${flag(p)} ${NATS[p.nat]?NATS[p.nat][0]:""}${p.pos?" · "+({GK:"Goalkeeper",DEF:"Defender",MID:"Midfielder",FWD:"Forward"})[p.pos]:""}`,
+        s:"c"+p.id,ans:clubs.sort((a,b)=>clubCounts[b]-clubCounts[a])};
+    }else{
+      const cs=CP(),a=cs[Math.floor(r()*cs.length)],b=cs[Math.floor(r()*cs.length)];if(a===b)continue;
+      const ans=PLAYERS.filter(p=>p.set.has(a)&&p.set.has(b));
+      if(ans.length<2||ans.length>3)continue;
+      if(DIFF!=="hard"&&!ans.every(p=>MID_SET.has(p.id)))continue;
+      return {kind,t:`Name the ${ans.length} players who played for both <b>${esc(clubName(a))}</b> and <b>${esc(clubName(b))}</b>`,sub:"In our database",
+        s:"p"+[a,b].sort().join("-"),ans:ans.sort((x,y)=>y.pop-x.pop).map(p=>p.id)};
+    }
   }
 }
-function dcScore(q,id){const i=q.ans.indexOf(id);if(i<0)return 0;return Math.max(1,Math.round(100*i/(q.ans.length-1)))}
-function makeDeep(seed){const r=rng(seed),qs=[],seen=new Set();while(qs.length<DC_N){const q=dcQuestion(r);if(q&&!seen.has(q.s)){seen.add(q.s);qs.push(q)}}return qs}
+const dcPts=(q,x)=>q.kind==="clubs"?clubPts(x):playerPts(x);
+const dcName=(q,x)=>q.kind==="clubs"?clubName(x):PLAYERS[x].name;
+function makeDeep(seed){const r=rng(seed),qs=[],seen=new Set();
+  const kinds=shuffle(["clubs","clubs","players"],r);
+  for(const k of kinds){let q=null;for(let t=0;t<5&&!q;t++){const c=dcQuestion(r,k);if(c&&!seen.has(c.s))q=c}if(!q)q=dcQuestion(r,"clubs");seen.add(q.s);qs.push(q)}
+  return qs}
 function startDeep(daily){
-  const seed=daily?hash("deep"+dayKey):Math.floor(Math.random()*1e9);
-  Object.assign(DC,{daily,qs:makeDeep(seed),k:0,picks:[[],[],[]]});
-  if(daily){const s=store.get("deep-"+dayKey,null);if(s)Object.assign(DC,s)}
+  const seed=daily?hash("deep2"+dayKey):Math.floor(Math.random()*1e9);
+  Object.assign(DC,{daily,qs:makeDeep(seed),k:0,found:[[],[],[]],miss:[0,0,0],shut:[false,false,false]});
+  if(daily){const s=store.get("deep2-"+dayKey,null);if(s)Object.assign(DC,s)}
   $("dc-label").textContent=daily?dayLabel:"free play";$("dc-daily").hidden=daily;setMsg("dc-msg","");renderDeep();
 }
-function saveDeep(){if(DC.daily)store.set("deep-"+dayKey,{k:DC.k,picks:DC.picks});updateHome()}
-const dcTotal=()=>DC.picks.flat().reduce((a,x)=>a+x.pts,0);
-const dcEmoji=p=>p===0?"⬛":p>=80?"🟪":p>=50?"🟦":p>=20?"🟩":"🟨";
+function saveDeep(){if(DC.daily)store.set("deep2-"+dayKey,{k:DC.k,found:DC.found,miss:DC.miss,shut:DC.shut,tot:dcTotal()});updateHome()}
+const dcTotal=()=>DC.qs.reduce((a,q,j)=>a+DC.found[j].reduce((b,x)=>b+dcPts(q,x),0),0);
+const dcMax=()=>DC.qs.reduce((a,q)=>a+q.ans.reduce((b,x)=>b+dcPts(q,x),0),0);
+const dcEmoji=p=>p>=70?"🟪":p>=40?"🟦":p>=15?"🟩":"🟨";
 const dcOver=()=>DC.k>=DC_N;
+function dcBlock(j,showAll){const q=DC.qs[j],f=DC.found[j],shut=DC.shut[j];
+  return `<div class="dcq">${q.t}<div class="dcsub">${q.sub}</div></div><ul class="dcs">`+q.ans.map((x,i)=>{
+    if(f.includes(x))return `<li class="y"><span>${esc(dcName(q,x))}</span><span class="pts">+${dcPts(q,x)}</span></li>`;
+    if(shut||showAll)return `<li class="x"><span>${esc(dcName(q,x))}</span><span class="pts">${dcPts(q,x)}</span></li>`;
+    return `<li class="empty"><span>Answer ${i+1}</span><span class="pts">?</span></li>`}).join("")+`</ul>`}
 function renderDeep(){
-  const over=dcOver(),k=Math.min(DC.k,DC_N-1),q=DC.qs[k],picks=DC.picks[k];
+  const over=dcOver(),k=Math.min(DC.k,DC_N-1),q=DC.qs[k],shut=DC.shut[k];
   $("dc-round").textContent=`${k+1}/${DC_N}`;$("dc-total").textContent=dcTotal();
-  $("dc-q").innerHTML=over?"<b>Finished!</b> Here’s how deep you went:":q.t;
-  const slot=(p,i)=>p?`<li class="${p.pts?"y":"x"}"><span>${esc(PLAYERS[p.id].name)}</span><span class="pts">${p.pts?"+"+p.pts:"✗"}</span></li>`:`<li class="empty"><span>Answer ${i+1}</span><span class="pts">—</span></li>`;
-  const reveal=qq=>{const top=PLAYERS[qq.ans[qq.ans.length-1]],ob=PLAYERS[qq.ans[0]],mid=qq.ans.filter(id=>MID_SET.has(id));const deep=PLAYERS[mid[mid.length-1]];
-    return `<p class="dcr">Most obvious: <b>${esc(ob.name)}</b> (1 pt) · Deep cut: <b>${esc(deep.name)}</b> (${dcScore(qq,deep.id)} pts) · Deepest: <b>${esc(top.name)}</b> (100 pts) · ${qq.ans.length} valid answers</p>`};
-  if(over){$("dc-slots").innerHTML=DC.qs.map((qq,j)=>`<div class="dcblk"><div class="dcq">${qq.t}</div><ul class="dcs">${DC.picks[j].map(slot).join("")}</ul>${reveal(qq)}</div>`).join("")}
-  else{const qDone=picks.length>=DC_SLOTS;$("dc-slots").innerHTML=`<ul class="dcs">${Array.from({length:DC_SLOTS},(_,i)=>slot(picks[i],i)).join("")}</ul>`+(qDone?reveal(q):"")}
-  const qDone=!over&&picks.length>=DC_SLOTS;
-  $("dc-search").hidden=over||qDone;$("dc-next").hidden=!qDone;$("dc-next").textContent=k===DC_N-1?"See results":"Next question";
-  if(over){const t=dcTotal();setMsg("dc-msg",`Total: ${t} points out of ${DC_N*DC_SLOTS*100}.`,t>=300?"ok":"");
-    renderShare("dc",`Dugout · Deep Cut (${tag(DC.daily)})\n`+DC.picks.map(ps=>ps.map(p=>dcEmoji(p.pts)).join("")).join("\n")+`\n${t} pts`)}
+  $("dc-lives").innerHTML=over?"—":Array.from({length:DC_MISS},(_,i)=>`<i class="${i<DC.miss[k]?"n":""}"></i>`).join("");
+  $("dc-q").innerHTML=over?"<p><b>Finished!</b></p>":"";
+  $("dc-slots").innerHTML=over?DC.qs.map((_,j)=>`<div class="dcblk">${dcBlock(j,true)}</div>`).join(""):dcBlock(k,false);
+  $("dc-input").placeholder=q.kind==="clubs"?"Type a club…":"Type a player…";
+  $("dc-search").hidden=over||shut;$("dc-give").hidden=over||shut;
+  $("dc-next").hidden=over||!shut;$("dc-next").textContent=k===DC_N-1?"See results":"Next question";
+  if(over){const t=dcTotal();setMsg("dc-msg",`Total: ${t} points (best possible ${dcMax()}).`,"ok");
+    renderShare("dc",`Dugout · Deep Cut (${tag(DC.daily)})\n`+DC.qs.map((q,j)=>q.ans.map(x=>DC.found[j].includes(x)?dcEmoji(dcPts(q,x)):"⬛").join("")).join("\n")+`\n${t} pts`)}
   else renderShare("dc",null);
 }
-inlineSearch("dc-input","dc-results",()=>new Set((DC.picks[DC.k]||[]).map(p=>p.id)),id=>{
-  if(dcOver())return;const q=DC.qs[DC.k],picks=DC.picks[DC.k];if(picks.length>=DC_SLOTS)return;
-  if(picks.some(p=>p.id===id)){setMsg("dc-msg","You already used that player.","bad");return}
-  const pts=dcScore(q,id);picks.push({id,pts});
-  setMsg("dc-msg",pts?(pts>=80?`Deep cut! +${pts}`:pts>=50?`Nice one. +${pts}`:pts>=20?`+${pts}`:`Too obvious… +${pts}`):`${PLAYERS[id].name} doesn’t fit. Slot lost.`,pts?"ok":"bad");
-  saveDeep();renderDeep();if(picks.length<DC_SLOTS)$("dc-input").focus()});
+function dcClose(){DC.shut[DC.k]=true;const q=DC.qs[DC.k],n=DC.found[DC.k].length;
+  setMsg("dc-msg",n===q.ans.length?"All found!":`You found ${n} of ${q.ans.length}.`,n===q.ans.length?"ok":"bad")}
+function dcAnswer(x){
+  if(dcOver()||DC.shut[DC.k])return;const q=DC.qs[DC.k],f=DC.found[DC.k];
+  if(f.includes(x)){setMsg("dc-msg","Already found.","bad");return}
+  if(q.ans.includes(x)){f.push(x);const p=dcPts(q,x);setMsg("dc-msg",p>=70?`Deep cut! +${p}`:p>=40?`Nice one. +${p}`:`+${p}`,"ok");if(f.length===q.ans.length)dcClose()}
+  else{DC.miss[DC.k]++;setMsg("dc-msg",`${dcName(q,x)} isn’t one. ${DC_MISS-DC.miss[DC.k]} miss${DC_MISS-DC.miss[DC.k]===1?"":"es"} left.`,"bad");
+    const c=$("dc-input");c.classList.add("shake");setTimeout(()=>c.classList.remove("shake"),400);if(DC.miss[DC.k]>=DC_MISS)dcClose()}
+  saveDeep();renderDeep();if(!DC.shut[DC.k])$("dc-input").focus()}
+(()=>{const inp=$("dc-input"),ul=$("dc-results");
+  const list=()=>{const q=DC.qs[Math.min(DC.k,DC_N-1)];act=0;
+    if(q.kind==="clubs"){const r=searchClubs(inp.value);ul.innerHTML=r.length?r.map((c,n)=>`<li><button type="button" data-v="${esc(c)}" class="${n===0?"act":""}">${clubBadge(c,"sm")} ${esc(clubName(c))}</button></li>`).join(""):(inp.value.trim()?`<li class="none">No club found.</li>`:"")}
+    else{const r=search(inp.value);ul.innerHTML=r.length?r.map((p,n)=>`<li><button type="button" data-v="${p.id}" class="${n===0?"act":""}">${p.name}<span>${flag(p)}</span></button></li>`).join(""):(inp.value.trim()?`<li class="none">Not in our database. Try the surname.</li>`:"")}};
+  const pick=v=>{inp.value="";ul.hidden=true;const q=DC.qs[DC.k];dcAnswer(q.kind==="clubs"?v:+v)};
+  inp.addEventListener("input",()=>{list();ul.hidden=!inp.value.trim()});
+  inp.addEventListener("keydown",e=>{if(e.key==="Escape"){ul.hidden=true;return}const items=[...ul.querySelectorAll("button")];if(!items.length)return;
+    if(e.key==="ArrowDown"||e.key==="ArrowUp"){e.preventDefault();items[act].classList.remove("act");act=(act+(e.key==="ArrowDown"?1:-1)+items.length)%items.length;items[act].classList.add("act")}
+    if(e.key==="Enter"){e.preventDefault();pick(items[act].dataset.v)}});
+  ul.addEventListener("click",e=>{const b=e.target.closest("button[data-v]");if(b)pick(b.dataset.v)});
+})();
+$("dc-give").onclick=()=>{if(dcOver())return;dcClose();saveDeep();renderDeep()};
 $("dc-next").onclick=()=>{DC.k++;setMsg("dc-msg","");saveDeep();renderDeep()};
 $("dc-new").onclick=()=>startDeep(false);$("dc-daily").onclick=()=>startDeep(true);
-const deepDone=k=>{const x=store.get("deep-"+k,null);return !!(x&&x.k>=DC_N)};
+const deepDone=k=>{const x=store.get("deep2-"+k,null);return !!(x&&x.k>=DC_N)};
 
 // Enganches: portada, racha y sobres
 DAILY_GAMES.push(["who","Who Said It?",whoDone],["deep","Deep Cut",deepDone]);
 const _uhW=updateHome;updateHome=function(){_uhW();
   const w=store.get("who-"+dayKey,null),wd=whoDone(dayKey);$("st-who").textContent=wd?`Done · ${w.res.filter(Boolean).length}/${WQ_N}`:"Today’s puzzle waiting";$("st-who").className="st"+(wd?" done":"");
-  const d=store.get("deep-"+dayKey,null),dd=deepDone(dayKey);$("st-deep").textContent=dd?`Done · ${d.picks.flat().reduce((a,x)=>a+x.pts,0)} pts`:"Today’s puzzle waiting";$("st-deep").className="st"+(dd?" done":"");
+  const d=store.get("deep2-"+dayKey,null),dd=deepDone(dayKey);$("st-deep").textContent=dd?`Done · ${d.tot||0} pts`:"Today’s puzzle waiting";$("st-deep").className="st"+(dd?" done":"");
 };
 const _ptW=playedToday;playedToday=function(){return _ptW()||whoDone(dayKey)||deepDone(dayKey)};
 
