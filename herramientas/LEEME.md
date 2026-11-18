@@ -9,7 +9,7 @@ python3 herramientas/fetch_stats.py datos/raw.json               # partidos y go
 python3 herramientas/build_players.py datos/raw.json prototipo-claude.html js/players.js /dev/null
 ```
 
-Después hay que regenerar `supabase/02_cartas.sql` y ejecutarlo en Supabase (SQL Editor) para que
+Después hay que regenerar `supabase/02_cartas.sql` con `node herramientas/export_cartas.js` (necesita Playwright) y ejecutarlo en Supabase (SQL Editor) para que
 el catálogo de cromos coincida con los jugadores.
 
 Limpieza que se aplica: se quitan selecciones nacionales, filiales, equipos juveniles y de cantera

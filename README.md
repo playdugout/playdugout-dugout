@@ -17,5 +17,6 @@ Survival, Timeline, Versus/Ranked online, cromos, trofeos y ruleta.
 - ✅ Web independiente lista para Netlify.
 - ✅ 3.737 futbolistas (de las ligas conocidas + leyendas) con trayectorias, estadísticas reales y posición.
 - ✅ Modo online (Versus, Ranked, intercambio con amigos) sobre Supabase Realtime.
-- ⏳ Siguiente fase: sobres, cromos, trofeos, racha y ELO guardados y validados en el servidor
+- ✅ Sobres, cromos, trofeos, ruleta, racha, intercambios y ELO guardados y validados en el servidor (Supabase), con modo local si no hay conexión.
+- ✅ Páginas legales (`legal.html`: aviso legal, privacidad y cookies), aviso de cookies y botón «Delete my data».
   (ahora se guardan en el navegador de cada jugador).
