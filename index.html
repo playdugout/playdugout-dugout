@@ -279,6 +279,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,.cell:focus-visible{out
 .ccard .nm{font-family:var(--display);font-weight:800;font-size:1.1rem;line-height:1.02;text-transform:uppercase;overflow-wrap:anywhere}
 .ccard .cl{display:flex;flex-wrap:wrap;gap:3px;margin-top:auto}
 .ccard .cl .badge{width:22px;height:22px;font-size:.5rem;box-shadow:0 0 0 1px var(--chalk)}
+.ccard .rt{font-size:.62rem;line-height:1.25;color:var(--chalk-dim);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}
 .ccard .ft{font-family:var(--mono);font-size:.6rem;color:var(--chalk-dim)}
 .ccard .tagn{position:absolute;top:-8px;right:-6px;font-family:var(--mono);font-size:.62rem;background:var(--ok);color:var(--felt);padding:1px 6px;border-radius:4px}
 .ccard .tagn.dup{background:var(--chalk-dim)}
@@ -1696,8 +1697,8 @@ function addPacks(n){store.set("packs",packs()+n)}
 function owned(){const a=album();return Object.keys(a).filter(k=>a[k]>0).length}
 function cardHTML(p,o={}){
   const first=p.stints[0],last=p.stints[p.stints.length-1];const clubs=[...new Set(p.stints.map(s=>s.club))];
-  const big=clubs.filter(c=>CLUBS[c]).slice(0,5);
-  return `<div class="ccard ${p.rar}">${o.tag?`<span class="tagn ${o.tag==="NEW"?"":"dup"}">${o.tag}</span>`:""}<div class="top"><span>${RAR_INFO[p.rar].n}</span><span>#${String(p.id+1).padStart(3,"0")}</span></div><span class="fl" aria-hidden="true">${flag(p)}</span><span class="nm">${esc(p.name)}</span><span class="ft">${first.s}–${last.e>=2026?"now":last.e} · ${clubs.length} clubs</span><div class="cl">${big.map(c=>clubBadge(c)).join("")}</div>${o.count>1?`<span class="ft">×${o.count}</span>`:""}</div>`;
+  const big=clubs.slice(0,6),more=clubs.length-big.length;const route=clubs.map(c=>clubName(c)).join(" → ");
+  return `<div class="ccard ${p.rar}">${o.tag?`<span class="tagn ${o.tag==="NEW"?"":"dup"}">${o.tag}</span>`:""}<div class="top"><span>${RAR_INFO[p.rar].n}</span><span>#${String(p.id+1).padStart(3,"0")}</span></div><span class="fl" aria-hidden="true">${flag(p)}</span><span class="nm">${esc(p.name)}</span><span class="ft">${first.s}–${last.e>=2026?"now":last.e} · ${clubs.length} clubs</span><div class="cl">${big.map(c=>clubBadge(c)).join("")}${more>0?`<span class="ft">+${more}</span>`:""}</div><span class="rt" title="${esc(route)}">${esc(route)}</span>${o.count>1?`<span class="ft">×${o.count}</span>`:""}</div>`;
 }
 function drawCard(){let x=Math.random(),acc=0,r="common";for(const k of ["legend","epic","rare","common"]){acc+=RAR_INFO[k].p;if(x<acc){r=k;break}}const L=BY_RAR[r];return L[Math.floor(Math.random()*L.length)]}
 function openPack(){
