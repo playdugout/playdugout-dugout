@@ -9,7 +9,7 @@ const sql=`-- Card catalogue (one per player). Generated from the game database 
 -- Card ids are fixed (a hash of the player's name), so they don't change when the player list is updated.
 -- Run 04_servidor.sql first. Safe to run again.
 alter table public.cards add column if not exists active boolean not null default true;
-update public.cards set active = false;
+update public.cards set active = false where active;
 insert into public.cards (id, name, rarity, active) values
 `+o.rows.map(r=>"  ("+r[0]+", '"+esc(r[1])+"', '"+r[2]+"', true)").join(',\n')+`
 on conflict (id) do update set name = excluded.name, rarity = excluded.rarity, active = true;
