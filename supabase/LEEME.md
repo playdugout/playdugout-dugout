@@ -5,7 +5,7 @@ Orden para un proyecto nuevo (Supabase → **SQL Editor** → **New query** → 
 1. `01_esquema.sql` — tablas, seguridad y funciones básicas.
 2. `03_ajustes.sql` — ajustes de seguridad y rendimiento que recomienda el Advisor.
 3. `04_servidor.sql` — conecta la web con el servidor: estado del jugador, trofeos comprobados, intercambios con amigos, ranked y borrar cuenta.
-4. `02_cartas.sql` — catálogo de cromos (necesita el 04 antes).
+4. Catálogo de cromos (necesita el 04 antes): ejecuta **en orden** los 8 archivos de `supabase/cartas/` (`1_preparar.sql` … `8_terminar.sql`). Es el mismo contenido que `02_cartas.sql`, partido porque el editor no admite textos tan largos.
 5. `05_estadisticas.sql` — estadísticas de uso (solo de quien las acepta) y buzón de opiniones.
 6. **Authentication → Sign In / Providers** → activa **Allow anonymous sign-ins**.
 
