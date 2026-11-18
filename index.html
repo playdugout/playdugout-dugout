@@ -354,6 +354,22 @@ footer .legal a{color:var(--chalk-dim)}
 .cookie{position:fixed;left:12px;right:12px;bottom:max(12px,env(safe-area-inset-bottom,0px));z-index:50;max-width:620px;margin:0 auto;padding:14px 16px;border-radius:14px;border:2px solid var(--card);background:var(--felt-2);box-shadow:0 10px 30px rgba(0,0,0,.4)}
 .cookie p{margin:0 0 10px;font-size:.92rem}
 .cookie a{color:var(--card)}
+.rm .sheet{position:relative;max-width:440px;text-align:center;border-color:var(--card)}
+.rm .x{position:absolute;top:10px;right:10px;width:32px;height:32px;border-radius:50%;border:1px solid var(--line);background:transparent;color:var(--chalk);cursor:pointer;font:inherit}
+.rm-k{font-family:var(--mono);font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;color:var(--chalk-dim);padding:0 30px}
+.rm-h{font-family:var(--display);font-weight:800;font-size:1.7rem;line-height:1.1;text-transform:uppercase;margin:10px 0 14px;color:var(--card)}
+.rm-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:14px}
+.rm-stats b{display:block;font-family:var(--display);font-weight:800;font-size:2rem;line-height:1}
+.rm-stats span{font-size:.72rem;color:var(--chalk-dim)}
+.rm-dist{display:flex;flex-direction:column;gap:4px;margin:0 0 14px;text-align:left}
+.rm-row{display:grid;grid-template-columns:56px 1fr;gap:6px;align-items:center;font-family:var(--mono);font-size:.78rem}
+.rm-row span{text-align:right;color:var(--chalk-dim)}
+.rm-row i{display:block;font-style:normal;background:var(--felt-3);border-radius:4px;padding:2px 6px;text-align:right;min-width:22px}
+.rm-row i.me{background:var(--card);color:var(--card-ink);font-weight:700}
+.rm-next{font-size:.9rem;margin:0 0 14px}.rm-next b{font-family:var(--mono)}
+.rm-btns{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.rm-go{flex-basis:100%;text-align:center;text-decoration:none;position:relative;font-size:1.05rem}
+.rm-badge{display:inline-block;margin-left:8px;min-width:22px;padding:0 6px;border-radius:999px;background:var(--bad);color:#fff;font-size:.8rem;line-height:22px}
 .fbline{font-size:.88rem;color:var(--chalk-dim);margin:10px 0 0}.fbline a{color:var(--card)}
 #fb .sheet{display:flex;flex-direction:column;gap:12px}
 #fb textarea{font:inherit;width:100%;padding:10px 12px;border-radius:10px;border:2px solid var(--line);background:rgba(0,0,0,.2);color:var(--chalk);resize:vertical}
@@ -885,6 +901,7 @@ footer{margin-top:40px;color:var(--chalk-dim);font-size:.82rem;border-top:2px da
 
   <footer>Fan-made game, not affiliated with any club or league. Badges are generic emblems with each team’s initials. Database: <span id="count"></span> players; seasons are shown by starting year (2013–2018 = 2013/14 to 2017/18). Player data from Wikidata.<br><span id="dg-status">Server: connecting…</span>
     <nav class="legal" aria-label="Legal"><a href="#" data-feedback>💬 Feedback</a><a href="legal.html#notice">Legal notice</a><a href="legal.html#privacy">Privacy</a><a href="legal.html#cookies">Cookies</a><a href="#" data-cookie-settings>Cookie settings</a><a href="#" data-delete-data>Delete my data</a></nav></footer>
+  <div class="picker rm" id="rm" hidden><div class="sheet" role="dialog" aria-modal="true" aria-label="Your result" id="rm-body"></div></div>
   <div class="picker" id="fb" hidden>
     <form class="sheet" id="fb-form" role="dialog" aria-modal="true" aria-labelledby="fb-title">
       <p class="q" id="fb-title">Send feedback</p>
@@ -2532,6 +2549,83 @@ $("fb-form").addEventListener("submit",async e=>{
     $("fb-text").value="";setMsg("fb-msg","Thanks! We read every message.","ok");setTimeout(closeFeedback,1500)}
   catch(err){$("fb-send").disabled=false;setMsg("fb-msg",(err&&err.message)||"Couldn’t send. Please try again.","bad")}
 });
+
+// ---------- Ventana de resultado al terminar un juego ----------
+// Aparece al acabar cualquier juego: resultado, estadísticas del juego (retos diarios), distribución,
+// cuenta atrás hasta el siguiente reto, compartir y botón al siguiente reto pendiente.
+const DAILY_VIEW={link:"link-up",grid:"grid",tray:"career",odd:"odd-one-out",tl:"timeline",lu:"lineup",five:"54321",who:"who-said-it",deep:"deep-cut"};
+const KEY2ID={l:"link",g:"grid",t:"tray",o:"odd",tl:"tl",lu:"lu",f:"five",w2:"who",dc:"deep"};
+const LASTSHARE={};
+// Resultado de cada juego: si cuenta como victoria, en qué columna de la distribución cae y el orden de columnas
+function resultOf(k){
+  const n=a=>a.filter(Boolean).length;
+  switch(k){
+    case "l":{const s=L.chain.length-1;return {win:L.won,b:L.won?(s>=6?"6+":String(s)):"X",cols:["2","3","4","5","6+","X"]}}
+    case "g":{const x=G.filled.filter(v=>v!=null).length;return {win:x>=5,b:String(x),cols:["0","1","2","3","4","5","6","7","8","9"]}}
+    case "t":return {win:T.won,b:T.won?String(T.guesses.length):"X",cols:["1","2","3","4","5","X"]};
+    case "o":{const x=n(O.res);return {win:x>=3,b:String(x),cols:["0","1","2","3","4","5"]}}
+    case "tl":{const x=n(tlCorrect());return {win:x===5,b:String(x),cols:["0","1","2","3","4","5"]}}
+    case "lu":{const x=LU.got.length;return {win:!LU.gave,b:x===11?"11":x>=9?"9–10":x>=6?"6–8":"0–5",cols:["0–5","6–8","9–10","11"]}}
+    case "f":{const x=F.won?5:F.lv;return {win:F.won,b:F.won?"5/5":`${x}/5`,cols:["0/5","1/5","2/5","3/5","4/5","5/5"]}}
+    case "w2":{const x=n(WQ.res);return {win:x>=3,b:String(x),cols:["0","1","2","3","4","5"]}}
+    case "dc":{const x=dcTotal();return {win:x>=100,b:x>=300?"300+":x>=200?"200–299":x>=100?"100–199":x>=50?"50–99":"0–49",cols:["0–49","50–99","100–199","200–299","300+"]}}
+  }
+  return null;
+}
+function prevDay(){const d=new Date();d.setDate(d.getDate()-1);return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate()}
+// Estadísticas por juego (solo retos diarios), guardadas en este navegador
+function recordDaily(k,r){
+  const id=KEY2ID[k],key="gs-"+id,st=store.get(key,{played:0,wins:0,cur:0,best:0,last:null,lastWin:null,dist:{}});
+  if(st.last===baseDay)return st;                       // un registro por juego y día
+  st.played++;st.last=baseDay;st.dist[r.b]=(st.dist[r.b]||0)+1;
+  if(r.win){st.wins++;st.cur=st.lastWin===prevDay()?st.cur+1:1;st.lastWin=baseDay;st.best=Math.max(st.best,st.cur)}else st.cur=0;
+  store.set(key,st);return st;
+}
+function dailyLeft(){return Object.entries(DAILY_VIEW).filter(([id])=>{const g=DAILY_GAMES.find(x=>x[0]===id);try{return g&&!g[2](dayKey)}catch(e){return true}})}
+function untilMidnight(){const n=new Date(),m=new Date(n);m.setHours(24,0,0,0);const s=Math.max(0,Math.floor((m-n)/1000));return [s/3600,s%3600/60,s%60].map(v=>String(Math.floor(v)).padStart(2,"0")).join(":")}
+let RM_T=null;
+function showResult(k,text){
+  const G=CH_GAMES[k];if(!G)return;
+  const lines=text.split("\n"),daily=!/free play/.test(lines[0])&&!/challenge/.test(($(k+"-label")||{}).textContent||"");
+  const r=resultOf(k),msgEl=$(k==="h"?"h-msg":k==="s"?"s-overtxt":k+"-msg");
+  const headline=(k==="s"?`You survived ${SV.streak} question${SV.streak===1?"":"s"}`:(msgEl&&msgEl.textContent)||lines.slice(1).join(" "));
+  let h=`<button type="button" class="x" data-rm-close aria-label="Close">✕</button>
+    <div class="rm-k">${esc(G.n)} · ${daily?"Daily puzzle · "+esc(dayLabel):"Free play"} · ${esc(DIFF_NAMES[DIFF])}</div>
+    <h3 class="rm-h">${esc(headline)}</h3>`;
+  if(daily&&r){const st=recordDaily(k,r),pct=st.played?Math.round(100*st.wins/st.played):0;
+    h+=`<div class="rm-stats"><div><b>${st.played}</b><span>Played</span></div><div><b>${pct}%</b><span>Win rate</span></div><div><b>${st.cur}</b><span>Current streak</span></div><div><b>${st.best}</b><span>Best streak</span></div></div>`;
+    const mx=Math.max(1,...r.cols.map(c=>st.dist[c]||0));
+    h+=`<div class="rm-dist" aria-label="Your results so far">${r.cols.map(c=>{const v=st.dist[c]||0;return `<div class="rm-row"><span>${c}</span><i class="${c===r.b?"me":""}" style="width:${Math.max(8,v/mx*100)}%">${v}</i></div>`}).join("")}</div>`;
+  }
+  const left=dailyLeft().filter(([,v])=>v!==G.v);
+  h+=`<p class="rm-next">Next daily puzzles in <b id="rm-clock">${untilMidnight()}</b></p>
+    <div class="rm-btns">${left.length?`<a class="btn primary rm-go" href="#${left[0][1]}" data-rm-close>Next game <span class="rm-badge">${left.length}</span></a>`:`<a class="btn primary rm-go" href="#home" data-rm-close>All daily puzzles done 🎉</a>`}
+      <button class="btn" type="button" data-rm="share">Share</button><button class="btn" type="button" data-rm="img">📸 Story</button><button class="btn" type="button" data-rm="chal">⚔️ Challenge</button></div>`;
+  $("rm-body").innerHTML=h;$("rm").hidden=false;$("rm").dataset.k=k;
+  clearInterval(RM_T);RM_T=setInterval(()=>{const c=$("rm-clock");if(!c||$("rm").hidden){clearInterval(RM_T);return}c.textContent=untilMidnight()},1000);
+  setTimeout(()=>{const b=$("rm").querySelector(".rm-go");b&&b.focus()},50);
+}
+function closeResult(){$("rm").hidden=true;clearInterval(RM_T)}
+$("rm").addEventListener("click",async e=>{
+  if(e.target.id==="rm"||e.target.closest("[data-rm-close]")){closeResult();return}
+  const b=e.target.closest("[data-rm]");if(!b)return;const k=$("rm").dataset.k,text=LASTSHARE[k];if(!text)return;
+  if(b.dataset.rm==="img")return shareImage(text,b);
+  if(b.dataset.rm==="chal"){const url=challengeURL(k,text),G=CH_GAMES[k],msg=`⚔️ I just played ${G?G.n:"Dugout"} on Dugout (${DIFF_NAMES[DIFF]}). Can you beat me?`;
+    if(navigator.share){try{await navigator.share({text:msg,url});return}catch(err){if(err&&err.name==="AbortError")return}}
+    try{await navigator.clipboard.writeText(msg+"\n"+url);b.textContent="Link copied!"}catch(err){prompt("Copy this:",msg+"\n"+url)}return}
+  const full=text+"\n"+SITE_URL;
+  if(navigator.share){try{await navigator.share({text:full});return}catch(err){if(err&&err.name==="AbortError")return}}
+  try{await navigator.clipboard.writeText(full);b.textContent="Copied!"}catch(err){prompt("Copy this:",full)}
+});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("rm").hidden)closeResult()});
+// Se abre cuando un juego termina estando en su pantalla (una vez por partida; los retos diarios, una vez al día)
+{const _rsM=renderShare,shownM=new Set();renderShare=function(k,text){_rsM(k,text);if(!text)return;LASTSHARE[k]=text;
+  const G=CH_GAMES[k];if(!G||location.hash.slice(1)!==G.v)return;
+  const sig=k+"|"+text;if(shownM.has(sig))return;shownM.add(sig);
+  const isDaily=KEY2ID[k]&&!/free play/.test(text.split("\n")[0])&&!/challenge/.test(($(k+"-label")||{}).textContent||"");
+  if(isDaily){const fk="rm-"+k+"-"+dayKey;if(store.get(fk,false))return;store.set(fk,true)}
+  setTimeout(()=>showResult(k,text),k==="s"?200:700);
+}}
 
 const VIEWS=["home","link-up","grid","career","odd-one-out","lineup","54321","higher-lower","survival","timeline","who-said-it","deep-cut","versus","album"];
 function route(){
